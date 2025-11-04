@@ -1,21 +1,23 @@
 # Wireframes
 
-Reference the Creating an Entity Relationship Diagram final project guide in the course portal for more information about how to complete this deliverable.
-
 ## List of Pages
 
-[👉🏾👉🏾👉🏾 List the pages you expect to have in your app, with a ⭐ next to pages you have wireframed]
+- Auth (Login/Signup)
+- Developer Summary
+- Project Details ⭐
+- Sprint Board ⭐
+- Issue Details ⭐
+- Ticket Intake
+- Tickets Triage
 
-## Wireframe 1: [page title]
+## Wireframe 1: [Project Details]
 
-[👉🏾👉🏾👉🏾 include wireframe 1]
+<img src='/assets/project_details_wireframe.png' title='Project Details Wireframe' alt='Project Details Wireframe' />
 
-## Wireframe 2: [page title]
+## Wireframe 2: [Sprint Board]
 
-[👉🏾👉🏾👉🏾 include wireframe 2]
+<img src='/assets/sprint_board_wireframe.png' title='Sprint Board Wireframe' alt='Sprint Board Wireframe' />
 
-## Wireframe 3: [page title]
+## Wireframe 3: [Issue Details]
 
-[👉🏾👉🏾👉🏾 include wireframe 3]
-
-[👉🏾👉🏾👉🏾 include more wireframes as desired]
+<img src='/assets/issue_details_wireframe.png' title='Issue Details' alt='Issue Details' />
