@@ -13,4 +13,4 @@
 
 ## Entity Relationship Diagram
 
-<img src='/assets/burdd_erd.png' title='Burdd ERD' alt='Burdd ERD' />
+<img src='/assets/erd/burdd_erd.png' title='Burdd ERD' alt='Burdd ERD' />

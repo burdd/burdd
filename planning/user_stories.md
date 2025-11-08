@@ -1,7 +1,5 @@
 # User Stories
 
-<!-- Reference the Writing User Stories final project guide in the course portal for more information about how to complete each of the sections below. -->
-
 ## User Roles
 
 - Customer: external user filing tickets
