@@ -9,8 +9,8 @@
 ## User Stories
 
 ### Customer
-1. As a Customer, I want to submit a ticket without creating an account so that I can report issues quickly.
-2. As a Customer, I want a tokenized status link so that I can check progress on my ticket later.
+1. As a Customer, I want to submit a ticket to report an issue or request a feature.
+2. As a Customer, I want to check progress on my ticket later.
 3. As a Customer, I want to add a screenshot to my ticket so that developers can reproduce the issue.
 4. As a Customer, I want to see the latest public status and last updated time so that I know someone is looking at it.
 

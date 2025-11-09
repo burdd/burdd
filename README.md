@@ -18,7 +18,7 @@ Most issues trackers separate public intake from internal planning. Burdd merges
 
 ## Tech Stack
 
-Frontend: JavaScript (Typescript), React, CSS
+Frontend: JavaScript, React, CSS
 
 Backend: Node.js, Express, PostgreSQL, Passport.js
 
@@ -32,7 +32,7 @@ Admins can create, add developers to, and delete projects
 
 ### Public ticket intake
 
-End users can submit a public ticket and receive a tokenized status link
+End users can submit a public ticket and track its status
 
 [gif goes here]
 
