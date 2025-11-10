@@ -2,11 +2,66 @@
 
 ## Frontend
 
-- []
-- []
-- []
-- []
-- []
+#### Tasks
+
+- [ ] Bootstrap client workspace
+    - [ ] Scaffold `frontend/` with Vite (React + TS template)
+    - [ ] Enable `strict` mode and path aliases in `tsconfig.json`
+    - [ ] Configure CSS Modules plus sample usage
+    - [ ] Add `src/styles/globals.css` and `variables.css` for shared tokens
+
+- [ ] Layout and navigation shell
+    - [ ] Install React Router v6 and register routes for `/login`, `/projects`, `/projects/:id`, `/sprints/:id`, `/issues/:id`, `/tickets/triage`
+    - [ ] Build `AppLayout` with header, sidebar navigation, and project switcher
+    - [ ] Add responsive grid, active link styling, 404 route, and refresh-safe deep links
+
+- [ ] Mock data and fetch helpers
+    - [ ] Create `mock-api/projects.json`, `sprints.json`, `issues.json`, `tickets.json`
+    - [ ] Implement `src/lib/fetcher.ts` with `getList<T>` and `getById<T>` helpers
+    - [ ] Add `ApiProvider` context to toggle between mocks and future real API
+    - [ ] Wire the projects page to fetch from mocks and prove end-to-end typing
+
+- [ ] Projects list and detail views
+    - [ ] Build `/projects` table with search filter and empty state component
+    - [ ] Create `/projects/:id` summary showing description, members, active sprint, issue stats
+    - [ ] Ship reusable `DataTable`, `Tag`, and `EmptyState` components styled via CSS Modules
+    - [ ] Ensure navigation from list to detail is instant and preserves scroll position
+
+- [ ] Sprint board
+    - [ ] Implement `/sprints/:id` board with In Queue, In Progress, Code Review, Done columns
+    - [ ] Group issues by status with column totals and empty messaging
+    - [ ] Add drag-and-drop plus keyboard “Move to Column” controls with ARIA labels
+
+- [ ] Issue detail surface
+    - [ ] Build `/issues/:id` view showing title, status, assignee, description, linked tickets
+    - [ ] Create `FormField` components for inline edits with validation and error states
+    - [ ] Support optimistic updates for description/status changes
+
+- [ ] Ticket triage dashboard
+    - [ ] Implement `/tickets/triage` list with filters for new / linked / converted tickets
+    - [ ] Add “Convert to Issue” flow that creates a mock issue and removes ticket from queue
+    - [ ] Add “Link to Issue” modal with search, selection, and toast confirmations
+    - [ ] Update mock data after each action to reflect queue changes
+
+- [ ] Auth shell and protected routes
+    - [ ] Create `AuthProvider` with `login`, `logout`, and `user` state
+    - [ ] Build `/login` form including error handling and redirect logic
+    - [ ] Protect developer routes, redirect unauthenticated visitors, and surface user info in header
+
+- [ ] Styling polish and docs
+    - [ ] Define typography scale, spacing system, and responsive breakpoints in `variables.css`
+    - [ ] Add loading, error, and empty skeletons plus mobile-specific tweaks for tables/boards
+    - [ ] Verify tab order, focus states, and Lighthouse contrast goals
+    - [ ] Configure `npm run build` with `VITE_API_BASE`, ensure mock data serves from `dist/`, and document setup in `README_frontend.md` with a v1.0 changelog entry
+
+#### Routes
+
+- /login — developer auth shell
+- /projects — project list with filters
+- /projects/:id — project overview with related sprints/issues
+- /sprints/:id — kanban board grouped by status
+- /issues/:id — issue details and inline editing
+- /tickets/triage — developer triage queue
 
 ## Tickets
 
