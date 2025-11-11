@@ -63,6 +63,15 @@
 - /issues/:id — issue details and inline editing
 - /tickets/triage — developer triage queue
 
+## Tickets
+
+- []
+- []
+- []
+- []
+- []
+
+
 ## Public Feedback Frontend
 
 ### Tasks
@@ -106,18 +115,10 @@
   - [ ] Comment (individual comment display)
 
 ### Routes
-/ — The main feedback dashboard (list view)
-/feedback/:id — The detail page for a single submission
-/submit — The new feedback submission form page
-/success — The confirmation page shown after submission
-
-## Tickets
-
-- []
-- []
-- []
-- []
-- []
+- / — The main feedback dashboard (list view)
+- /feedback/:id — The detail page for a single submission
+- /submit — The new feedback submission form page
+- /success — The confirmation page shown after submission
 
 ## Backend
 
