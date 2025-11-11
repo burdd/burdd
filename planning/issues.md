@@ -1,6 +1,6 @@
 # Issues
 
-## Frontend
+## Sprint Board Frontend
 
 #### Tasks
 
@@ -62,6 +62,54 @@
 - /sprints/:id — kanban board grouped by status
 - /issues/:id — issue details and inline editing
 - /tickets/triage — developer triage queue
+
+## Public Feedback Frontend
+
+### Tasks
+- [ ] Implement Feedback Dashboard (Homepage)
+  - [ ] Build the main dashboard list/feed view
+  - [ ] Create the "Submit New Idea" primary CTA button
+  - [ ] Render each submission as a FeedbackCard component
+  - [ ] Display title, upvote count, comment count, category, and status on each card
+  - [ ] Implement filter controls for Category (Feature, Issue, Suggestion)
+  - [ ] Implement filter controls for Status (Under Review, In Progress, Shipped)
+  - [ ] Implement sort controls (Hot, Top, Newest)
+
+- [ ] Build Submission Form Page
+  - [ ] Create the dedicated /submit route and page
+  - [ ] Add "Title" text input
+  - [ ] Add "Category" dropdown/radio (Feature, Issue, Suggestion)
+  - [ ] Add "Description" textarea (support simple Markdown)
+  - [ ] Add (optional) attachment/screenshot upload field
+  - [ ] Implement client-side validation for required fields
+
+- [ ] Build Submission Success Page
+  - [ ] Create the confirmation screen shown after successful submission
+  - [ ] Display the unique "tracking link" for the user
+  - [ ] Add a "Copy Link" button
+
+- [ ] Implement Feedback Detail Page
+  - [ ] Build the /feedback/:id route and page
+  - [ ] Display the full submission details (title, description)
+  - [ ] Implement the UpvoteButton (stateful, increments count per session)
+  - [ ] Display the read-only StatusBadge (e.g., "In Progress")
+  - [ ] Build the CommentThread section
+    - [ ] Add a "Post a comment" form
+    - [ ] Display a read-only list of all existing comments
+
+- [ ] Create Core Reusable Components
+  - [ ] FeedbackCard (for the dashboard list)
+  - [ ] UpvoteButton (stateful)
+  - [ ] StatusBadge (props for color based on status)
+  - [ ] CategoryTag (props for color/text)
+  - [ ] CommentThread (container)
+  - [ ] Comment (individual comment display)
+
+### Routes
+/ — The main feedback dashboard (list view)
+/feedback/:id — The detail page for a single submission
+/submit — The new feedback submission form page
+/success — The confirmation page shown after submission
 
 ## Tickets
 
