@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sprint-burdd-alpha",
+    "projectId": "project-burdd",
+    "name": "Alpha polish",
+    "goal": "Stabilize intake form and connect to triage board.",
+    "startDate": "2024-07-08",
+    "endDate": "2024-07-19"
+  },
+  {
+    "id": "sprint-burdd-beta",
+    "projectId": "project-burdd",
+    "name": "Beta hardening",
+    "goal": "Ship ticket linking and live board filters.",
+    "startDate": "2024-07-22",
+    "endDate": "2024-08-02"
+  },
+  {
+    "id": "sprint-sdk-beta",
+    "projectId": "project-sdk",
+    "name": "SDK beta",
+    "goal": "Deliver embeddable widget docs and QA harness.",
+    "startDate": "2024-07-01",
+    "endDate": "2024-07-12"
+  }
+]

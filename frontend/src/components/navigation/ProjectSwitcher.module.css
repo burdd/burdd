@@ -1,0 +1,40 @@
+.switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.65rem;
+}
+
+.select {
+  appearance: none;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.35rem 2rem 0.35rem 0.75rem;
+  border-radius: var(--radius-md);
+  min-width: 200px;
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.error {
+  font-size: 0.7rem;
+  color: var(--color-danger);
+}
+
+@media (max-width: 600px) {
+  .select {
+    min-width: unset;
+    width: 100%;
+  }
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ticket-5001",
+    "projectId": "project-burdd",
+    "title": "Cannot paste stack traces",
+    "status": "new",
+    "category": "complaint",
+    "reporter": "Quality Ops",
+    "createdAt": "2024-07-11T15:30:00.000Z",
+    "summary": "Textarea rejects >2000 characters making it hard to attach logs.",
+    "relatedIssueId": null
+  },
+  {
+    "id": "ticket-5002",
+    "projectId": "project-burdd",
+    "title": "Need bulk ticket uploader",
+    "status": "triaged",
+    "category": "feature_request",
+    "reporter": "Security Pilot",
+    "createdAt": "2024-07-10T09:00:00.000Z",
+    "summary": "Pilot teams want to import backlog from CSV into Burdd.",
+    "relatedIssueId": "issue-1002"
+  },
+  {
+    "id": "ticket-5003",
+    "projectId": "project-sdk",
+    "title": "SDK docs missing auth example",
+    "status": "new",
+    "category": "complaint",
+    "reporter": "QA Harness",
+    "createdAt": "2024-07-08T12:15:00.000Z",
+    "summary": "Need sample verifying the signed widget handshake.",
+    "relatedIssueId": "issue-2000"
+  },
+  {
+    "id": "ticket-5004",
+    "projectId": "project-burdd",
+    "title": "Tokenized status page 500",
+    "status": "closed",
+    "category": "complaint",
+    "reporter": "Internal QA",
+    "createdAt": "2024-07-04T08:45:00.000Z",
+    "summary": "Was fixed during alpha patch 3.",
+    "relatedIssueId": "issue-1001"
+  }
+]
