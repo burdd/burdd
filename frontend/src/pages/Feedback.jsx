@@ -127,21 +127,42 @@ const IconShare = ({ className }) => (
   </svg>
 );
 
+const IconCalendar = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="16" y1="2" x2="16" y2="6"></line>
+    <line x1="8" y1="2" x2="8" y2="6"></line>
+    <line x1="3" y1="10" x2="21" y2="10"></line>
+  </svg>
+);
+
 
 // --- MOCK DATA ---
-// Aligned with the backend spec: ticket_category, ticket_status, ticket_comments, etc.
-// Added back 'importance' tracking per user request.
+// Added 'createdAt' and 'sprint' (with 'endDate')
 const mockFeedbackData = [
   {
     id: '1',
     title: 'Bring back chronological timeline by default',
     body: "I don't want the 'For You' algorithmic feed. Please make the 'Following' (chronological) timeline the default tab, or at least remember my choice.",
-    category: 'complaint',
+    category: 'suggestion',
     status: 'new',
     upvoteCount: 128,
     hasVoted: false,
     importanceCounts: { 'NOT IMPORTANT': 1, 'NICE-TO-HAVE': 5, 'IMPORTANT': 78, 'CRITICAL': 44 },
-    myImportanceVote: 'IMPORTANT', // User's "session" vote
+    myImportanceVote: 'IMPORTANT',
+    createdAt: "2025-11-08T14:30:00Z", // 3 days ago
+    sprint: null,
     comments: [
       { id: 'c1', user: { handle: 'User123', avatar_url: 'https://placehold.co/40x40/6366F1/FFFFFF?text=U' }, body: 'This!! 100% this.' },
       { id: 'c2', user: { handle: 'TimelineFan', avatar_url: 'https://placehold.co/40x40/EC4899/FFFFFF?text=T' }, body: 'The app always opening on "For You" is the most annoying thing.' }
@@ -158,6 +179,8 @@ const mockFeedbackData = [
     hasVoted: true,
     importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 12, 'IMPORTANT': 98, 'CRITICAL': 146 },
     myImportanceVote: 'CRITICAL',
+    createdAt: "2025-09-15T10:00:00Z",
+    sprint: { id: 'sprint-10', endDate: "2025-09-30T17:00:00Z" },
     comments: [
       { id: 'c3', user: { handle: 'Admin', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=A' }, body: 'This is now available for Twitter Blue subscribers!' },
       { id: 'c4', user: { handle: 'TypoQueen', avatar_url: 'https://placehold.co/40x40/10B981/FFFFFF?text=T' }, body: 'Finally! But it should be free.' }
@@ -174,6 +197,8 @@ const mockFeedbackData = [
     hasVoted: false,
     importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 2, 'IMPORTANT': 45, 'CRITICAL': 29 },
     myImportanceVote: null,
+    createdAt: "2025-11-01T09:12:00Z", // 10 days ago
+    sprint: { id: 'sprint-12', endDate: "2025-11-20T17:00:00Z" },
     comments: [
       { id: 'c5', user: { handle: 'AndroidUser', avatar_url: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=A' }, body: 'Same here, Pixel 7. Videos are almost unwatchable.' },
       { id: 'c6', user: { handle: 'DevTeam', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=D' }, body: 'Thanks for the report, we are actively investigating this.' }
@@ -190,6 +215,8 @@ const mockFeedbackData = [
     hasVoted: false,
     importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 1, 'IMPORTANT': 55, 'CRITICAL': 159 },
     myImportanceVote: 'CRITICAL',
+    createdAt: "2025-10-20T11:00:00Z",
+    sprint: { id: 'sprint-12', endDate: "2025-11-20T17:00:00Z" },
     comments: [
       { id: 'c7', user: { handle: 'CryptoHater', avatar_url: 'https://placehold.co/40x40/EF4444/FFFFFF?text=C' }, body: 'This is the biggest problem on the platform right now.' }
     ],
@@ -199,43 +226,133 @@ const mockFeedbackData = [
     id: '5',
     title: "Add 'Bookmarks' to the main navigation bar",
     body: "Bookmarks are so useful but they're hidden in the profile menu. Please add a 'Bookmarks' icon to the main bottom navigation bar for quick access.",
-    category: 'feature_request',
+    category: 'suggestion',
     status: 'new',
     upvoteCount: 98,
     hasVoted: false,
     importanceCounts: { 'NOT IMPORTANT': 2, 'NICE-TO-HAVE': 70, 'IMPORTANT': 26, 'CRITICAL': 0 },
     myImportanceVote: 'NICE-TO-HAVE',
+    createdAt: "2025-11-10T18:00:00Z", // 1 day ago
+    sprint: null,
     comments: [
       { id: 'c8', user: { handle: 'PowerUser', avatar_url: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=P' }, body: 'I bookmark things all the time and forget they exist because they are so hard to find.' }
     ],
     imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Bookmarks'
   },
+  {
+    id: '6',
+    title: 'Increase character limit for all users',
+    body: 'The 280-character limit feels outdated. It would be great to have at least 500 characters for everyone, not just Blue subscribers, to allow for more nuanced conversations.',
+    category: 'suggestion',
+    status: 'rejected',
+    upvoteCount: 42,
+    hasVoted: false,
+    importanceCounts: { 'NOT IMPORTANT': 20, 'NICE-TO-HAVE': 15, 'IMPORTANT': 5, 'CRITICAL': 2 },
+    myImportanceVote: null,
+    createdAt: "2025-10-05T00:00:00Z",
+    sprint: null,
+    comments: [
+        { id: 'c9', user: { handle: 'Admin', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=A' }, body: "We appreciate the feedback, but we've decided to keep the 280-character limit for now to maintain brevity." },
+    ],
+    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Character+Limit'
+  },
+  {
+    id: '7',
+    title: 'Need an edit button',
+    body: 'How do we still not have an edit button?',
+    category: 'feature_request',
+    status: 'duplicate',
+    upvoteCount: 15,
+    hasVoted: false,
+    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 1, 'IMPORTANT': 5, 'CRITICAL': 9 },
+    myImportanceVote: null,
+    createdAt: "2025-09-16T00:00:00Z",
+    sprint: null,
+    comments: [
+        { id: 'c10', user: { handle: 'Admin', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=A' }, body: "This is a duplicate of an existing request. Please see [ticket #2] for updates." },
+    ],
+    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Duplicate'
+  },
 ];
 
-// Aligned with backend spec
-const CATEGORIES = ['All', 'feature_request', 'complaint'];
-const STATUSES = ['All', 'new', 'triaged', 'closed'];
+// --- CONSTANTS ---
+const CATEGORIES = ['All', 'feature_request', 'suggestion', 'complaint'];
+const STATUSES = ['All', 'new', 'triaged', 'closed', 'rejected', 'duplicate'];
 const SORT_OPTIONS = ['Top', 'Newest', 'Hot'];
 const IMPORTANCE_LEVELS = ['NOT IMPORTANT', 'NICE-TO-HAVE', 'IMPORTANT', 'CRITICAL'];
 
+// Mock current time for "time ago" consistency
+const MOCK_CURRENT_TIME = new Date("2025-11-11T23:39:00Z");
 
-// Maps for user-friendly display
+
+// --- MAPS ---
 const CATEGORY_DISPLAY_MAP = {
   'feature_request': 'Feature Request',
-  'complaint': 'Complaint / Issue'
+  'suggestion': 'Suggestion',
+  'complaint': 'Issue'
 };
 
 const STATUS_DISPLAY_MAP = {
   'new': 'Under Review',
   'triaged': 'In Progress',
-  'closed': 'Shipped'
+  'closed': 'Shipped',
+  'rejected': 'Rejected',
+  'duplicate': 'Duplicate'
 };
+
+// --- HELPER FUNCTIONS ---
+
+/**
+ * Formats an ISO date string into a "time ago" format.
+ * @param {string} dateString - The ISO 8601 date string.
+ * @returns {string} A relative time string (e.g., "3 days ago").
+ */
+const formatTimeAgo = (dateString) => {
+  const date = new Date(dateString);
+  const seconds = Math.floor((MOCK_CURRENT_TIME - date) / 1000);
+
+  let interval = seconds / 31536000;
+  if (interval > 1) {
+    return Math.floor(interval) + " years ago";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months ago";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days ago";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours ago";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes ago";
+  }
+  return Math.floor(seconds) + " seconds ago";
+};
+
+/**
+ * Formats an ISO date string into a readable date.
+ * @param {string} dateString - The ISO 8601 date string.
+ * @returns {string} A formatted date (e.g., "November 20, 2025").
+ */
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
 
 // --- REUSABLE COMPONENTS ---
 
 /**
  * UpvoteButton Component
- * Now accepts initialUpvoteCount and initialHasVoted to align with API.
  */
 const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size = 'md' }) => {
   const [upvoted, setUpvoted] = useState(initialHasVoted);
@@ -248,7 +365,7 @@ const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size 
     
     setUpvoted(newUpvoted);
     setCount(newCount);
-    onUpvote(id, newCount, newUpvoted); // Notify parent of new count and voted status
+    onUpvote(id, newCount, newUpvoted);
   };
 
   const baseStyles = "flex items-center gap-1.5 transition-colors rounded-lg border";
@@ -273,13 +390,14 @@ const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size 
 
 /**
  * StatusBadge Component
- * Maps backend status enum to user-friendly, colored badges.
  */
 const StatusBadge = ({ status }) => {
   const styles = {
     'new': 'bg-yellow-900/50 text-yellow-300',
     'triaged': 'bg-blue-900/50 text-blue-300',
     'closed': 'bg-green-900/50 text-green-300',
+    'rejected': 'bg-red-900/50 text-red-300',
+    'duplicate': 'bg-gray-700 text-gray-400'
   };
   return (
     <span
@@ -292,7 +410,6 @@ const StatusBadge = ({ status }) => {
 
 /**
  * CategoryTag Component
- * Maps backend category enum to user-friendly text.
  */
 const CategoryTag = ({ category }) => {
   return (
@@ -304,7 +421,6 @@ const CategoryTag = ({ category }) => {
 
 /**
  * Comment Component
- * Aligned with ticket_comments table (user object, body).
  */
 const Comment = ({ comment }) => (
   <div className="flex gap-3 py-4 border-b border-gray-700">
@@ -323,7 +439,6 @@ const Comment = ({ comment }) => (
 
 /**
  * FilterPills Component
- * A generic component to render a list of selectable pills.
  */
 const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) => (
   <div>
@@ -348,7 +463,6 @@ const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) =>
 
 /**
  * ImportanceSelector Component
- * Renders the four importance buttons for voting or selection.
  */
 const ImportanceSelector = ({ selected, onSelect }) => {
   const getStyle = (level) => {
@@ -393,21 +507,16 @@ const FeedbackDashboard = ({
   const filteredAndSortedItems = useMemo(() => {
     let items = [...feedbackItems];
 
-    // Filter by Category
     if (filters.category !== 'All') {
       items = items.filter(item => item.category === filters.category);
     }
-
-    // Filter by Status
     if (filters.status !== 'All') {
       items = items.filter(item => item.status === filters.status);
     }
-
-    // Sort
     if (sortBy === 'Top') {
       items.sort((a, b) => b.upvoteCount - a.upvoteCount);
     } else if (sortBy === 'Newest') {
-      items.sort((a, b) => new Date(b.id) - new Date(a.id)); // Using ID as proxy for date
+      items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by new createdAt
     } else if (sortBy === 'Hot') {
       items.sort((a, b) => b.upvoteCount - a.upvoteCount);
     }
@@ -562,9 +671,20 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
           <div className="flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-100">{item.title}</h1>
-              <div className="flex items-center gap-2 mt-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3">
                 <CategoryTag category={item.category} />
                 <StatusBadge status={item.status} />
+                <span className="flex items-center gap-1.5 text-sm text-gray-400">
+                  <IconCalendar className="w-4 h-4" />
+                  Submitted {formatTimeAgo(item.createdAt)}
+                </span>
+                {/* --- Estimated Release Date --- */}
+                {item.status === 'triaged' && item.sprint && (
+                   <span className="flex items-center gap-1.5 text-sm text-blue-400 font-medium">
+                    <IconCalendar className="w-4 h-4" />
+                    Estimated Release: {formatDate(item.sprint.endDate)}
+                  </span>
+                )}
               </div>
             </div>
             <div className="flex-shrink-0 flex gap-2">
@@ -641,8 +761,6 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
 
 /**
  * SubmissionFormPage Component
- * Aligned with backend: submits `title`, `category` (enum), and `body`.
- * Added `importance` back as requested.
  */
 const SubmissionFormPage = ({ onSubmit, onBack }) => {
   const [title, setTitle] = useState("");
@@ -662,7 +780,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
       title,
       category,
       body,
-      importance, // Add importance to the new ticket
+      importance,
     };
     onSubmit(newTicket);
   };
@@ -712,6 +830,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
               className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100"
             >
               <option value="feature_request">{CATEGORY_DISPLAY_MAP['feature_request']}</option>
+              <option value="suggestion">{CATEGORY_DISPLAY_MAP['suggestion']}</option>
               <option value="complaint">{CATEGORY_DISPLAY_MAP['complaint']}</option>
             </select>
           </div>
@@ -910,7 +1029,6 @@ export default function App() {
 
   // --- Data Handlers (Callbacks) ---
   
-  // Simulates POST/DELETE /tickets/:ticketId/upvotes
   const handleUpvote = useCallback((id, newCount, newHasVoted) => {
     setFeedbackItems(currentItems =>
       currentItems.map(item =>
@@ -919,7 +1037,6 @@ export default function App() {
     );
   }, []);
   
-  // Simulates POST /tickets/:ticketId/comments
   const handleAddComment = useCallback((id, commentBody) => {
     const newComment = {
       id: `c${new Date().getTime()}`,
@@ -935,21 +1052,16 @@ export default function App() {
     );
   }, []);
 
-  // Simulates a "session" vote for importance
   const handleImportanceVote = useCallback((id, newLevel) => {
     setFeedbackItems(currentItems =>
       currentItems.map(item => {
         if (item.id !== id) return item;
-
-        // Mock-update the counts
         const newCounts = { ...item.importanceCounts };
         const oldLevel = item.myImportanceVote;
         
-        // Decrement old vote if it exists
         if (oldLevel && newCounts[oldLevel] > 0) {
           newCounts[oldLevel]--;
         }
-        // Increment new vote
         newCounts[newLevel] = (newCounts[newLevel] || 0) + 1;
 
         return {
@@ -961,27 +1073,24 @@ export default function App() {
     );
   }, []);
   
-  // Simulates POST /projects/:projectId/tickets
   const handleSubmitFeedback = useCallback((newTicketData) => {
-    // newTicketData now contains { title, category, body, importance }
-    
-    // Initialize importance counts for the new ticket
     const initialCounts = { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 0, 'IMPORTANT': 0, 'CRITICAL': 0 };
     initialCounts[newTicketData.importance] = 1;
 
     const newTicket = {
       ...newTicketData,
       id: crypto.randomUUID(),
-      status: 'new', // Default status for new tickets
+      status: 'new',
       upvoteCount: 0,
-      hasVoted: false, // User hasn't upvoted their own ticket by default
+      hasVoted: false,
       comments: [],
+      createdAt: new Date().toISOString(), // Set creation date
+      sprint: null, // New tickets don't have a sprint
       importanceCounts: initialCounts,
-      myImportanceVote: newTicketData.importance, // The submitter's vote
+      myImportanceVote: newTicketData.importance,
       imageUrl: `https://placehold.co/600x400/${project.themeColor === 'blue' ? '1DA1F2' : 'E2E8F0'}/FFFFFF?text=${encodeURIComponent(newTicketData.title)}`
     };
     
-    // We no longer need to store the single 'importance' field
     delete newTicket.importance;
 
     setFeedbackItems(currentItems => [newTicket, ...currentItems]);
@@ -999,7 +1108,7 @@ export default function App() {
             item={selectedItem}
             onUpvote={handleUpvote}
             onAddComment={handleAddComment}
-            onImportanceVote={handleImportanceVote} // Pass the new handler
+            onImportanceVote={handleImportanceVote}
             onBack={showDashboard}
             project={project}
           />
