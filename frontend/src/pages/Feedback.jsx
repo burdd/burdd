@@ -219,7 +219,7 @@ const UpvoteButton = ({ initialUpvotes, onUpvote, id, size = 'md' }) => {
   };
   
   // Dark mode styles
-  const activeStyles = "bg-indigo-500 border-indigo-400 text-white";
+  const activeStyles = "bg-blue-500 border-blue-400 text-white";
   const inactiveStyles = "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600";
 
   return (
@@ -294,7 +294,7 @@ const FilterPills = ({ options, selected, onSelect, title }) => (
           onClick={() => onSelect(option)}
           className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
             selected === option
-              ? 'bg-indigo-500 text-white'
+              ? 'bg-blue-500 text-white'
               : 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600'
           }`}
         >
@@ -454,7 +454,7 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack }) => {
     <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm font-semibold text-indigo-400 hover:text-indigo-300 mb-6"
+        className="flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-300 mb-6"
       >
         <IconArrowLeft className="w-4 h-4" />
         Back to Dashboard
@@ -500,13 +500,13 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack }) => {
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 bg-gray-700 text-gray-100 placeholder-gray-500"
+                className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100 placeholder-gray-500"
                 rows="3"
                 placeholder="Add your comment..."
               ></textarea>
               <button
                 type="submit"
-                className="mt-3 px-5 py-2.5 bg-indigo-500 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="mt-3 px-5 py-2.5 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Post Comment
               </button>
@@ -556,7 +556,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
     <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
        <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm font-semibold text-indigo-400 hover:text-indigo-300 mb-6"
+        className="flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-300 mb-6"
       >
         <IconArrowLeft className="w-4 h-4" />
         Back to Dashboard
@@ -581,7 +581,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 bg-gray-700 text-gray-100 placeholder-gray-500"
+              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100 placeholder-gray-500"
               placeholder="A brief summary of your idea"
             />
           </div>
@@ -594,7 +594,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 bg-gray-700 text-gray-100"
+              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100"
             >
               <option>Feature</option>
               <option>Issue</option>
@@ -610,7 +610,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 bg-gray-700 text-gray-100 placeholder-gray-500"
+              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100 placeholder-gray-500"
               rows="6"
               placeholder="How would this help you? What's the problem?"
             ></textarea>
@@ -627,7 +627,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
                   <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                 </svg>
                 <div className="flex text-sm text-gray-400">
-                  <label htmlFor="file-upload" className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-indigo-400 hover:text-indigo-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                  <label htmlFor="file-upload" className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                     <span>Upload a file</span>
                     <input id="file-upload" name="file-upload" type="file" className="sr-only" />
                   </label>
@@ -641,7 +641,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Submit Idea
             </button>
@@ -656,11 +656,11 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
  * SubmissionSuccessPage Component
  * A confirmation screen shown after submitting.
  */
-const SubmissionSuccessPage = ({ submittedTicket, onBack }) => {
+const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
   const [copied, setCopied] = useState(false);
   
   // This is a mock URL. In a real app, this would be part of the URL.
-  const trackingLink = `https://your-app.com/feedback/${submittedTicket.id}`;
+  const trackingLink = `burdd.com/${project.slug}/feedback/${submittedTicket.id}`;
 
   const copyToClipboard = () => {
     // This is a fallback for `navigator.clipboard` which might not work in sandboxed iframes.
@@ -719,7 +719,7 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack }) => {
         
         <button
           onClick={onBack}
-          className="mt-8 px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Back to Dashboard
         </button>
@@ -733,17 +733,18 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack }) => {
  * Header Component
  * The main site header with navigation.
  */
-const Header = ({ onShowSubmitForm }) => (
+const Header = ({ onShowSubmitForm, project }) => (
   <header className="bg-gray-800 shadow-sm border-b border-gray-700 sticky top-0 z-10">
     <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-16">
-        <div className="flex-shrink-0 flex items-center">
-          <span className="text-2xl font-bold text-indigo-400">Feedback</span>
-          <span className="text-2xl font-bold text-gray-100">Portal</span>
+        <div className="flex-shrink-0 flex items-center gap-4">
+          <span className="text-2xl font-bold text-gray-100">BURDD</span>
+          <span className="text-xl font-medium text-gray-400">/</span>
+          <span className="text-xl font-semibold text-blue-400">{project.name} Feedback</span>
         </div>
         <button
           onClick={onShowSubmitForm}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <IconPlus className="w-5 h-5" />
           Submit New Idea
@@ -756,6 +757,13 @@ const Header = ({ onShowSubmitForm }) => (
 
 // --- MAIN APP COMPONENT ---
 export default function App() {
+  // In a real app, this project info would come from the URL router
+  const [project, setProject] = useState({
+    name: 'Twitter',
+    slug: 'twitter',
+    themeColor: 'blue' // This maps to Tailwind's 'blue'
+  });
+
   const [page, setPage] = useState('dashboard'); // 'dashboard', 'detail', 'submit', 'success'
   const [selectedFeedbackId, setSelectedFeedbackId] = useState(null);
   const [feedbackItems, setFeedbackItems] = useState(mockFeedbackData);
@@ -814,12 +822,12 @@ export default function App() {
       status: 'Under Review',
       upvotes: 0,
       comments: [],
-      imageUrl: `https://placehold.co/600x400/E2E8F0/4A5568?text=${encodeURIComponent(newTicketData.title)}`
+      imageUrl: `https://placehold.co/600x400/${project.themeColor === 'blue' ? '1DA1F2' : 'E2E8F0'}/FFFFFF?text=${encodeURIComponent(newTicketData.title)}`
     };
     
     setFeedbackItems(currentItems => [newTicket, ...currentItems]);
     showSuccess(newTicket);
-  }, []);
+  }, [project]); // Add project as dependency
 
   // --- Render Logic ---
   
@@ -847,6 +855,7 @@ export default function App() {
           <SubmissionSuccessPage
             submittedTicket={submittedTicket}
             onBack={showDashboard}
+            project={project}
           />
         );
       case 'dashboard':
@@ -868,12 +877,12 @@ export default function App() {
   return (
     // Add the 'dark' class here to enable dark mode for all Tailwind classes
     <div className="min-h-screen bg-gray-900 text-gray-300 font-inter dark">
-      <Header onShowSubmitForm={showSubmitForm} />
+      <Header onShowSubmitForm={showSubmitForm} project={project} />
       <main>
         {renderPage()}
       </main>
       <footer className="text-center py-6 text-gray-500 text-sm">
-        Powered by Your Feedback
+        Powered by BURDD
       </footer>
     </div>
   );
