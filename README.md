@@ -24,6 +24,11 @@ Backend: Node.js, Express, PostgreSQL, Passport.js
 
 ## Features
 
+### Postgres ✅
+The web app uses an appropriately structured PostgreSQL database to store data
+
+<img src='/assets/feature_gifs/postgres.gif' title='Postgres GIF' alt='Postgres GIF' />
+
 ### Projects CRUD
 
 Admins can create, add developers to, and delete projects
