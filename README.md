@@ -18,7 +18,7 @@ Most issues trackers separate public intake from internal planning. Burdd merges
 
 ## Tech Stack
 
-Frontend: JavaScript, React, CSS
+Frontend: JavaScript (TypeScript), React, CSS
 
 Backend: Node.js, Express, PostgreSQL, Passport.js
 

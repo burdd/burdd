@@ -1,0 +1,74 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.header h2 {
+  margin: 0.25rem 0 0;
+}
+
+.search {
+  min-width: 260px;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text);
+}
+
+.projectCell {
+  display: flex;
+  flex-direction: column;
+}
+
+.projectName {
+  margin: 0;
+  font-weight: 600;
+}
+
+.projectDescription {
+  margin: 0.2rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.statRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.link {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .search {
+    width: 100%;
+  }
+}

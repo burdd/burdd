@@ -1,0 +1,17 @@
+.empty {
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.empty h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.empty p {
+  margin-top: 0;
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,136 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  font-size: 0.65rem;
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.hero h2 {
+  margin: 0.35rem 0 0.5rem;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  background: var(--color-panel);
+}
+
+.cardLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.cardValue {
+  margin: 0.35rem 0 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.memberGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.memberCard {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.memberName {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+}
+
+.sprintList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sprintCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 120ms ease;
+}
+
+.sprintCard:hover {
+  border-color: var(--color-accent);
+}
+
+.sprintName {
+  margin: 0;
+  font-weight: 600;
+}
+
+.dateRange {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 720px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .sprintCard {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "issue-1000",
+    "projectId": "project-burdd",
+    "sprintId": "sprint-burdd-alpha",
+    "title": "Public ticket intake form",
+    "status": "progress",
+    "assigneeId": "user-abdul",
+    "description": "Build responsive form with validation + tokenized confirmation receipt.",
+    "priority": "high"
+  },
+  {
+    "id": "issue-1001",
+    "projectId": "project-burdd",
+    "sprintId": "sprint-burdd-alpha",
+    "title": "Sprint board drag + drop",
+    "status": "review",
+    "assigneeId": "user-riley",
+    "description": "Implement column drag with keyboard shortcuts and optimistic updates.",
+    "priority": "medium"
+  },
+  {
+    "id": "issue-1002",
+    "projectId": "project-burdd",
+    "sprintId": "sprint-burdd-alpha",
+    "title": "Ticket to issue linkage",
+    "status": "queue",
+    "assigneeId": null,
+    "description": "Allow developers to convert or link tickets from triage dashboard.",
+    "priority": "high"
+  },
+  {
+    "id": "issue-1010",
+    "projectId": "project-burdd",
+    "sprintId": null,
+    "title": "Lighthouse accessibility audit",
+    "status": "queue",
+    "assigneeId": "user-lila",
+    "description": "Track regressions on focus order and contrast ratios.",
+    "priority": "low"
+  },
+  {
+    "id": "issue-2000",
+    "projectId": "project-sdk",
+    "sprintId": "sprint-sdk-beta",
+    "title": "Widget authentication handshake",
+    "status": "progress",
+    "assigneeId": "user-jesse",
+    "description": "Sign requests with short-lived tokens before proxying to Burdd.",
+    "priority": "high"
+  },
+  {
+    "id": "issue-2001",
+    "projectId": "project-sdk",
+    "sprintId": "sprint-sdk-beta",
+    "title": "Add copy-ready quickstart",
+    "status": "done",
+    "assigneeId": "user-abdul",
+    "description": "Author quickstart guide plus runnable sandbox harness.",
+    "priority": "medium"
+  }
+]
