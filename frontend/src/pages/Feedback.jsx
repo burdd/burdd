@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 
 // --- ICONS ---
-// Using lucide-react for icons. In a real app, you'd install this.
-// For this snippet, we'll use simple inline SVGs or text placeholders.
-// Let's create simple SVG components for icons to keep it self-contained.
+// Simple inline SVG components for icons.
 
 const IconMessageSquare = ({ className }) => (
   <svg
@@ -131,102 +129,117 @@ const IconShare = ({ className }) => (
 
 
 // --- MOCK DATA ---
+// Aligned with the backend spec: ticket_category, ticket_status, ticket_comments, etc.
+// Added back 'importance' tracking per user request.
 const mockFeedbackData = [
   {
     id: '1',
     title: 'Bring back chronological timeline by default',
-    description: "I don't want the 'For You' algorithmic feed. Please make the 'Following' (chronological) timeline the default tab, or at least remember my choice.",
-    category: 'Suggestion',
-    status: 'Under Review',
-    upvotes: 128,
-    importance: 'Important',
+    body: "I don't want the 'For You' algorithmic feed. Please make the 'Following' (chronological) timeline the default tab, or at least remember my choice.",
+    category: 'complaint',
+    status: 'new',
+    upvoteCount: 128,
+    hasVoted: false,
+    importanceCounts: { 'NOT IMPORTANT': 1, 'NICE-TO-HAVE': 5, 'IMPORTANT': 78, 'CRITICAL': 44 },
+    myImportanceVote: 'IMPORTANT', // User's "session" vote
     comments: [
-      { id: 'c1', user: 'User123', text: 'This!! 100% this.' },
-      { id: 'c2', user: 'TimelineFan', text: 'The app always opening on "For You" is the most annoying thing.' }
+      { id: 'c1', user: { handle: 'User123', avatar_url: 'https://placehold.co/40x40/6366F1/FFFFFF?text=U' }, body: 'This!! 100% this.' },
+      { id: 'c2', user: { handle: 'TimelineFan', avatar_url: 'https://placehold.co/40x40/EC4899/FFFFFF?text=T' }, body: 'The app always opening on "For You" is the most annoying thing.' }
     ],
     imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Chronological+Feed'
   },
   {
     id: '2',
     title: 'Edit Button for Tweets',
-    description: "We've been asking for this for years. We need a simple edit button to fix typos after posting, maybe with a 5-minute window. This should be for everyone, not just subscribers.",
-    category: 'Feature',
-    status: 'Shipped',
-    upvotes: 256,
-    importance: 'Critical',
+    body: "We've been asking for this for years. We need a simple edit button to fix typos after posting, maybe with a 5-minute window. This should be for everyone, not just subscribers.",
+    category: 'feature_request',
+    status: 'closed',
+    upvoteCount: 256,
+    hasVoted: true,
+    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 12, 'IMPORTANT': 98, 'CRITICAL': 146 },
+    myImportanceVote: 'CRITICAL',
     comments: [
-      { id: 'c3', user: 'Admin', text: 'This is now available for Twitter Blue subscribers!' },
-      { id: 'c4', user: 'TypoQueen', text: 'Finally! But it should be free.' }
+      { id: 'c3', user: { handle: 'Admin', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=A' }, body: 'This is now available for Twitter Blue subscribers!' },
+      { id: 'c4', user: { handle: 'TypoQueen', avatar_url: 'https://placehold.co/40x40/10B981/FFFFFF?text=T' }, body: 'Finally! But it should be free.' }
     ],
     imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Edit+Button'
   },
   {
     id: '3',
     title: 'Video player is buggy on Android',
-    description: 'The video player often freezes, fails to load, or the audio goes out of sync. This happens constantly on my Samsung Galaxy S23. It makes watching videos impossible.',
-    category: 'Issue',
-    status: 'In Progress',
-    upvotes: 76,
-    importance: 'Important',
+    body: 'The video player often freezes, fails to load, or the audio goes out of sync. This happens constantly on my Samsung Galaxy S23. It makes watching videos impossible.',
+    category: 'complaint',
+    status: 'triaged',
+    upvoteCount: 76,
+    hasVoted: false,
+    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 2, 'IMPORTANT': 45, 'CRITICAL': 29 },
+    myImportanceVote: null,
     comments: [
-      { id: 'c5', user: 'AndroidUser', text: 'Same here, Pixel 7. Videos are almost unwatchable.' },
-      { id: 'c6', user: 'DevTeam', text: 'Thanks for the report, we are actively investigating this.' }
+      { id: 'c5', user: { handle: 'AndroidUser', avatar_url: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=A' }, body: 'Same here, Pixel 7. Videos are almost unwatchable.' },
+      { id: 'c6', user: { handle: 'DevTeam', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=D' }, body: 'Thanks for the report, we are actively investigating this.' }
     ],
     imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Video+Bug'
   },
   {
     id: '4',
     title: 'Better spam and bot detection in replies',
-    description: "My replies are flooded with crypto scams and spam bots. The current 'hide reply' and 'block' tools aren't enough. We need more aggressive, proactive filtering.",
-    category: 'Feature',
-    status: 'In Progress',
-    upvotes: 215,
-    importance: 'Critical',
+    body: "My replies are flooded with crypto scams and spam bots. The current 'hide reply' and 'block' tools aren't enough. We need more aggressive, proactive filtering.",
+    category: 'feature_request',
+    status: 'triaged',
+    upvoteCount: 215,
+    hasVoted: false,
+    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 1, 'IMPORTANT': 55, 'CRITICAL': 159 },
+    myImportanceVote: 'CRITICAL',
     comments: [
-      { id: 'c7', user: 'CryptoHater', text: 'This is the biggest problem on the platform right now.' }
+      { id: 'c7', user: { handle: 'CryptoHater', avatar_url: 'https://placehold.co/40x40/EF4444/FFFFFF?text=C' }, body: 'This is the biggest problem on the platform right now.' }
     ],
     imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Spam+Bots'
   },
   {
     id: '5',
     title: "Add 'Bookmarks' to the main navigation bar",
-    description: "Bookmarks are so useful but they're hidden in the profile menu. Please add a 'Bookmarks' icon to the main bottom navigation bar for quick access.",
-    category: 'Suggestion',
-    status: 'Under Review',
-    upvotes: 98,
-    importance: 'Nice-to-have',
+    body: "Bookmarks are so useful but they're hidden in the profile menu. Please add a 'Bookmarks' icon to the main bottom navigation bar for quick access.",
+    category: 'feature_request',
+    status: 'new',
+    upvoteCount: 98,
+    hasVoted: false,
+    importanceCounts: { 'NOT IMPORTANT': 2, 'NICE-TO-HAVE': 70, 'IMPORTANT': 26, 'CRITICAL': 0 },
+    myImportanceVote: 'NICE-TO-HAVE',
     comments: [
-      { id: 'c8', user: 'PowerUser', text: 'I bookmark things all the time and forget they exist because they are so hard to find.' }
+      { id: 'c8', user: { handle: 'PowerUser', avatar_url: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=P' }, body: 'I bookmark things all the time and forget they exist because they are so hard to find.' }
     ],
     imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Bookmarks'
   },
-  {
-    id: '6',
-    title: 'Increase character limit for all users',
-    description: 'The 280-character limit feels outdated. It would be great to have at least 500 characters for everyone, not just Blue subscribers, to allow for more nuanced conversations.',
-    category: 'Suggestion',
-    status: 'Under Review',
-    upvotes: 42,
-    importance: 'Not Important',
-    comments: [],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Character+Limit'
-  },
 ];
 
-const CATEGORIES = ['All', 'Feature', 'Issue', 'Suggestion'];
-const STATUSES = ['All', 'Under Review', 'In Progress', 'Shipped'];
-const SORT_OPTIONS = ['Top', 'Newest', 'Hot']; // "Hot" is just "Top" for this mock
+// Aligned with backend spec
+const CATEGORIES = ['All', 'feature_request', 'complaint'];
+const STATUSES = ['All', 'new', 'triaged', 'closed'];
+const SORT_OPTIONS = ['Top', 'Newest', 'Hot'];
 const IMPORTANCE_LEVELS = ['NOT IMPORTANT', 'NICE-TO-HAVE', 'IMPORTANT', 'CRITICAL'];
+
+
+// Maps for user-friendly display
+const CATEGORY_DISPLAY_MAP = {
+  'feature_request': 'Feature Request',
+  'complaint': 'Complaint / Issue'
+};
+
+const STATUS_DISPLAY_MAP = {
+  'new': 'Under Review',
+  'triaged': 'In Progress',
+  'closed': 'Shipped'
+};
 
 // --- REUSABLE COMPONENTS ---
 
 /**
  * UpvoteButton Component
- * A stateful button that shows an upvote count and toggles its active state.
+ * Now accepts initialUpvoteCount and initialHasVoted to align with API.
  */
-const UpvoteButton = ({ initialUpvotes, onUpvote, id, size = 'md' }) => {
-  const [upvoted, setUpvoted] = useState(false);
-  const [count, setCount] = useState(initialUpvotes);
+const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size = 'md' }) => {
+  const [upvoted, setUpvoted] = useState(initialHasVoted);
+  const [count, setCount] = useState(initialUpvoteCount);
 
   const handleClick = (e) => {
     e.stopPropagation(); // Prevent card click
@@ -235,7 +248,7 @@ const UpvoteButton = ({ initialUpvotes, onUpvote, id, size = 'md' }) => {
     
     setUpvoted(newUpvoted);
     setCount(newCount);
-    onUpvote(id, newCount); // Notify parent of the new total count
+    onUpvote(id, newCount, newUpvoted); // Notify parent of new count and voted status
   };
 
   const baseStyles = "flex items-center gap-1.5 transition-colors rounded-lg border";
@@ -244,7 +257,6 @@ const UpvoteButton = ({ initialUpvotes, onUpvote, id, size = 'md' }) => {
     lg: "flex-col px-4 py-2"
   };
   
-  // Dark mode styles
   const activeStyles = "bg-blue-500 border-blue-400 text-white";
   const inactiveStyles = "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600";
 
@@ -261,47 +273,50 @@ const UpvoteButton = ({ initialUpvotes, onUpvote, id, size = 'md' }) => {
 
 /**
  * StatusBadge Component
- * A visual tag for displaying the status of a feedback item.
+ * Maps backend status enum to user-friendly, colored badges.
  */
 const StatusBadge = ({ status }) => {
   const styles = {
-    'Under Review': 'bg-yellow-900/50 text-yellow-300',
-    'In Progress': 'bg-blue-900/50 text-blue-300',
-    'Shipped': 'bg-green-900/50 text-green-300',
+    'new': 'bg-yellow-900/50 text-yellow-300',
+    'triaged': 'bg-blue-900/50 text-blue-300',
+    'closed': 'bg-green-900/50 text-green-300',
   };
   return (
     <span
       className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${styles[status] || 'bg-gray-700 text-gray-300'}`}
     >
-      {status}
+      {STATUS_DISPLAY_MAP[status] || status}
     </span>
   );
 };
 
 /**
  * CategoryTag Component
- * A visual tag for displaying the category of a feedback item.
+ * Maps backend category enum to user-friendly text.
  */
 const CategoryTag = ({ category }) => {
   return (
     <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-700 text-gray-300">
-      {category}
+      {CATEGORY_DISPLAY_MAP[category] || category}
     </span>
   );
 };
 
 /**
  * Comment Component
- * Displays a single comment.
+ * Aligned with ticket_comments table (user object, body).
  */
 const Comment = ({ comment }) => (
   <div className="flex gap-3 py-4 border-b border-gray-700">
-    <div className="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold flex-shrink-0">
-      {comment.user.charAt(0)}
-    </div>
+    <img
+      src={comment.user.avatar_url}
+      alt={comment.user.handle}
+      className="w-10 h-10 rounded-full bg-gray-700 flex-shrink-0"
+      onError={(e) => { e.target.src = 'https://placehold.co/40x40/71717A/FFFFFF?text=?'; }}
+    />
     <div>
-      <h4 className="font-semibold text-gray-100">{comment.user}</h4>
-      <p className="text-gray-300 mt-1">{comment.text}</p>
+      <h4 className="font-semibold text-gray-100">{comment.user.handle}</h4>
+      <p className="text-gray-300 mt-1">{comment.body}</p>
     </div>
   </div>
 );
@@ -310,7 +325,7 @@ const Comment = ({ comment }) => (
  * FilterPills Component
  * A generic component to render a list of selectable pills.
  */
-const FilterPills = ({ options, selected, onSelect, title }) => (
+const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) => (
   <div>
     <h3 className="text-sm font-semibold text-gray-400 mb-2">{title}</h3>
     <div className="flex flex-wrap gap-2">
@@ -324,7 +339,7 @@ const FilterPills = ({ options, selected, onSelect, title }) => (
               : 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600'
           }`}
         >
-          {option}
+          {displayMap[option] || option}
         </button>
       ))}
     </div>
@@ -364,7 +379,6 @@ const ImportanceSelector = ({ selected, onSelect }) => {
 
 /**
  * FeedbackDashboard Component
- * The main homepage, showing filters and the list of feedback items.
  */
 const FeedbackDashboard = ({
   feedbackItems,
@@ -391,12 +405,11 @@ const FeedbackDashboard = ({
 
     // Sort
     if (sortBy === 'Top') {
-      items.sort((a, b) => b.upvotes - a.upvotes);
+      items.sort((a, b) => b.upvoteCount - a.upvoteCount);
     } else if (sortBy === 'Newest') {
       items.sort((a, b) => new Date(b.id) - new Date(a.id)); // Using ID as proxy for date
     } else if (sortBy === 'Hot') {
-      // Simple "Hot" logic: just sort by top
-      items.sort((a, b) => b.upvotes - a.upvotes);
+      items.sort((a, b) => b.upvoteCount - a.upvoteCount);
     }
     
     return items;
@@ -411,12 +424,14 @@ const FeedbackDashboard = ({
           options={CATEGORIES}
           selected={filters.category}
           onSelect={(cat) => setFilters(f => ({ ...f, category: cat }))}
+          displayMap={{ ...CATEGORY_DISPLAY_MAP, 'All': 'All' }}
         />
         <FilterPills
           title="Status"
           options={STATUSES}
           selected={filters.status}
           onSelect={(stat) => setFilters(f => ({ ...f, status: stat }))}
+          displayMap={{ ...STATUS_DISPLAY_MAP, 'All': 'All' }}
         />
         <div className="md:col-span-2">
           <FilterPills
@@ -452,7 +467,6 @@ const FeedbackDashboard = ({
 
 /**
  * FeedbackCard Component
- * A card that displays a summary of a feedback item.
  */
 const FeedbackCard = ({ item, onClick, onUpvote }) => {
   return (
@@ -470,7 +484,12 @@ const FeedbackCard = ({ item, onClick, onUpvote }) => {
         <h3 className="text-lg font-semibold text-gray-100 truncate mb-2">{item.title}</h3>
         
         <div className="flex items-center justify-between">
-          <UpvoteButton initialUpvotes={item.upvotes} onUpvote={onUpvote} id={item.id} />
+          <UpvoteButton 
+            initialUpvoteCount={item.upvoteCount}
+            initialHasVoted={item.hasVoted}
+            onUpvote={onUpvote} 
+            id={item.id} 
+          />
           
           <div className="flex items-center gap-2 text-gray-400">
             <IconMessageSquare className="w-4 h-4" />
@@ -489,17 +508,14 @@ const FeedbackCard = ({ item, onClick, onUpvote }) => {
 
 /**
  * FeedbackDetailPage Component
- * Shows the full details for a single feedback item, including comments.
  */
-const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) => {
+const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, onBack, project }) => {
   const [newComment, setNewComment] = useState("");
   const [copied, setCopied] = useState(false);
-  const [votedImportance, setVotedImportance] = useState(null);
 
   const trackingLink = `burdd.com/${project.slug}/feedback/${item.id}`;
 
   const copyToClipboard = () => {
-    // This is a fallback for `navigator.clipboard` which might not work in sandboxed iframes.
     const textArea = document.createElement("textarea");
     textArea.value = trackingLink;
     document.body.appendChild(textArea);
@@ -507,7 +523,7 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
     try {
       document.execCommand('copy');
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset after 2s
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }
@@ -563,7 +579,8 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
                 {copied ? <IconCheck className="w-5 h-5" /> : <IconShare className="w-5 h-5" />}
               </button>
               <UpvoteButton 
-                initialUpvotes={item.upvotes} 
+                initialUpvoteCount={item.upvoteCount}
+                initialHasVoted={item.hasVoted} 
                 onUpvote={onUpvote} 
                 id={item.id} 
                 size="lg" 
@@ -571,7 +588,7 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
             </div>
           </div>
           
-          <p className="text-lg text-gray-300 mt-6 whitespace-pre-wrap">{item.description}</p>
+          <p className="text-lg text-gray-300 mt-6 whitespace-pre-wrap">{item.body}</p>
           
           {/* Comments Section */}
           <div className="mt-10">
@@ -605,15 +622,15 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
               )}
             </div>
           </div>
-
+          
           {/* Importance Poll Section */}
           <div className="mt-10 pt-6 border-t border-gray-700">
             <h2 className="text-xl font-semibold text-gray-100 mb-4">
               How important is this to you?
             </h2>
             <ImportanceSelector
-              selected={votedImportance}
-              onSelect={setVotedImportance}
+              selected={item.myImportanceVote}
+              onSelect={(newLevel) => onImportanceVote(item.id, newLevel)}
             />
           </div>
         </div>
@@ -624,18 +641,19 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
 
 /**
  * SubmissionFormPage Component
- * A page with a form to submit new feedback.
+ * Aligned with backend: submits `title`, `category` (enum), and `body`.
+ * Added `importance` back as requested.
  */
 const SubmissionFormPage = ({ onSubmit, onBack }) => {
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("Feature");
-  const [description, setDescription] = useState("");
-  const [importance, setImportance] = useState("NICE-TO-HAVE");
+  const [category, setCategory] = useState("feature_request");
+  const [body, setBody] = useState("");
+  const [importance, setImportance] = useState("NICE-TO-HAVE"); // Default importance
   const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim()) {
+    if (!title.trim() || !body.trim()) {
       setError("Title and description are required.");
       return;
     }
@@ -643,8 +661,8 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
     const newTicket = {
       title,
       category,
-      description,
-      importance,
+      body,
+      importance, // Add importance to the new ticket
     };
     onSubmit(newTicket);
   };
@@ -693,20 +711,19 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100"
             >
-              <option>Feature</option>
-              <option>Issue</option>
-              <option>Suggestion</option>
+              <option value="feature_request">{CATEGORY_DISPLAY_MAP['feature_request']}</option>
+              <option value="complaint">{CATEGORY_DISPLAY_MAP['complaint']}</option>
             </select>
           </div>
           
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">
-              Description
+            <label htmlFor="body" className="block text-sm font-medium text-gray-300 mb-1">
+              Description (Body)
             </label>
             <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              id="body"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
               className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100 placeholder-gray-500"
               rows="6"
               placeholder="How would this help you? What's the problem?"
@@ -761,16 +778,13 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
 
 /**
  * SubmissionSuccessPage Component
- * A confirmation screen shown after submitting.
  */
 const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
   const [copied, setCopied] = useState(false);
   
-  // This is a mock URL. In a real app, this would be part of the URL.
   const trackingLink = `burdd.com/${project.slug}/feedback/${submittedTicket.id}`;
 
   const copyToClipboard = () => {
-    // This is a fallback for `navigator.clipboard` which might not work in sandboxed iframes.
     const textArea = document.createElement("textarea");
     textArea.value = trackingLink;
     document.body.appendChild(textArea);
@@ -778,7 +792,7 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
     try {
       document.execCommand('copy');
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset after 2s
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }
@@ -838,7 +852,6 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
 
 /**
  * Header Component
- * The main site header with navigation.
  */
 const Header = ({ onShowSubmitForm, project }) => (
   <header className="bg-gray-800 shadow-sm border-b border-gray-700 sticky top-0 z-10">
@@ -866,9 +879,10 @@ const Header = ({ onShowSubmitForm, project }) => (
 export default function App() {
   // In a real app, this project info would come from the URL router
   const [project, setProject] = useState({
+    projectId: 'a7c4a1f8-a28a-4b0d-9b0a-0b2a3d3c4e5f', // Aligned with backend
     name: 'Twitter',
     slug: 'twitter',
-    themeColor: 'blue' // This maps to Tailwind's 'blue'
+    themeColor: 'blue'
   });
 
   const [page, setPage] = useState('dashboard'); // 'dashboard', 'detail', 'submit', 'success'
@@ -896,21 +910,21 @@ export default function App() {
 
   // --- Data Handlers (Callbacks) ---
   
-  // Update upvote count in the main state
-  const handleUpvote = useCallback((id, newCount) => {
+  // Simulates POST/DELETE /tickets/:ticketId/upvotes
+  const handleUpvote = useCallback((id, newCount, newHasVoted) => {
     setFeedbackItems(currentItems =>
       currentItems.map(item =>
-        item.id === id ? { ...item, upvotes: newCount } : item
+        item.id === id ? { ...item, upvoteCount: newCount, hasVoted: newHasVoted } : item
       )
     );
   }, []);
   
-  // Add a new comment
-  const handleAddComment = useCallback((id, commentText) => {
+  // Simulates POST /tickets/:ticketId/comments
+  const handleAddComment = useCallback((id, commentBody) => {
     const newComment = {
       id: `c${new Date().getTime()}`,
-      user: 'GuestUser', // Mock user
-      text: commentText,
+      user: { handle: 'GuestUser', avatar_url: 'https://placehold.co/40x40/71717A/FFFFFF?text=G' }, // Mock guest user
+      body: commentBody,
     };
     setFeedbackItems(currentItems =>
       currentItems.map(item =>
@@ -920,21 +934,59 @@ export default function App() {
       )
     );
   }, []);
+
+  // Simulates a "session" vote for importance
+  const handleImportanceVote = useCallback((id, newLevel) => {
+    setFeedbackItems(currentItems =>
+      currentItems.map(item => {
+        if (item.id !== id) return item;
+
+        // Mock-update the counts
+        const newCounts = { ...item.importanceCounts };
+        const oldLevel = item.myImportanceVote;
+        
+        // Decrement old vote if it exists
+        if (oldLevel && newCounts[oldLevel] > 0) {
+          newCounts[oldLevel]--;
+        }
+        // Increment new vote
+        newCounts[newLevel] = (newCounts[newLevel] || 0) + 1;
+
+        return {
+          ...item,
+          myImportanceVote: newLevel,
+          importanceCounts: newCounts,
+        };
+      })
+    );
+  }, []);
   
-  // Submit a new feedback item
+  // Simulates POST /projects/:projectId/tickets
   const handleSubmitFeedback = useCallback((newTicketData) => {
+    // newTicketData now contains { title, category, body, importance }
+    
+    // Initialize importance counts for the new ticket
+    const initialCounts = { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 0, 'IMPORTANT': 0, 'CRITICAL': 0 };
+    initialCounts[newTicketData.importance] = 1;
+
     const newTicket = {
-      ...newTicketData, // This now includes title, category, description, and importance
-      id: crypto.randomUUID(), // Use crypto.randomUUID for a unique ID
-      status: 'Under Review',
-      upvotes: 0,
+      ...newTicketData,
+      id: crypto.randomUUID(),
+      status: 'new', // Default status for new tickets
+      upvoteCount: 0,
+      hasVoted: false, // User hasn't upvoted their own ticket by default
       comments: [],
+      importanceCounts: initialCounts,
+      myImportanceVote: newTicketData.importance, // The submitter's vote
       imageUrl: `https://placehold.co/600x400/${project.themeColor === 'blue' ? '1DA1F2' : 'E2E8F0'}/FFFFFF?text=${encodeURIComponent(newTicketData.title)}`
     };
     
+    // We no longer need to store the single 'importance' field
+    delete newTicket.importance;
+
     setFeedbackItems(currentItems => [newTicket, ...currentItems]);
     showSuccess(newTicket);
-  }, [project]); // Add project as dependency
+  }, [project]);
 
   // --- Render Logic ---
   
@@ -947,8 +999,9 @@ export default function App() {
             item={selectedItem}
             onUpvote={handleUpvote}
             onAddComment={handleAddComment}
+            onImportanceVote={handleImportanceVote} // Pass the new handler
             onBack={showDashboard}
-            project={project} // Pass project for the share link
+            project={project}
           />
         );
       case 'submit':
@@ -983,7 +1036,6 @@ export default function App() {
   };
 
   return (
-    // Add the 'dark' class here to enable dark mode for all Tailwind classes
     <div className="min-h-screen bg-gray-900 text-gray-300 font-inter dark">
       <Header onShowSubmitForm={showSubmitForm} project={project} />
       <main>
