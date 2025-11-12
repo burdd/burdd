@@ -110,6 +110,25 @@ const IconCheck = ({ className }) => (
   </svg>
 );
 
+const IconShare = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+    <polyline points="16 6 12 2 8 6"></polyline>
+    <line x1="12" y1="2" x2="12" y2="15"></line>
+  </svg>
+);
+
 
 // --- MOCK DATA ---
 const mockFeedbackData = [
@@ -120,6 +139,7 @@ const mockFeedbackData = [
     category: 'Suggestion',
     status: 'Under Review',
     upvotes: 128,
+    importance: 'Important',
     comments: [
       { id: 'c1', user: 'User123', text: 'This!! 100% this.' },
       { id: 'c2', user: 'TimelineFan', text: 'The app always opening on "For You" is the most annoying thing.' }
@@ -133,6 +153,7 @@ const mockFeedbackData = [
     category: 'Feature',
     status: 'Shipped',
     upvotes: 256,
+    importance: 'Critical',
     comments: [
       { id: 'c3', user: 'Admin', text: 'This is now available for Twitter Blue subscribers!' },
       { id: 'c4', user: 'TypoQueen', text: 'Finally! But it should be free.' }
@@ -146,6 +167,7 @@ const mockFeedbackData = [
     category: 'Issue',
     status: 'In Progress',
     upvotes: 76,
+    importance: 'Important',
     comments: [
       { id: 'c5', user: 'AndroidUser', text: 'Same here, Pixel 7. Videos are almost unwatchable.' },
       { id: 'c6', user: 'DevTeam', text: 'Thanks for the report, we are actively investigating this.' }
@@ -159,6 +181,7 @@ const mockFeedbackData = [
     category: 'Feature',
     status: 'In Progress',
     upvotes: 215,
+    importance: 'Critical',
     comments: [
       { id: 'c7', user: 'CryptoHater', text: 'This is the biggest problem on the platform right now.' }
     ],
@@ -171,6 +194,7 @@ const mockFeedbackData = [
     category: 'Suggestion',
     status: 'Under Review',
     upvotes: 98,
+    importance: 'Nice-to-have',
     comments: [
       { id: 'c8', user: 'PowerUser', text: 'I bookmark things all the time and forget they exist because they are so hard to find.' }
     ],
@@ -183,6 +207,7 @@ const mockFeedbackData = [
     category: 'Suggestion',
     status: 'Under Review',
     upvotes: 42,
+    importance: 'Not Important',
     comments: [],
     imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Character+Limit'
   },
@@ -191,6 +216,7 @@ const mockFeedbackData = [
 const CATEGORIES = ['All', 'Feature', 'Issue', 'Suggestion'];
 const STATUSES = ['All', 'Under Review', 'In Progress', 'Shipped'];
 const SORT_OPTIONS = ['Top', 'Newest', 'Hot']; // "Hot" is just "Top" for this mock
+const IMPORTANCE_LEVELS = ['NOT IMPORTANT', 'NICE-TO-HAVE', 'IMPORTANT', 'CRITICAL'];
 
 // --- REUSABLE COMPONENTS ---
 
@@ -304,6 +330,34 @@ const FilterPills = ({ options, selected, onSelect, title }) => (
     </div>
   </div>
 );
+
+/**
+ * ImportanceSelector Component
+ * Renders the four importance buttons for voting or selection.
+ */
+const ImportanceSelector = ({ selected, onSelect }) => {
+  const getStyle = (level) => {
+    const isActive = selected === level;
+    if (isActive) {
+      return 'bg-blue-500 text-white border-blue-400';
+    }
+    return 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600';
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {IMPORTANCE_LEVELS.map((level) => (
+        <button
+          key={level}
+          onClick={() => onSelect(level)}
+          className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors border ${getStyle(level)}`}
+        >
+          {level}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 
 // --- PAGE COMPONENTS ---
@@ -437,9 +491,29 @@ const FeedbackCard = ({ item, onClick, onUpvote }) => {
  * FeedbackDetailPage Component
  * Shows the full details for a single feedback item, including comments.
  */
-const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack }) => {
+const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) => {
   const [newComment, setNewComment] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [votedImportance, setVotedImportance] = useState(null);
 
+  const trackingLink = `burdd.com/${project.slug}/feedback/${item.id}`;
+
+  const copyToClipboard = () => {
+    // This is a fallback for `navigator.clipboard` which might not work in sandboxed iframes.
+    const textArea = document.createElement("textarea");
+    textArea.value = trackingLink;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset after 2s
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+    document.body.removeChild(textArea);
+  };
+  
   const handleSubmitComment = (e) => {
     e.preventDefault();
     if (newComment.trim()) {
@@ -477,7 +551,17 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack }) => {
                 <StatusBadge status={item.status} />
               </div>
             </div>
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex gap-2">
+              <button
+                onClick={copyToClipboard}
+                className={`flex-shrink-0 p-2.5 font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2 ${
+                  copied
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600'
+                }`}
+              >
+                {copied ? <IconCheck className="w-5 h-5" /> : <IconShare className="w-5 h-5" />}
+              </button>
               <UpvoteButton 
                 initialUpvotes={item.upvotes} 
                 onUpvote={onUpvote} 
@@ -521,6 +605,17 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack }) => {
               )}
             </div>
           </div>
+
+          {/* Importance Poll Section */}
+          <div className="mt-10 pt-6 border-t border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-100 mb-4">
+              How important is this to you?
+            </h2>
+            <ImportanceSelector
+              selected={votedImportance}
+              onSelect={setVotedImportance}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -535,6 +630,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Feature");
   const [description, setDescription] = useState("");
+  const [importance, setImportance] = useState("NICE-TO-HAVE");
   const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
@@ -548,6 +644,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
       title,
       category,
       description,
+      importance,
     };
     onSubmit(newTicket);
   };
@@ -614,6 +711,16 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
               rows="6"
               placeholder="How would this help you? What's the problem?"
             ></textarea>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              How important is this to you?
+            </label>
+            <ImportanceSelector
+              selected={importance}
+              onSelect={setImportance}
+            />
           </div>
           
           {/* Mock Attachment Field */}
@@ -817,7 +924,7 @@ export default function App() {
   // Submit a new feedback item
   const handleSubmitFeedback = useCallback((newTicketData) => {
     const newTicket = {
-      ...newTicketData,
+      ...newTicketData, // This now includes title, category, description, and importance
       id: crypto.randomUUID(), // Use crypto.randomUUID for a unique ID
       status: 'Under Review',
       upvotes: 0,
@@ -841,6 +948,7 @@ export default function App() {
             onUpvote={handleUpvote}
             onAddComment={handleAddComment}
             onBack={showDashboard}
+            project={project} // Pass project for the share link
           />
         );
       case 'submit':
