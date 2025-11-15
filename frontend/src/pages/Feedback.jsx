@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 
 // --- ICONS ---
-// Simple inline SVG components for icons.
+// Added IconSearch
 
 const IconMessageSquare = ({ className }) => (
   <svg
@@ -147,139 +147,128 @@ const IconCalendar = ({ className }) => (
   </svg>
 );
 
+const IconSearch = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <circle cx="11" cy="11" r="8"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+);
+
 
 // --- MOCK DATA ---
-// Added 'createdAt' and 'sprint' (with 'endDate')
+// Strictly aligned to the data model:
+// - Removed importanceCounts, myImportanceVote, sprint, imageUrl
+// - Added user object, expected, actual, steps, environment (for complaints)
+// - Categories are 'feature_request' or 'complaint'
+// - Statuses are 'new', 'triaged', 'closed', 'rejected'
 const mockFeedbackData = [
   {
     id: '1',
+    user: { handle: 'TimelineFan', avatar_url: 'https://placehold.co/40x40/EC4899/FFFFFF?text=T' },
     title: 'Bring back chronological timeline by default',
     body: "I don't want the 'For You' algorithmic feed. Please make the 'Following' (chronological) timeline the default tab, or at least remember my choice.",
-    category: 'suggestion',
+    category: 'feature_request', // 'suggestion' maps to 'feature_request'
     status: 'new',
     upvoteCount: 128,
     hasVoted: false,
-    importanceCounts: { 'NOT IMPORTANT': 1, 'NICE-TO-HAVE': 5, 'IMPORTANT': 78, 'CRITICAL': 44 },
-    myImportanceVote: 'IMPORTANT',
     createdAt: "2025-11-08T14:30:00Z", // 3 days ago
-    sprint: null,
     comments: [
       { id: 'c1', user: { handle: 'User123', avatar_url: 'https://placehold.co/40x40/6366F1/FFFFFF?text=U' }, body: 'This!! 100% this.' },
-      { id: 'c2', user: { handle: 'TimelineFan', avatar_url: 'https://placehold.co/40x40/EC4899/FFFFFF?text=T' }, body: 'The app always opening on "For You" is the most annoying thing.' }
     ],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Chronological+Feed'
+    // Fields for 'complaint' are null
+    expected: null,
+    actual: null,
+    steps: null,
+    environment: null,
   },
   {
     id: '2',
+    user: { handle: 'TypoQueen', avatar_url: 'https://placehold.co/40x40/10B981/FFFFFF?text=T' },
     title: 'Edit Button for Tweets',
-    body: "We've been asking for this for years. We need a simple edit button to fix typos after posting, maybe with a 5-minute window. This should be for everyone, not just subscribers.",
+    body: "We've been asking for this for years. We need a simple edit button to fix typos after posting, maybe with a 5-minute window.",
     category: 'feature_request',
     status: 'closed',
     upvoteCount: 256,
     hasVoted: true,
-    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 12, 'IMPORTANT': 98, 'CRITICAL': 146 },
-    myImportanceVote: 'CRITICAL',
     createdAt: "2025-09-15T10:00:00Z",
-    sprint: { id: 'sprint-10', endDate: "2025-09-30T17:00:00Z" },
     comments: [
       { id: 'c3', user: { handle: 'Admin', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=A' }, body: 'This is now available for Twitter Blue subscribers!' },
-      { id: 'c4', user: { handle: 'TypoQueen', avatar_url: 'https://placehold.co/40x40/10B981/FFFFFF?text=T' }, body: 'Finally! But it should be free.' }
     ],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Edit+Button'
+    expected: null,
+    actual: null,
+    steps: null,
+    environment: null,
   },
   {
     id: '3',
+    user: { handle: 'AndroidUser', avatar_url: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=A' },
     title: 'Video player is buggy on Android',
-    body: 'The video player often freezes, fails to load, or the audio goes out of sync. This happens constantly on my Samsung Galaxy S23. It makes watching videos impossible.',
+    body: 'The video player often freezes, fails to load, or the audio goes out of sync.',
     category: 'complaint',
     status: 'triaged',
     upvoteCount: 76,
     hasVoted: false,
-    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 2, 'IMPORTANT': 45, 'CRITICAL': 29 },
-    myImportanceVote: null,
     createdAt: "2025-11-01T09:12:00Z", // 10 days ago
-    sprint: { id: 'sprint-12', endDate: "2025-11-20T17:00:00Z" },
     comments: [
-      { id: 'c5', user: { handle: 'AndroidUser', avatar_url: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=A' }, body: 'Same here, Pixel 7. Videos are almost unwatchable.' },
       { id: 'c6', user: { handle: 'DevTeam', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=D' }, body: 'Thanks for the report, we are actively investigating this.' }
     ],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Video+Bug'
+    expected: "Video plays smoothly.",
+    actual: "Video freezes and audio desyncs.",
+    steps: "1. Open the app on Android 13.\n2. Scroll to a video.\n3. Tap play.",
+    environment: "Samsung Galaxy S23, Android 13, Twitter App v10.2.1",
   },
   {
     id: '4',
+    user: { handle: 'CryptoHater', avatar_url: 'https://placehold.co/40x40/EF4444/FFFFFF?text=C' },
     title: 'Better spam and bot detection in replies',
     body: "My replies are flooded with crypto scams and spam bots. The current 'hide reply' and 'block' tools aren't enough. We need more aggressive, proactive filtering.",
     category: 'feature_request',
     status: 'triaged',
     upvoteCount: 215,
     hasVoted: false,
-    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 1, 'IMPORTANT': 55, 'CRITICAL': 159 },
-    myImportanceVote: 'CRITICAL',
     createdAt: "2025-10-20T11:00:00Z",
-    sprint: { id: 'sprint-12', endDate: "2025-11-20T17:00:00Z" },
-    comments: [
-      { id: 'c7', user: { handle: 'CryptoHater', avatar_url: 'https://placehold.co/40x40/EF4444/FFFFFF?text=C' }, body: 'This is the biggest problem on the platform right now.' }
-    ],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Spam+Bots'
-  },
-  {
-    id: '5',
-    title: "Add 'Bookmarks' to the main navigation bar",
-    body: "Bookmarks are so useful but they're hidden in the profile menu. Please add a 'Bookmarks' icon to the main bottom navigation bar for quick access.",
-    category: 'suggestion',
-    status: 'new',
-    upvoteCount: 98,
-    hasVoted: false,
-    importanceCounts: { 'NOT IMPORTANT': 2, 'NICE-TO-HAVE': 70, 'IMPORTANT': 26, 'CRITICAL': 0 },
-    myImportanceVote: 'NICE-TO-HAVE',
-    createdAt: "2025-11-10T18:00:00Z", // 1 day ago
-    sprint: null,
-    comments: [
-      { id: 'c8', user: { handle: 'PowerUser', avatar_url: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=P' }, body: 'I bookmark things all the time and forget they exist because they are so hard to find.' }
-    ],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Bookmarks'
+    comments: [],
+    expected: null,
+    actual: null,
+    steps: null,
+    environment: null,
   },
   {
     id: '6',
+    user: { handle: 'WordyUser', avatar_url: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=W' },
     title: 'Increase character limit for all users',
-    body: 'The 280-character limit feels outdated. It would be great to have at least 500 characters for everyone, not just Blue subscribers, to allow for more nuanced conversations.',
-    category: 'suggestion',
+    body: 'The 280-character limit feels outdated. It would be great to have at least 500 characters for everyone.',
+    category: 'feature_request',
     status: 'rejected',
     upvoteCount: 42,
     hasVoted: false,
-    importanceCounts: { 'NOT IMPORTANT': 20, 'NICE-TO-HAVE': 15, 'IMPORTANT': 5, 'CRITICAL': 2 },
-    myImportanceVote: null,
     createdAt: "2025-10-05T00:00:00Z",
-    sprint: null,
     comments: [
         { id: 'c9', user: { handle: 'Admin', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=A' }, body: "We appreciate the feedback, but we've decided to keep the 280-character limit for now to maintain brevity." },
     ],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Character+Limit'
-  },
-  {
-    id: '7',
-    title: 'Need an edit button',
-    body: 'How do we still not have an edit button?',
-    category: 'feature_request',
-    status: 'duplicate',
-    upvoteCount: 15,
-    hasVoted: false,
-    importanceCounts: { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 1, 'IMPORTANT': 5, 'CRITICAL': 9 },
-    myImportanceVote: null,
-    createdAt: "2025-09-16T00:00:00Z",
-    sprint: null,
-    comments: [
-        { id: 'c10', user: { handle: 'Admin', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=A' }, body: "This is a duplicate of an existing request. Please see [ticket #2] for updates." },
-    ],
-    imageUrl: 'https://placehold.co/600x400/1DA1F2/FFFFFF?text=Duplicate'
+    expected: null,
+    actual: null,
+    steps: null,
+    environment: null,
   },
 ];
 
 // --- CONSTANTS ---
-const CATEGORIES = ['All', 'feature_request', 'suggestion', 'complaint'];
-const STATUSES = ['All', 'new', 'triaged', 'closed', 'rejected', 'duplicate'];
+// Aligned to data model
+const CATEGORIES = ['All', 'feature_request', 'complaint'];
+const STATUSES = ['All', 'new', 'triaged', 'closed', 'rejected'];
 const SORT_OPTIONS = ['Top', 'Newest', 'Hot'];
-const IMPORTANCE_LEVELS = ['NOT IMPORTANT', 'NICE-TO-HAVE', 'IMPORTANT', 'CRITICAL'];
 
 // Mock current time for "time ago" consistency
 const MOCK_CURRENT_TIME = new Date("2025-11-11T23:39:00Z");
@@ -288,7 +277,6 @@ const MOCK_CURRENT_TIME = new Date("2025-11-11T23:39:00Z");
 // --- MAPS ---
 const CATEGORY_DISPLAY_MAP = {
   'feature_request': 'Feature Request',
-  'suggestion': 'Suggestion',
   'complaint': 'Issue'
 };
 
@@ -296,17 +284,11 @@ const STATUS_DISPLAY_MAP = {
   'new': 'Under Review',
   'triaged': 'In Progress',
   'closed': 'Shipped',
-  'rejected': 'Rejected',
-  'duplicate': 'Duplicate'
+  'rejected': 'Rejected'
 };
 
 // --- HELPER FUNCTIONS ---
 
-/**
- * Formats an ISO date string into a "time ago" format.
- * @param {string} dateString - The ISO 8601 date string.
- * @returns {string} A relative time string (e.g., "3 days ago").
- */
 const formatTimeAgo = (dateString) => {
   const date = new Date(dateString);
   const seconds = Math.floor((MOCK_CURRENT_TIME - date) / 1000);
@@ -334,32 +316,19 @@ const formatTimeAgo = (dateString) => {
   return Math.floor(seconds) + " seconds ago";
 };
 
-/**
- * Formats an ISO date string into a readable date.
- * @param {string} dateString - The ISO 8601 date string.
- * @returns {string} A formatted date (e.g., "November 20, 2025").
- */
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
 
 // --- REUSABLE COMPONENTS ---
 
 /**
  * UpvoteButton Component
+ * Styled for light mode
  */
 const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size = 'md' }) => {
   const [upvoted, setUpvoted] = useState(initialHasVoted);
   const [count, setCount] = useState(initialUpvoteCount);
 
   const handleClick = (e) => {
-    e.stopPropagation(); // Prevent card click
+    e.stopPropagation();
     const newUpvoted = !upvoted;
     const newCount = newUpvoted ? count + 1 : count - 1;
     
@@ -375,7 +344,7 @@ const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size 
   };
   
   const activeStyles = "bg-blue-500 border-blue-400 text-white";
-  const inactiveStyles = "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600";
+  const inactiveStyles = "bg-white border-gray-300 text-gray-700 hover:bg-gray-50";
 
   return (
     <button
@@ -390,18 +359,18 @@ const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size 
 
 /**
  * StatusBadge Component
+ * Styled for light mode
  */
 const StatusBadge = ({ status }) => {
   const styles = {
-    'new': 'bg-yellow-900/50 text-yellow-300',
-    'triaged': 'bg-blue-900/50 text-blue-300',
-    'closed': 'bg-green-900/50 text-green-300',
-    'rejected': 'bg-red-900/50 text-red-300',
-    'duplicate': 'bg-gray-700 text-gray-400'
+    'new': 'bg-yellow-100 text-yellow-800',
+    'triaged': 'bg-blue-100 text-blue-800',
+    'closed': 'bg-green-100 text-green-800',
+    'rejected': 'bg-red-100 text-red-800',
   };
   return (
     <span
-      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${styles[status] || 'bg-gray-700 text-gray-300'}`}
+      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${styles[status] || 'bg-gray-100 text-gray-800'}`}
     >
       {STATUS_DISPLAY_MAP[status] || status}
     </span>
@@ -410,10 +379,11 @@ const StatusBadge = ({ status }) => {
 
 /**
  * CategoryTag Component
+ * Styled for light mode
  */
 const CategoryTag = ({ category }) => {
   return (
-    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-700 text-gray-300">
+    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
       {CATEGORY_DISPLAY_MAP[category] || category}
     </span>
   );
@@ -421,28 +391,30 @@ const CategoryTag = ({ category }) => {
 
 /**
  * Comment Component
+ * Styled for light mode
  */
 const Comment = ({ comment }) => (
-  <div className="flex gap-3 py-4 border-b border-gray-700">
+  <div className="flex gap-3 py-4 border-b border-gray-200">
     <img
       src={comment.user.avatar_url}
       alt={comment.user.handle}
-      className="w-10 h-10 rounded-full bg-gray-700 flex-shrink-0"
-      onError={(e) => { e.target.src = 'https://placehold.co/40x40/71717A/FFFFFF?text=?'; }}
+      className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0"
+      onError={(e) => { e.target.src = 'https://placehold.co/40x40/A1A1AA/FFFFFF?text=?'; }}
     />
     <div>
-      <h4 className="font-semibold text-gray-100">{comment.user.handle}</h4>
-      <p className="text-gray-300 mt-1">{comment.body}</p>
+      <h4 className="font-semibold text-gray-900">{comment.user.handle}</h4>
+      <p className="text-gray-700 mt-1">{comment.body}</p>
     </div>
   </div>
 );
 
 /**
  * FilterPills Component
+ * Styled for light mode
  */
 const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) => (
   <div>
-    <h3 className="text-sm font-semibold text-gray-400 mb-2">{title}</h3>
+    <h3 className="text-sm font-semibold text-gray-500 mb-2">{title}</h3>
     <div className="flex flex-wrap gap-2">
       {options.map((option) => (
         <button
@@ -451,7 +423,7 @@ const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) =>
           className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
             selected === option
               ? 'bg-blue-500 text-white'
-              : 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600'
+              : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
           }`}
         >
           {displayMap[option] || option}
@@ -461,38 +433,12 @@ const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) =>
   </div>
 );
 
-/**
- * ImportanceSelector Component
- */
-const ImportanceSelector = ({ selected, onSelect }) => {
-  const getStyle = (level) => {
-    const isActive = selected === level;
-    if (isActive) {
-      return 'bg-blue-500 text-white border-blue-400';
-    }
-    return 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600';
-  };
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {IMPORTANCE_LEVELS.map((level) => (
-        <button
-          key={level}
-          onClick={() => onSelect(level)}
-          className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors border ${getStyle(level)}`}
-        >
-          {level}
-        </button>
-      ))}
-    </div>
-  );
-};
-
 
 // --- PAGE COMPONENTS ---
 
 /**
  * FeedbackDashboard Component
+ * Now renders FeedbackListItem
  */
 const FeedbackDashboard = ({
   feedbackItems,
@@ -501,33 +447,47 @@ const FeedbackDashboard = ({
   sortBy,
   setSortBy,
   onCardClick,
-  onUpvote
+  onUpvote,
+  searchTerm
 }) => {
-  // Apply filters and sorting
+  // Apply filters, search, and sorting
   const filteredAndSortedItems = useMemo(() => {
     let items = [...feedbackItems];
 
+    // Filter by Search Term
+    if (searchTerm) {
+      items = items.filter(item => 
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.body.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Filter by Category
     if (filters.category !== 'All') {
       items = items.filter(item => item.category === filters.category);
     }
+
+    // Filter by Status
     if (filters.status !== 'All') {
       items = items.filter(item => item.status === filters.status);
     }
+
+    // Sort
     if (sortBy === 'Top') {
       items.sort((a, b) => b.upvoteCount - a.upvoteCount);
     } else if (sortBy === 'Newest') {
-      items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by new createdAt
+      items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (sortBy === 'Hot') {
       items.sort((a, b) => b.upvoteCount - a.upvoteCount);
     }
     
     return items;
-  }, [feedbackItems, filters, sortBy]);
+  }, [feedbackItems, filters, sortBy, searchTerm]);
   
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* --- Filter/Sort Controls --- */}
-      <div className="p-6 bg-gray-800 rounded-2xl shadow-sm border border-gray-700 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-200 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <FilterPills
           title="Category"
           options={CATEGORIES}
@@ -553,72 +513,72 @@ const FeedbackDashboard = ({
       </div>
       
       {/* --- Feedback List --- */}
-      {filteredAndSortedItems.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAndSortedItems.map(item => (
-            <FeedbackCard
-              key={item.id}
-              item={item}
-              onClick={() => onCardClick(item.id)}
-              onUpvote={onUpvote}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 bg-gray-800 rounded-2xl shadow-sm border border-gray-700">
-          <h3 className="text-xl font-semibold text-gray-100">No feedback found</h3>
-          <p className="text-gray-400 mt-2">Try adjusting your filters or submit a new idea!</p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-/**
- * FeedbackCard Component
- */
-const FeedbackCard = ({ item, onClick, onUpvote }) => {
-  return (
-    <div
-      onClick={onClick}
-      className="bg-gray-800 rounded-2xl shadow-sm border border-gray-700 overflow-hidden cursor-pointer transition-all hover:bg-gray-700"
-    >
-      <img 
-        src={item.imageUrl} 
-        alt={item.title} 
-        className="w-full h-48 object-cover bg-gray-700"
-        onError={(e) => { e.target.src = 'https://placehold.co/600x400/E2E8F0/4A5568?text=Image+Error'; }}
-      />
-      <div className="p-5">
-        <h3 className="text-lg font-semibold text-gray-100 truncate mb-2">{item.title}</h3>
-        
-        <div className="flex items-center justify-between">
-          <UpvoteButton 
-            initialUpvoteCount={item.upvoteCount}
-            initialHasVoted={item.hasVoted}
-            onUpvote={onUpvote} 
-            id={item.id} 
-          />
-          
-          <div className="flex items-center gap-2 text-gray-400">
-            <IconMessageSquare className="w-4 h-4" />
-            <span className="text-sm font-medium">{item.comments.length}</span>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        {filteredAndSortedItems.length > 0 ? (
+          <ul className="divide-y divide-gray-200">
+            {filteredAndSortedItems.map(item => (
+              <FeedbackListItem
+                key={item.id}
+                item={item}
+                onClick={() => onCardClick(item.id)}
+                onUpvote={onUpvote}
+              />
+            ))}
+          </ul>
+        ) : (
+          <div className="text-center py-20">
+            <h3 className="text-xl font-semibold text-gray-900">No feedback found</h3>
+            <p className="text-gray-500 mt-2">Try adjusting your filters or search term!</p>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-700">
-          <CategoryTag category={item.category} />
-          <StatusBadge status={item.status} />
-        </div>
+        )}
       </div>
     </div>
   );
 };
 
 /**
- * FeedbackDetailPage Component
+ * FeedbackListItem Component
+ * New component for the list view
  */
-const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, onBack, project }) => {
+const FeedbackListItem = ({ item, onClick, onUpvote }) => {
+  return (
+    <li
+      onClick={onClick}
+      className="flex items-center px-4 py-4 sm:px-6 cursor-pointer hover:bg-gray-50"
+    >
+      <div className="flex-1 min-w-0">
+        <h3 className="text-lg font-semibold text-gray-900 truncate">{item.title}</h3>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+          <CategoryTag category={item.category} />
+          <StatusBadge status={item.status} />
+          <span className="text-sm text-gray-500">
+            {formatTimeAgo(item.createdAt)} by {item.user.handle}
+          </span>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-4 ml-4 flex-shrink-0">
+        <div className="flex items-center gap-1.5 text-gray-500">
+          <IconMessageSquare className="w-4 h-4" />
+          <span className="text-sm font-medium">{item.comments.length}</span>
+        </div>
+        <UpvoteButton 
+          initialUpvoteCount={item.upvoteCount}
+          initialHasVoted={item.hasVoted}
+          onUpvote={onUpvote} 
+          id={item.id} 
+        />
+      </div>
+    </li>
+  );
+};
+
+/**
+ * FeedbackDetailPage Component
+ * Styled for light mode. Removed Importance and Sprint.
+ * Added user handle.
+ */
+const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) => {
   const [newComment, setNewComment] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -653,38 +613,24 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
     <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-300 mb-6"
+        className="flex items-center gap-1.5 text-sm font-semibold text-blue-500 hover:text-blue-600 mb-6"
       >
         <IconArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </button>
 
-      <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
-        <img
-          src={item.imageUrl}
-          alt={item.title}
-          className="w-full h-64 object-cover bg-gray-700"
-          onError={(e) => { e.target.src = 'https://placehold.co/600x400/E2E8F0/4A5568?text=Image+Error'; }}
-        />
-        
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="p-6 md:p-8">
           <div className="flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-100">{item.title}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{item.title}</h1>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3">
                 <CategoryTag category={item.category} />
                 <StatusBadge status={item.status} />
-                <span className="flex items-center gap-1.5 text-sm text-gray-400">
+                <span className="flex items-center gap-1.5 text-sm text-gray-500">
                   <IconCalendar className="w-4 h-4" />
-                  Submitted {formatTimeAgo(item.createdAt)}
+                  Submitted {formatTimeAgo(item.createdAt)} by {item.user.handle}
                 </span>
-                {/* --- Estimated Release Date --- */}
-                {item.status === 'triaged' && item.sprint && (
-                   <span className="flex items-center gap-1.5 text-sm text-blue-400 font-medium">
-                    <IconCalendar className="w-4 h-4" />
-                    Estimated Release: {formatDate(item.sprint.endDate)}
-                  </span>
-                )}
               </div>
             </div>
             <div className="flex-shrink-0 flex gap-2">
@@ -693,7 +639,7 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
                 className={`flex-shrink-0 p-2.5 font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2 ${
                   copied
                     ? 'bg-green-500 text-white'
-                    : 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
               >
                 {copied ? <IconCheck className="w-5 h-5" /> : <IconShare className="w-5 h-5" />}
@@ -708,11 +654,21 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
             </div>
           </div>
           
-          <p className="text-lg text-gray-300 mt-6 whitespace-pre-wrap">{item.body}</p>
+          <p className="text-lg text-gray-700 mt-6 whitespace-pre-wrap">{item.body}</p>
+
+          {/* Show extra fields if it's a complaint */}
+          {item.category === 'complaint' && (
+            <div className="mt-6 space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+              {item.environment && <div><strong className="text-gray-600">Environment:</strong> <span className="text-gray-700">{item.environment}</span></div>}
+              {item.steps && <div><strong className="text-gray-600">Steps to Reproduce:</strong> <pre className="text-gray-700 whitespace-pre-wrap font-sans">{item.steps}</pre></div>}
+              {item.expected && <div><strong className="text-gray-600">Expected Result:</strong> <span className="text-gray-700">{item.expected}</span></div>}
+              {item.actual && <div><strong className="text-gray-600">Actual Result:</strong> <span className="text-gray-700">{item.actual}</span></div>}
+            </div>
+          )}
           
           {/* Comments Section */}
           <div className="mt-10">
-            <h2 className="text-xl font-semibold text-gray-100 mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Comments ({item.comments.length})
             </h2>
             
@@ -721,13 +677,13 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100 placeholder-gray-500"
+                className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
                 rows="3"
                 placeholder="Add your comment..."
               ></textarea>
               <button
                 type="submit"
-                className="mt-3 px-5 py-2.5 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="mt-3 px-5 py-2.5 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Post Comment
               </button>
@@ -738,20 +694,9 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
               {item.comments.length > 0 ? (
                 item.comments.map(comment => <Comment key={comment.id} comment={comment} />)
               ) : (
-                <p className="text-gray-400">Be the first to comment!</p>
+                <p className="text-gray-500">Be the first to comment!</p>
               )}
             </div>
-          </div>
-          
-          {/* Importance Poll Section */}
-          <div className="mt-10 pt-6 border-t border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-100 mb-4">
-              How important is this to you?
-            </h2>
-            <ImportanceSelector
-              selected={item.myImportanceVote}
-              onSelect={(newLevel) => onImportanceVote(item.id, newLevel)}
-            />
           </div>
         </div>
       </div>
@@ -761,13 +706,19 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onImportanceVote, on
 
 /**
  * SubmissionFormPage Component
+ * Now dynamic based on category
  */
 const SubmissionFormPage = ({ onSubmit, onBack }) => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("feature_request");
   const [body, setBody] = useState("");
-  const [importance, setImportance] = useState("NICE-TO-HAVE"); // Default importance
   const [error, setError] = useState("");
+  
+  // Fields for 'complaint'
+  const [steps, setSteps] = useState("");
+  const [expected, setExpected] = useState("");
+  const [actual, setActual] = useState("");
+  const [environment, setEnvironment] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -775,38 +726,66 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
       setError("Title and description are required.");
       return;
     }
+    
+    if (category === 'complaint' && (!steps.trim() || !expected.trim() || !actual.trim())) {
+      setError("For issues, please fill in steps, expected, and actual results.");
+      return;
+    }
+    
     setError("");
     const newTicket = {
       title,
       category,
       body,
-      importance,
+      steps: category === 'complaint' ? steps : null,
+      expected: category === 'complaint' ? expected : null,
+      actual: category === 'complaint' ? actual : null,
+      environment: category === 'complaint' ? environment : null,
     };
     onSubmit(newTicket);
   };
+
+  const attachmentPlaceholder = category === 'complaint' 
+    ? "Upload screenshot of the issue" 
+    : "Upload a concept or mockup (optional)";
 
   return (
     <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
        <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-300 mb-6"
+        className="flex items-center gap-1.5 text-sm font-semibold text-blue-500 hover:text-blue-600 mb-6"
       >
         <IconArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </button>
       
-      <div className="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-lg border border-gray-700">
-        <h1 className="text-3xl font-bold text-gray-100 mb-6">Submit new idea</h1>
+      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Submit new idea</h1>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-3 bg-red-900/50 border border-red-700 text-red-300 rounded-lg">
+            <div className="p-3 bg-red-100 border border-red-300 text-red-800 rounded-lg">
               {error}
             </div>
           )}
           
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+              What kind of feedback is this?
+            </label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+            >
+              <option value="feature_request">{CATEGORY_DISPLAY_MAP['feature_request']}</option>
+              <option value="complaint">{CATEGORY_DISPLAY_MAP['complaint']}</option>
+            </select>
+          </div>
+          
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
               Title
             </label>
             <input
@@ -814,69 +793,102 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100 placeholder-gray-500"
-              placeholder="A brief summary of your idea"
+              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
+              placeholder={category === 'complaint' ? 'e.g., "Video player freezes on Android"' : 'e.g., "Add bookmarks to main nav bar"'}
             />
           </div>
           
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-1">
-              Category
-            </label>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100"
-            >
-              <option value="feature_request">{CATEGORY_DISPLAY_MAP['feature_request']}</option>
-              <option value="suggestion">{CATEGORY_DISPLAY_MAP['suggestion']}</option>
-              <option value="complaint">{CATEGORY_DISPLAY_MAP['complaint']}</option>
-            </select>
-          </div>
-          
-          <div>
-            <label htmlFor="body" className="block text-sm font-medium text-gray-300 mb-1">
-              Description (Body)
+            <label htmlFor="body" className="block text-sm font-medium text-gray-700 mb-1">
+              {category === 'complaint' ? 'Please describe the issue' : 'Please describe your idea'}
             </label>
             <textarea
               id="body"
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-gray-700 text-gray-100 placeholder-gray-500"
-              rows="6"
-              placeholder="How would this help you? What's the problem?"
+              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
+              rows="4"
+              placeholder={category === 'complaint' ? 'What are you experiencing?' : 'How would this help you?'}
             ></textarea>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              How important is this to you?
-            </label>
-            <ImportanceSelector
-              selected={importance}
-              onSelect={setImportance}
-            />
-          </div>
+          
+          {/* --- DYNAMIC COMPLAINT FIELDS --- */}
+          {category === 'complaint' && (
+            <div className="space-y-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+              <h3 className="text-lg font-medium text-gray-900">Issue Details</h3>
+              <div>
+                <label htmlFor="environment" className="block text-sm font-medium text-gray-700 mb-1">
+                  Environment (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="environment"
+                  value={environment}
+                  onChange={(e) => setEnvironment(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
+                  placeholder="e.g., Chrome, iOS 17, Android 13"
+                />
+              </div>
+              <div>
+                <label htmlFor="steps" className="block text-sm font-medium text-gray-700 mb-1">
+                  Steps to Reproduce
+                </label>
+                <textarea
+                  id="steps"
+                  value={steps}
+                  onChange={(e) => setSteps(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
+                  rows="3"
+                  placeholder="1. Go to...\n2. Click on...\n3. See error..."
+                ></textarea>
+              </div>
+              <div>
+                <label htmlFor="expected" className="block text-sm font-medium text-gray-700 mb-1">
+                  Expected Result
+                </label>
+                <input
+                  type="text"
+                  id="expected"
+                  value={expected}
+                  onChange={(e) => setExpected(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
+                  placeholder="What did you expect to happen?"
+                />
+              </div>
+              <div>
+                <label htmlFor="actual" className="block text-sm font-medium text-gray-700 mb-1">
+                  Actual Result
+                </label>
+                <input
+                  type="text"
+                  id="actual"
+                  value={actual}
+                  onChange={(e) => setActual(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
+                  placeholder="What actually happened?"
+                />
+              </div>
+            </div>
+          )}
           
           {/* Mock Attachment Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Attachments (Optional)
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Attachments (Screenshots, etc.)
             </label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
               <div className="space-y-1 text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                   <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                 </svg>
-                <div className="flex text-sm text-gray-400">
-                  <label htmlFor="file-upload" className="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                <div className="flex text-sm text-gray-600">
+                  <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-500 hover:text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                     <span>Upload a file</span>
                     <input id="file-upload" name="file-upload" type="file" className="sr-only" />
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                <p className="text-xs text-gray-500">{attachmentPlaceholder}</p>
               </div>
             </div>
           </div>
@@ -884,9 +896,9 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Submit Idea
+              Submit
             </button>
           </div>
         </form>
@@ -897,6 +909,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
 
 /**
  * SubmissionSuccessPage Component
+ * Styled for light mode
  */
 const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
   const [copied, setCopied] = useState(false);
@@ -920,28 +933,28 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
 
   return (
     <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-      <div className="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-lg border border-gray-700 text-center">
-        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-900/50">
-          <IconCheck className="h-8 w-8 text-green-400" />
+      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 text-center">
+        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+          <IconCheck className="h-8 w-8 text-green-600" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-100 mt-6 mb-2">Success!</h1>
-        <p className="text-lg text-gray-400 mb-6">Your feedback has been submitted.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mt-6 mb-2">Success!</h1>
+        <p className="text-lg text-gray-600 mb-6">Your feedback has been submitted.</p>
         
-        <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
-          <p className="text-sm text-gray-400 mb-3">Here's your unique tracking link to check on its status:</p>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <p className="text-sm text-gray-600 mb-3">Here's your unique tracking link to check on its status:</p>
           <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               readOnly
               value={trackingLink}
-              className="flex-1 p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-200"
+              className="flex-1 p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
             />
             <button
               onClick={copyToClipboard}
               className={`flex-shrink-0 px-4 py-2.5 font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2 ${
                 copied
                   ? 'bg-green-500 text-white'
-                  : 'bg-gray-600 text-gray-100 hover:bg-gray-500'
+                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
               }`}
             >
               {copied ? (
@@ -959,7 +972,7 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
         
         <button
           onClick={onBack}
-          className="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Back to Dashboard
         </button>
@@ -971,22 +984,39 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
 
 /**
  * Header Component
+ * Styled for light mode, added search
  */
-const Header = ({ onShowSubmitForm, project }) => (
-  <header className="bg-gray-800 shadow-sm border-b border-gray-700 sticky top-0 z-10">
+const Header = ({ onShowSubmitForm, project, searchTerm, onSearchChange }) => (
+  <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
     <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center h-16">
+      <div className="flex justify-between items-center h-16 gap-4">
         <div className="flex-shrink-0 flex items-center gap-4">
-          <span className="text-2xl font-bold text-gray-100">BURDD</span>
+          <span className="text-2xl font-bold text-gray-900">BURDD</span>
           <span className="text-xl font-medium text-gray-400">/</span>
-          <span className="text-xl font-semibold text-blue-400">{project.name} Feedback</span>
+          <span className="text-xl font-semibold text-blue-500">{project.name} Feedback</span>
         </div>
+        
+        <div className="flex-1 max-w-lg">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <IconSearch className="w-5 h-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={onSearchChange}
+              className="w-full p-2.5 pl-10 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400"
+              placeholder="Search by title or description..."
+            />
+          </div>
+        </div>
+        
         <button
           onClick={onShowSubmitForm}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <IconPlus className="w-5 h-5" />
-          Submit New Idea
+          Submit
         </button>
       </div>
     </nav>
@@ -996,23 +1026,22 @@ const Header = ({ onShowSubmitForm, project }) => (
 
 // --- MAIN APP COMPONENT ---
 export default function App() {
-  // In a real app, this project info would come from the URL router
   const [project, setProject] = useState({
-    projectId: 'a7c4a1f8-a28a-4b0d-9b0a-0b2a3d3c4e5f', // Aligned with backend
+    projectId: 'a7c4a1f8-a28a-4b0d-9b0a-0b2a3d3c4e5f',
     name: 'Twitter',
     slug: 'twitter',
     themeColor: 'blue'
   });
 
-  const [page, setPage] = useState('dashboard'); // 'dashboard', 'detail', 'submit', 'success'
+  const [page, setPage] = useState('dashboard');
   const [selectedFeedbackId, setSelectedFeedbackId] = useState(null);
   const [feedbackItems, setFeedbackItems] = useState(mockFeedbackData);
   const [submittedTicket, setSubmittedTicket] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   
   const [filters, setFilters] = useState({ category: 'All', status: 'All' });
   const [sortBy, setSortBy] = useState('Top');
   
-  // --- Navigation Handlers ---
   const showDashboard = () => setPage('dashboard');
   
   const showDetail = (id) => {
@@ -1027,8 +1056,7 @@ export default function App() {
     setPage('success');
   };
 
-  // --- Data Handlers (Callbacks) ---
-  
+  // Simulates POST/DELETE /tickets/:ticketId/upvotes
   const handleUpvote = useCallback((id, newCount, newHasVoted) => {
     setFeedbackItems(currentItems =>
       currentItems.map(item =>
@@ -1037,10 +1065,12 @@ export default function App() {
     );
   }, []);
   
+  // Simulates POST /tickets/:ticketId/comments
   const handleAddComment = useCallback((id, commentBody) => {
     const newComment = {
       id: `c${new Date().getTime()}`,
-      user: { handle: 'GuestUser', avatar_url: 'https://placehold.co/40x40/71717A/FFFFFF?text=G' }, // Mock guest user
+      // In a real app, this user would come from `GET /me`
+      user: { handle: 'GuestUser', avatar_url: 'https://placehold.co/40x40/A1A1AA/FFFFFF?text=G' },
       body: commentBody,
     };
     setFeedbackItems(currentItems =>
@@ -1051,48 +1081,21 @@ export default function App() {
       )
     );
   }, []);
-
-  const handleImportanceVote = useCallback((id, newLevel) => {
-    setFeedbackItems(currentItems =>
-      currentItems.map(item => {
-        if (item.id !== id) return item;
-        const newCounts = { ...item.importanceCounts };
-        const oldLevel = item.myImportanceVote;
-        
-        if (oldLevel && newCounts[oldLevel] > 0) {
-          newCounts[oldLevel]--;
-        }
-        newCounts[newLevel] = (newCounts[newLevel] || 0) + 1;
-
-        return {
-          ...item,
-          myImportanceVote: newLevel,
-          importanceCounts: newCounts,
-        };
-      })
-    );
-  }, []);
   
+  // Simulates POST /projects/:projectId/tickets
   const handleSubmitFeedback = useCallback((newTicketData) => {
-    const initialCounts = { 'NOT IMPORTANT': 0, 'NICE-TO-HAVE': 0, 'IMPORTANT': 0, 'CRITICAL': 0 };
-    initialCounts[newTicketData.importance] = 1;
-
     const newTicket = {
       ...newTicketData,
       id: crypto.randomUUID(),
+      // This user_id would come from the session / `GET /me`
+      user: { handle: 'GuestUser', avatar_url: 'https://placehold.co/40x40/A1A1AA/FFFFFF?text=G' },
       status: 'new',
       upvoteCount: 0,
       hasVoted: false,
       comments: [],
-      createdAt: new Date().toISOString(), // Set creation date
-      sprint: null, // New tickets don't have a sprint
-      importanceCounts: initialCounts,
-      myImportanceVote: newTicketData.importance,
-      imageUrl: `https://placehold.co/600x400/${project.themeColor === 'blue' ? '1DA1F2' : 'E2E8F0'}/FFFFFF?text=${encodeURIComponent(newTicketData.title)}`
+      createdAt: new Date().toISOString(),
     };
     
-    delete newTicket.importance;
-
     setFeedbackItems(currentItems => [newTicket, ...currentItems]);
     showSuccess(newTicket);
   }, [project]);
@@ -1108,7 +1111,6 @@ export default function App() {
             item={selectedItem}
             onUpvote={handleUpvote}
             onAddComment={handleAddComment}
-            onImportanceVote={handleImportanceVote}
             onBack={showDashboard}
             project={project}
           />
@@ -1139,14 +1141,20 @@ export default function App() {
             setSortBy={setSortBy}
             onCardClick={showDetail}
             onUpvote={handleUpvote}
+            searchTerm={searchTerm}
           />
         );
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-300 font-inter dark">
-      <Header onShowSubmitForm={showSubmitForm} project={project} />
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-inter">
+      <Header 
+        onShowSubmitForm={showSubmitForm} 
+        project={project} 
+        searchTerm={searchTerm}
+        onSearchChange={(e) => setSearchTerm(e.target.value)}
+      />
       <main>
         {renderPage()}
       </main>
