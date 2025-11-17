@@ -1,13 +1,20 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import SidebarNav from '@components/navigation/SidebarNav';
 import ProjectSwitcher from '@components/navigation/ProjectSwitcher';
 import { useApi } from '@contexts/ApiContext';
+import { useAuth } from '@contexts/AuthContext';
 import styles from './AppLayout.module.css';
 
 const AppLayout = () => {
   const { mode, setMode } = useApi();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMode = () => setMode(mode === 'mock' ? 'live' : 'mock');
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div className={styles.shell}>
@@ -23,6 +30,17 @@ const AppLayout = () => {
             <button className={styles.modeButton} type="button" onClick={toggleMode}>
               {mode === 'mock' ? 'Mock API' : 'Live API'}
             </button>
+            {user && (
+              <div className={styles.userControls}>
+                {user.avatarUrl && <img className={styles.userAvatar} src={user.avatarUrl} alt={user.name} />}
+                <div>
+                  <p className={styles.userName}>{user.name}</p>
+                  <button type="button" className={styles.logoutButton} onClick={handleLogout}>
+                    Log out
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </header>
         <main className={styles.content}>
