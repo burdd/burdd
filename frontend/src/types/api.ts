@@ -31,7 +31,6 @@ export interface Sprint {
   id: string;
   projectId: string;
   name: string;
-  goal: string;
   startDate: string;
   endDate: string;
 }
@@ -44,7 +43,6 @@ export interface Issue {
   status: IssueStatus;
   assigneeId: string | null;
   description: string;
-  priority: 'low' | 'medium' | 'high';
 }
 
 export interface Ticket {
@@ -55,8 +53,8 @@ export interface Ticket {
   category: TicketCategory;
   reporter: string;
   createdAt: string;
-  summary: string;
-  relatedIssueId?: string;
+  body: string;
+  relatedIssueIds: string[];
 }
 
 export interface UserLookup {

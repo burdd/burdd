@@ -7,8 +7,8 @@
     "category": "complaint",
     "reporter": "Quality Ops",
     "createdAt": "2024-07-11T15:30:00.000Z",
-    "summary": "Textarea rejects >2000 characters making it hard to attach logs.",
-    "relatedIssueId": null
+    "body": "Textarea rejects >2000 characters making it hard to attach logs.",
+    "relatedIssueIds": []
   },
   {
     "id": "ticket-5002",
@@ -18,8 +18,8 @@
     "category": "feature_request",
     "reporter": "Security Pilot",
     "createdAt": "2024-07-10T09:00:00.000Z",
-    "summary": "Pilot teams want to import backlog from CSV into Burdd.",
-    "relatedIssueId": "issue-1002"
+    "body": "Pilot teams want to import backlog from CSV into Burdd.",
+    "relatedIssueIds": ["issue-1002"]
   },
   {
     "id": "ticket-5003",
@@ -29,8 +29,8 @@
     "category": "complaint",
     "reporter": "QA Harness",
     "createdAt": "2024-07-08T12:15:00.000Z",
-    "summary": "Need sample verifying the signed widget handshake.",
-    "relatedIssueId": "issue-2000"
+    "body": "Need sample verifying the signed widget handshake.",
+    "relatedIssueIds": ["issue-2000"]
   },
   {
     "id": "ticket-5004",
@@ -40,7 +40,7 @@
     "category": "complaint",
     "reporter": "Internal QA",
     "createdAt": "2024-07-04T08:45:00.000Z",
-    "summary": "Was fixed during alpha patch 3.",
-    "relatedIssueId": "issue-1001"
+    "body": "Was fixed during alpha patch 3.",
+    "relatedIssueIds": ["issue-1001"]
   }
 ]
