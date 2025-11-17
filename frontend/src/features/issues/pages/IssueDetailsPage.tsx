@@ -48,9 +48,7 @@ const IssueDetailsPage = () => {
         const [projectData, sprintData, ticketData] = await Promise.all([
           getById<Project>(`${baseUrl}/projects.json`, issueData.projectId),
           issueData.sprintId ? getById<Sprint>(`${baseUrl}/sprints.json`, issueData.sprintId) : Promise.resolve(undefined),
-          getList<Ticket>(`${baseUrl}/tickets.json?relatedIssueId=${issueData.id}`).then((list) =>
-            list.filter((ticket) => ticket.relatedIssueId === issueData.id),
-          ),
+          getList<Ticket>(`${baseUrl}/tickets.json?relatedIssueId=${issueData.id}`),
         ]);
 
         if (ignore) return;
@@ -101,7 +99,6 @@ const IssueDetailsPage = () => {
         </div>
         <div className={styles.tags}>
           <Tag tone={statusToneMap[issue.status]}>{issue.status}</Tag>
-          <Tag tone={issue.priority === 'high' ? 'danger' : issue.priority === 'medium' ? 'info' : 'neutral'}>{issue.priority}</Tag>
         </div>
       </header>
 
@@ -133,7 +130,7 @@ const IssueDetailsPage = () => {
             {tickets.map((ticket) => (
               <li key={ticket.id}>
                 <p className={styles.ticketTitle}>{ticket.title}</p>
-                <p className={styles.muted}>{ticket.summary}</p>
+                <p className={styles.muted}>{ticket.body}</p>
               </li>
             ))}
           </ul>

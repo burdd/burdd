@@ -87,7 +87,7 @@ const TicketTriagePage = () => {
                 <p className={styles.meta}>
                   {ticket.reporter} · {new Date(ticket.createdAt).toLocaleDateString()}
                 </p>
-                <p className={styles.summary}>{ticket.summary}</p>
+                <p className={styles.summary}>{ticket.body}</p>
               </div>
               <Tag tone={ticket.status === 'closed' ? 'success' : ticket.status === 'triaged' ? 'info' : 'warning'}>
                 {ticket.status}

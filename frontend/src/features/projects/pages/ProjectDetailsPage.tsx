@@ -13,6 +13,8 @@ const statusLabels: Record<IssueStatus, string> = {
   review: 'Code review',
   done: 'Done',
 };
+const formatDate = (isoString: string) =>
+  new Date(isoString).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 
 const ProjectDetailsPage = () => {
   const { projectId } = useParams();
@@ -147,10 +149,9 @@ const ProjectDetailsPage = () => {
                 <Link key={sprint.id} className={styles.sprintCard} to={`/sprints/${sprint.id}`}>
                   <div>
                     <p className={styles.sprintName}>{sprint.name}</p>
-                    <p className={styles.muted}>{sprint.goal}</p>
                   </div>
                   <p className={styles.dateRange}>
-                    {sprint.startDate} → {sprint.endDate}
+                    {formatDate(sprint.startDate)} → {formatDate(sprint.endDate)}
                   </p>
                 </Link>
               ))}

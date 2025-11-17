@@ -8,6 +8,13 @@ import type { Issue, IssueStatus, Project, Sprint } from '@/types/api';
 import styles from './SprintBoardPage.module.css';
 
 const columns: IssueStatus[] = ['queue', 'progress', 'review', 'done'];
+const formatDate = (isoString: string) => {
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) {
+    return 'Invalid date';
+  }
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+};
 
 const SprintBoardPage = () => {
   const { sprintId } = useParams();
@@ -83,10 +90,9 @@ const SprintBoardPage = () => {
         <div>
           <p className={styles.eyebrow}>Sprint</p>
           <h2>{sprint.name}</h2>
-          <p className={styles.muted}>{sprint.goal}</p>
         </div>
         <p className={styles.dateRange}>
-          {sprint.startDate} → {sprint.endDate}
+          {formatDate(sprint.startDate)} → {formatDate(sprint.endDate)}
         </p>
       </header>
 
@@ -106,9 +112,7 @@ const SprintBoardPage = () => {
                   columnIssues.map((issue) => (
                     <article key={issue.id} className={styles.card}>
                       <p className={styles.cardTitle}>{issue.title}</p>
-                      <p className={styles.cardMeta}>
-                        {memberLookup.get(issue.assigneeId ?? '') ?? 'Unassigned'} · {issue.priority}
-                      </p>
+                      <p className={styles.cardMeta}>{memberLookup.get(issue.assigneeId ?? '') ?? 'Unassigned'}</p>
                     </article>
                   ))
                 )}
