@@ -2,12 +2,12 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at top, rgba(124, 93, 255, 0.3), transparent 55%), var(--color-bg);
+  background: linear-gradient(180deg, #fefefe 0%, #f5f6fa 45%, #eceff3 100%);
 }
 
 .form {
   width: min(90vw, 420px);
-  background: rgba(3, 7, 18, 0.85);
+  background: var(--color-panel);
   padding: 2.5rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
@@ -40,7 +40,7 @@
   padding: 0.65rem 0.9rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--color-surface);
   color: var(--color-text);
 }
 
