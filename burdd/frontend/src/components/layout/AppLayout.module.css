@@ -60,6 +60,11 @@
   box-shadow: var(--shadow-md);
 }
 
+.modeButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .userControls {
   display: flex;
   align-items: center;
@@ -97,6 +102,11 @@
 .logoutButton:hover {
   color: var(--color-danger);
   text-decoration: underline;
+}
+
+.logoutButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .content {
