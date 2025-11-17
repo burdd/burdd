@@ -12,7 +12,11 @@ const LoginPage = () => {
 
   const redirectTo = useMemo(() => {
     const params = new URLSearchParams(location.search);
-    return params.get('redirectTo') ?? '/projects';
+    const redirect = params.get('redirectTo') ?? '/projects';
+    if (redirect.startsWith('/') && !redirect.startsWith('//')) {
+      return redirect;
+    }
+    return '/projects';
   }, [location.search]);
 
   useEffect(() => {
@@ -26,12 +30,12 @@ const LoginPage = () => {
       setSubmitting(true);
       setError(null);
       await login();
-      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to sign in. Try again.');
+    } finally {
       setSubmitting(false);
     }
-  }, [login, navigate, redirectTo]);
+  }, [login]);
 
   return (
     <div className={styles.shell}>
