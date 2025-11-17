@@ -6,8 +6,7 @@
     "title": "Public ticket intake form",
     "status": "progress",
     "assigneeId": "user-abdul",
-    "description": "Build responsive form with validation + tokenized confirmation receipt.",
-    "priority": "high"
+    "description": "Build responsive form with validation + tokenized confirmation receipt."
   },
   {
     "id": "issue-1001",
@@ -16,8 +15,7 @@
     "title": "Sprint board drag + drop",
     "status": "review",
     "assigneeId": "user-riley",
-    "description": "Implement column drag with keyboard shortcuts and optimistic updates.",
-    "priority": "medium"
+    "description": "Implement column drag with keyboard shortcuts and optimistic updates."
   },
   {
     "id": "issue-1002",
@@ -26,8 +24,7 @@
     "title": "Ticket to issue linkage",
     "status": "queue",
     "assigneeId": null,
-    "description": "Allow developers to convert or link tickets from triage dashboard.",
-    "priority": "high"
+    "description": "Allow developers to convert or link tickets from triage dashboard."
   },
   {
     "id": "issue-1010",
@@ -36,8 +33,7 @@
     "title": "Lighthouse accessibility audit",
     "status": "queue",
     "assigneeId": "user-lila",
-    "description": "Track regressions on focus order and contrast ratios.",
-    "priority": "low"
+    "description": "Track regressions on focus order and contrast ratios."
   },
   {
     "id": "issue-2000",
@@ -46,8 +42,7 @@
     "title": "Widget authentication handshake",
     "status": "progress",
     "assigneeId": "user-jesse",
-    "description": "Sign requests with short-lived tokens before proxying to Burdd.",
-    "priority": "high"
+    "description": "Sign requests with short-lived tokens before proxying to Burdd."
   },
   {
     "id": "issue-2001",
@@ -56,7 +51,6 @@
     "title": "Add copy-ready quickstart",
     "status": "done",
     "assigneeId": "user-abdul",
-    "description": "Author quickstart guide plus runnable sandbox harness.",
-    "priority": "medium"
+    "description": "Author quickstart guide plus runnable sandbox harness."
   }
 ]
