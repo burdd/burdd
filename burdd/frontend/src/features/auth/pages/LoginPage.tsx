@@ -1,42 +1,49 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@contexts/AuthContext';
 import styles from './LoginPage.module.css';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [status, setStatus] = useState<'idle' | 'error'>('idle');
+  const location = useLocation();
+  const { login, user, loading } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const projectKey = formData.get('projectKey')?.toString()?.trim() ?? '';
+  const redirectTo = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('redirectTo') ?? '/projects';
+  }, [location.search]);
 
-    if (!projectKey) {
-      setStatus('error');
-      return;
+  useEffect(() => {
+    if (!loading && user) {
+      navigate(redirectTo, { replace: true });
     }
+  }, [loading, user, redirectTo, navigate]);
 
-    setStatus('idle');
-    navigate('/projects');
-  };
+  const handleGitHubSignIn = useCallback(async () => {
+    try {
+      setSubmitting(true);
+      setError(null);
+      await login();
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to sign in. Try again.');
+      setSubmitting(false);
+    }
+  }, [login, navigate, redirectTo]);
 
   return (
     <div className={styles.shell}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <div className={styles.form}>
         <p className={styles.eyebrow}>Burdd developers</p>
         <h1>Log in to triage</h1>
-        <label>
-          <span>Email</span>
-          <input type="email" name="email" placeholder="kai@burdd.dev" required />
-        </label>
-        <label>
-          <span>Project key</span>
-          <input name="projectKey" placeholder="BUR" required />
-        </label>
-        {status === 'error' && <p className={styles.error}>Add your project key to proceed.</p>}
-        <button type="submit">Continue</button>
-      </form>
+        <p>Sign in with GitHub to access developer tools for your assigned projects.</p>
+        {error && <p className={styles.error}>{error}</p>}
+        <button type="button" onClick={handleGitHubSignIn} disabled={loading || submitting}>
+          {loading || submitting ? 'Signing in…' : 'Continue with GitHub'}
+        </button>
+      </div>
     </div>
   );
 };
