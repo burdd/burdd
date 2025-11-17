@@ -1,6 +1,6 @@
 # Issues
 
-## Frontend
+## Sprint Board Frontend
 
 #### Tasks
 
@@ -63,13 +63,57 @@
 - /issues/:id — issue details and inline editing
 - /tickets/triage — developer triage queue
 
-## Tickets
 
-- []
-- []
-- []
-- []
-- []
+## Public Feedback Frontend
+
+#### Tasks
+
+- [ ] Implement Feedback Dashboard (Homepage)
+    - [ ] Build the main dashboard list/feed view
+    - [ ] Create the "Submit New Idea" primary CTA button
+    - [ ] Render each submission as a FeedbackCard component
+    - [ ] Display title, upvote count, comment count, category, and status on each card
+    - [ ] Implement filter controls for Category (Feature, Issue, Suggestion)
+    - [ ] Implement filter controls for Status (Under Review, In Progress, Shipped)
+    - [ ] Implement sort controls (Hot, Top, Newest)
+
+- [ ] Build Submission Form Page
+    - [ ] Create the dedicated /submit route and page
+    - [ ] Add "Title" text input
+    - [ ] Add "Category" dropdown/radio (Feature, Issue, Suggestion)
+    - [ ] Add "Description" textarea (support simple Markdown)
+    - [ ] Add (optional) attachment/screenshot upload field
+    - [ ] Implement client-side validation for required fields
+
+- [ ] Build Submission Success Page
+    - [ ] Create the confirmation screen shown after successful submission
+    - [ ] Display the unique "tracking link" for the user
+    - [ ] Add a "Copy Link" button
+
+- [ ] Implement Feedback Detail Page
+    - [ ] Build the /feedback/:id route and page
+    - [ ] Display the full submission details (title, description)
+    - [ ] Implement the UpvoteButton (stateful, increments count per session)
+    - [ ] Display the read-only StatusBadge (e.g., "In Progress")
+    - [ ] Build the CommentThread section
+        - [ ] Add a "Post a comment" form
+        - [ ] Display a read-only list of all existing comments
+
+- [ ] Create Core Reusable Components
+    - [ ] FeedbackCard (for the dashboard list)
+    - [ ] UpvoteButton (stateful)
+    - [ ] StatusBadge (props for color based on status)
+    - [ ] CategoryTag (props for color/text)
+    - [ ] CommentThread (container)
+    - [ ] Comment (individual comment display)
+
+#### Routes
+
+- / — The main feedback dashboard (list view)
+- /feedback/:id — The detail page for a single submission
+- /submit — The new feedback submission form page
+- /success — The confirmation page shown after submission
+
 
 ## Backend
 
@@ -77,33 +121,33 @@
 
 - [ ] Set up server
     - [ ] Create server directory and initialize npm project
-    - [ ] Install dependencies: cors, express, pg, nodemon, dotenv
-    - [ ] Create server.js file and make it the primary entry point to application
-    - [ ] In server.js, import express, and start app to listen and use the necessary middleware functions
+    - [ ] Install dependencies: `cors`, `express`, `pg`, `nodemon`, `dotenv`
+    - [ ] Create `server.js` file and make it the primary entry point to application
+    - [ ] In `server.js`, import `express`, and start app to listen and use the necessary middleware functions
 
 - [ ] Connect to database
     - [ ] Set up database on Render
-    - [ ] Create .env file with the relevant database connection values
-    - [ ] Create config/database.js and config/reset.js files
-    - [ ] In config/database.js, create and export pool with the relevant config values
-    - [ ] In config/reset.js, import pool and create tables
+    - [ ] Create `.env` file with the relevant database connection values
+    - [ ] Create `config/database.js` and `config/reset.js` files
+    - [ ] In `config/database.js`, create and export `pool` with the relevant config values
+    - [ ] In `config/reset.js`, import `pool` and create tables
 
 - [ ] Set up controllers
-    - [ ] Create a /controllers directory
-    - [ ] In /controllers, create javascript files for each endpoint
+    - [ ] Create a `/controllers` directory
+    - [ ] In `/controllers`, create javascript files for each endpoint
     - [ ] In each file, create and export functions to perform the different CRUD operations
 
 - [ ] Define routes
-    - [ ] Create a /routes directory
-    - [ ] In /routes, create javascript files for each endpoint
+    - [ ] Create a `/routes` directory
+    - [ ] In `/routes`, create javascript files for each endpoint
     - [ ] In each file, define routes to use the different controller functions
-    - [ ] In server.js, specify the api path to use for each router
+    - [ ] In `server.js`, specify the api path to use for each router
     - [ ] Test endpoints with postman
 
 - [ ] Connect frontend
-    - [ ] In client, create an /api directory
-    - [ ] In /api, create and export functions for all api calls
-    - [ ] Configure vite to proxy /api requests to server 
+    - [ ] In client, create an `/api` directory
+    - [ ] In `/api`, create and export functions for all api calls
+    - [ ] Configure vite to proxy `/api` requests to server 
 
 
 #### API endpoints
