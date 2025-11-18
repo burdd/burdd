@@ -249,6 +249,7 @@ Enum ticket_category {
 Table users {
   id uuid [pk, not null]
   github_id text [not null]
+  full_name text
   first_name text 
   last_name text
   email text [not null]
