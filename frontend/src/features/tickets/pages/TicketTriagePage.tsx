@@ -11,6 +11,7 @@ const TicketTriagePage = () => {
   const { baseUrl } = useApi();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [filter, setFilter] = useState<TicketStatus | 'all'>('new');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +43,15 @@ const TicketTriagePage = () => {
     if (filter === 'all') return tickets;
     return tickets.filter((ticket) => ticket.status === filter);
   }, [filter, tickets]);
+
+  const visibleTickets = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return filteredTickets;
+    return filteredTickets.filter((ticket) => {
+      const haystack = `${ticket.title} ${ticket.body} ${ticket.reporter}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [filteredTickets, searchQuery]);
 
   const statusCounts = useMemo(() => {
     return tickets.reduce(
@@ -75,26 +85,69 @@ const TicketTriagePage = () => {
         </div>
       </header>
 
+      <div className={styles.controlsRow}>
+        <div className={styles.search}>
+          <input
+            type="search"
+            aria-label="Search tickets"
+            placeholder="Search tickets…"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          {searchQuery && (
+            <button type="button" onClick={() => setSearchQuery('')} aria-label="Clear search">
+              ×
+            </button>
+          )}
+        </div>
+        <p className={styles.resultCount}>
+          {visibleTickets.length} {visibleTickets.length === 1 ? 'result' : 'results'}
+        </p>
+      </div>
+
       {loading && <p className={styles.muted}>Loading tickets…</p>}
       {error && <p className={styles.error}>{error}</p>}
 
       {!loading && !error && (
-        <ul className={styles.list}>
-          {filteredTickets.map((ticket) => (
-            <li key={ticket.id} className={styles.card}>
-              <div>
-                <p className={styles.title}>{ticket.title}</p>
-                <p className={styles.meta}>
-                  {ticket.reporter} · {new Date(ticket.createdAt).toLocaleDateString()}
-                </p>
-                <p className={styles.summary}>{ticket.body}</p>
-              </div>
-              <Tag tone={ticket.status === 'closed' ? 'success' : ticket.status === 'triaged' ? 'info' : 'warning'}>
-                {ticket.status}
-              </Tag>
-            </li>
-          ))}
-        </ul>
+        <div className={styles.tableWrapper}>
+          {visibleTickets.length === 0 ? (
+            <p className={styles.empty}>
+              No tickets match “{searchQuery}”. Try a different keyword or reset your filters.
+            </p>
+          ) : (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Reporter</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleTickets.map((ticket) => (
+                  <tr key={ticket.id}>
+                    <td>
+                      <p className={styles.title}>{ticket.title}</p>
+                      <p className={styles.summary}>{ticket.body}</p>
+                    </td>
+                    <td className={styles.meta}>
+                      {ticket.reporter}
+                      <br />
+                      <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                    </td>
+                    <td className={styles.meta}>{ticket.category.replace('_', ' ')}</td>
+                    <td>
+                      <Tag tone={ticket.status === 'closed' ? 'success' : ticket.status === 'triaged' ? 'info' : 'warning'}>
+                        {ticket.status}
+                      </Tag>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       )}
     </section>
   );
