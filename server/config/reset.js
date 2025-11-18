@@ -53,7 +53,8 @@ const createEnums = async () => {
         CREATE TYPE "ticket_status" AS ENUM (
             'new',
             'triaged',
-            'closed'
+            'closed',
+            'rejected'
         );
 
         CREATE TYPE "issue_status" AS ENUM (
