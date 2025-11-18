@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "type": "module",
-  "scripts": { 
+  "scripts": {
     "reset": "cd config && node reset.js",
     "dev": "npm run reset && nodemon server",
     "start": "node server"
@@ -16,7 +16,10 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-session": "^1.18.2",
     "nodemon": "^3.1.11",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
     "pg": "^8.16.3"
   }
 }

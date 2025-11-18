@@ -1,5 +1,5 @@
-import { pool } from "./database.js"
 import './dotenv.js'
+import { pool } from "./database.js"
 
 const dropTables = async () => {
     const query = `
@@ -83,10 +83,11 @@ const createUsersTable = async () => {
     const query = `
         CREATE TABLE "users" (
             "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-            "github_id" text NOT NULL,
+            "github_id" text NOT NULL UNIQUE,
+            "full_name" text,
             "first_name" text,
             "last_name" text,
-            "email" text NOT NULL,
+            "email" text,
             "handle" text NOT NULL,
             "avatar_url" text,
             "created_at" timestamptz DEFAULT NOW()
