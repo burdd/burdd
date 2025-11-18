@@ -54,40 +54,108 @@
   border-color: var(--color-accent);
 }
 
-.list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.controlsRow {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
-  background: var(--color-panel);
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+.search {
+  display: inline-flex;
   align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.35rem 0.5rem;
+  background: var(--color-panel);
+  min-width: 240px;
 }
 
-.title {
-  margin: 0 0 0.35rem;
-  font-weight: 600;
+.search input {
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  padding: 0.25rem 0.5rem;
+  outline: none;
+  min-width: 0;
 }
 
-.meta {
+.search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.search button {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.search button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.resultCount {
   margin: 0;
   font-size: 0.85rem;
   color: var(--color-text-muted);
 }
 
-.summary {
-  margin: 0.35rem 0 0;
+.tableWrapper {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-panel);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: var(--color-text-muted);
+}
+
+.table tbody tr:hover {
+  background: var(--color-surface);
+}
+
+.title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.summary {
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.meta {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.meta span {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
 }
 
 .muted {
@@ -98,9 +166,8 @@
   color: var(--color-danger);
 }
 
-@media (max-width: 640px) {
-  .card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.empty {
+  margin: 1.5rem;
+  text-align: center;
+  color: var(--color-text-muted);
 }
