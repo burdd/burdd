@@ -10,12 +10,12 @@ const CATEGORIES = ['All', 'feature_request', 'complaint'];
 const STATUSES = ['All', 'new', 'triaged', 'closed', 'rejected'];
 const SORT_OPTIONS = ['Top', 'Newest', 'Hot'];
 
-const CATEGORY_DISPLAY_MAP = {
+const CATEGORY_DISPLAY_MAP: Record<string, string> = {
   'feature_request': 'Feature Request',
   'complaint': 'Issue'
 };
 
-const STATUS_DISPLAY_MAP = {
+const STATUS_DISPLAY_MAP: Record<string, string> = {
   'new': 'Under Review',
   'triaged': 'In Progress',
   'closed': 'Shipped',
@@ -110,6 +110,8 @@ const FeedbackDashboardPage = () => {
                 item={item}
                 projectSlug={project.slug}
                 onUpvote={handleUpvote}
+                statusDisplayMap={STATUS_DISPLAY_MAP}
+                categoryDisplayMap={CATEGORY_DISPLAY_MAP}
               />
             ))}
           </ul>

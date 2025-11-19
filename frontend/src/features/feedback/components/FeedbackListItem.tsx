@@ -16,18 +16,25 @@ const statusToneMap: any = {
   'rejected': 'danger'
 };
 
-const CATEGORY_DISPLAY_MAP: any = {
-  'feature_request': 'Feature Request',
-  'complaint': 'Issue'
-};
-
 interface FeedbackListItemProps {
   item: PublicTicket;
   projectSlug: string;
   onUpvote: (id: string, newCount: number, newHasVoted: boolean) => void;
+  statusDisplayMap?: Record<string, string>;
+  categoryDisplayMap?: Record<string, string>;
 }
 
-const FeedbackListItem = ({ item, projectSlug, onUpvote }: FeedbackListItemProps) => {
+const FeedbackListItem = ({ 
+  item, 
+  projectSlug, 
+  onUpvote,
+  statusDisplayMap = {}, 
+  categoryDisplayMap = {} 
+}: FeedbackListItemProps) => {
+  
+  const statusLabel = statusDisplayMap[item.status] || item.status;
+  const categoryLabel = categoryDisplayMap[item.category] || item.category;
+
   return (
     <li className={styles.item}>
       <Link to={`/${projectSlug}/feedback/${item.id}`} className={styles.link}>
@@ -35,10 +42,10 @@ const FeedbackListItem = ({ item, projectSlug, onUpvote }: FeedbackListItemProps
           <h3 className={styles.title}>{item.title}</h3>
           <div className={styles.meta}>
             <Tag tone={statusToneMap[item.status] || 'neutral'}>
-              {item.status}
+              {statusLabel}
             </Tag>
             <Tag tone="neutral">
-              {CATEGORY_DISPLAY_MAP[item.category] || item.category}
+              {categoryLabel}
             </Tag>
             <span className={styles.metaText}>
               {formatTimeAgo(item.createdAt)} by {item.user.handle}
