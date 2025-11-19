@@ -108,7 +108,7 @@ const createProjectsTable = async () => {
         CREATE TABLE "projects" (
             "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
             "name" text,
-            "key" text UNIQUE,
+            "key" text,
             "created_at" timestamptz DEFAULT NOW()
         );
     `

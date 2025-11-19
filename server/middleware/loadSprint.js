@@ -10,9 +10,20 @@ export const loadSprint = asyncHandler(async (req, res, next) => {
     }
 
     const query = `
-        SELECT id, project_id, name, start, end
-        FROM sprints
-        WHERE id = $1
+        SELECT 
+            s.id, 
+            s.project_id, 
+            s.name, 
+            s.start, 
+            s.end,
+            p.id AS project_id,
+            p.name AS project_name,
+            p.key AS project_key,
+            p.created_at AS project_created_at
+        FROM sprints AS s
+        INNER JOIN projects AS p 
+            ON p.id = s.project_id
+        WHERE s.id = $1
     `
 
     const { rows } = await pool.query(query, [id])
@@ -24,7 +35,19 @@ export const loadSprint = asyncHandler(async (req, res, next) => {
         throw err
     }
 
-    req.sprint = sprint
+    req.sprint = {
+        id: sprint.id,
+        project_id: sprint.project_id,
+        name: sprint.name,
+        start: sprint.start,
+        end: sprint.end
+    }
+    req.project = {
+        id: sprint.project_id,
+        name: sprint.project_name,
+        key: sprint.project_key,
+        created_at: sprint.project_created_at
+    }
 
     return next()
 })

@@ -5,7 +5,13 @@ import passport from 'passport'
 import session from 'express-session'
 import { GitHub } from './config/auth.js'
 import { pool } from './config/database.js'
-import authRoutes from './routes/auth.js'
+import authRouter from './routes/auth.js'
+import meRouter from './routes/me.js'
+import projectsRouter from './routes/projects.js'
+import sprintsRouter from './routes/sprints.js'
+import issuesRouter from './routes/issues.js'
+import ticketsRouter from './routes/tickets.js'
+import { requireAuth } from './middleware/requireAuth.js'
 import { notFoundHandler } from './middleware/notFoundHandler.js'
 import { errorHandler } from './middleware/errorHandler.js'
 
@@ -49,7 +55,14 @@ app.use(cors({
     credentials: true
 }))
 
-app.use('/auth', authRoutes)
+app.use('/auth', authRouter)
+
+app.use(requireAuth)
+app.use('/me', meRouter)
+app.use('/projects', projectsRouter)
+app.use('/sprints', sprintsRouter)
+app.use('/issues', issuesRouter)
+app.use('/tickets', ticketsRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)

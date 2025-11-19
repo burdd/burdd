@@ -199,11 +199,15 @@
     - PATCH /issues/:issueId — update issue (change status, change sprint)
     - DELETE /issues/:issueId — delete issue
 
+- /issues/:issueId/tickets
+    - GET /issues/:issueId/tickets - list tickets for issues
+
 - /tickets
     - GET /tickets/:ticketId — get ticket
     - PATCH /tickets/:ticketId — update ticket (change status)
 
 - /tickets/:ticketId/issues
+    - GET /tickets/:ticketId/issues - list issues for ticket
     - POST /tickets/:ticketId/issues — link issue to ticket { issueId }
 
 - /tickets/:ticketId/comments
@@ -261,7 +265,7 @@ Table users {
 Table projects {
   id uuid [pk, not null]
   name text
-  key text [unique]
+  key text
   created_at timestamptz
 }
 
