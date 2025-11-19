@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useApi } from '../../../contexts/ApiContext';
+import { requestJson } from '../../../lib/fetcher';
 import type { PublicComment } from '../types';
 import styles from './CommentThread.module.css';
 
@@ -22,18 +26,52 @@ const Comment = ({ comment }: CommentProps) => (
 );
 
 interface CommentThreadProps {
+  ticketId: string;
   comments: PublicComment[];
-  onAddComment: (body: string) => void;
+  onAddComment: (comment: PublicComment) => void;
 }
 
-const CommentThread = ({ comments, onAddComment }: CommentThreadProps) => {
+const CommentThread = ({ ticketId, comments, onAddComment }: CommentThreadProps) => {
   const [newComment, setNewComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const { user } = useAuth();
+  const { baseUrl } = useApi();
+  const location = useLocation();
 
-  const handleSubmitComment = (e: React.FormEvent<HTMLFormElement>) => {
+  // Generate the redirect URL for the login button
+  const currentPath = location.pathname + location.search;
+  const loginUrl = `/login?redirectTo=${encodeURIComponent(currentPath)}`;
+
+  const handleSubmitComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      onAddComment(newComment);
+    if (!newComment.trim() || !user) return;
+
+    setSubmitting(true);
+    try {
+      // In a real app, we would POST to the API like this:
+      // const response = await requestJson<PublicComment>(`${baseUrl}/tickets/${ticketId}/comments`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ body: newComment })
+      // });
+      
+      // Since we are mocking, we construct the comment object manually
+      const mockComment: PublicComment = {
+        id: `c-${Date.now()}`,
+        user: {
+          handle: user.name, // Use logged in user's name
+          avatar_url: user.avatarUrl || ''
+        },
+        body: newComment
+      };
+
+      // Update local state immediately
+      onAddComment(mockComment);
       setNewComment("");
+    } catch (error) {
+      console.error("Failed to post comment", error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -43,21 +81,32 @@ const CommentThread = ({ comments, onAddComment }: CommentThreadProps) => {
         Comments ({comments.length})
       </h2>
       
-      <form onSubmit={handleSubmitComment} className={styles.form}>
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          className={styles.textarea}
-          rows={3}
-          placeholder="Add your comment..."
-        ></textarea>
-        <button
-          type="submit"
-          className={styles.submitButton}
-        >
-          Post Comment
-        </button>
-      </form>
+      {user ? (
+        <form onSubmit={handleSubmitComment} className={styles.form}>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            className={styles.textarea}
+            rows={3}
+            placeholder="Add your comment..."
+            disabled={submitting}
+          ></textarea>
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={submitting}
+          >
+            {submitting ? 'Posting...' : 'Post Comment'}
+          </button>
+        </form>
+      ) : (
+        <div className={styles.loginPrompt}>
+            <p className={styles.loginText}>Have something to add?</p>
+            <Link to={loginUrl} className={styles.loginButton}>
+                Sign in to comment
+            </Link>
+        </div>
+      )}
       
       <div className={styles.list}>
         {comments.length > 0 ? (

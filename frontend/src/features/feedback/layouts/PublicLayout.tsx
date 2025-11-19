@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Outlet, useParams, Link } from 'react-router-dom';
+import { Outlet, useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useApi } from '../../../contexts/ApiContext';
+import { useAuth } from '../../../contexts/AuthContext'; 
 import styles from './PublicLayout.module.css';
 
 const IconSearch = ({ className }: { className: string }) => (
@@ -15,43 +16,74 @@ interface HeaderProps {
   project: { name: string; slug: string };
   searchTerm: string;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  user: any;
+  onLogout: () => void;
+  currentPath: string;
 }
 
-const Header = ({ project, searchTerm, onSearchChange }: HeaderProps) => (
-  <header className={styles.header}>
-    <nav className={styles.nav}>
-      <div className={styles.brand}>
-        <span className={styles.brandBurdd}>BURDD</span>
-        <span className={styles.brandSlash}>/</span>
-        <span className={styles.brandProject}>{project.name} Feedback</span>
-      </div>
-      <div className={styles.searchWrapper}>
-        <div className={styles.searchIcon}>
-          <IconSearch className="w-5 h-5" />
+const Header = ({ project, searchTerm, onSearchChange, user, onLogout, currentPath }: HeaderProps) => {
+  // Construct login URL with redirect back to current page
+  const loginUrl = `/login?redirectTo=${encodeURIComponent(currentPath)}`;
+
+  return (
+    <header className={styles.header}>
+      <nav className={styles.nav}>
+        <div className={styles.brand}>
+          <span className={styles.brandBurdd}>BURDD</span>
+          <span className={styles.brandSlash}>/</span>
+          <span className={styles.brandProject}>{project.name} Feedback</span>
         </div>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={onSearchChange}
-          className={styles.searchInput}
-          placeholder="Search by title or description..."
-        />
-      </div>
-      <Link
-        to={`/${project.slug}/feedback/submit`}
-        className={styles.submitButton}
-      >
-        <IconPlus className="w-5 h-5" />
-        Submit
-      </Link>
-    </nav>
-  </header>
-);
+        <div className={styles.searchWrapper}>
+          <div className={styles.searchIcon}>
+            <IconSearch className="w-5 h-5" />
+          </div>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={onSearchChange}
+            className={styles.searchInput}
+            placeholder="Search by title or description..."
+          />
+        </div>
+        
+        <div className={styles.actions}>
+          <Link
+              to={`/${project.slug}/feedback/submit`}
+              className={styles.submitButton}
+          >
+              <IconPlus className="w-5 h-5" />
+              Submit
+          </Link>
+
+          {user ? (
+            <div className={styles.userWidget}>
+                <img src={user.avatarUrl} alt={user.name} className={styles.userAvatar} />
+                <div className={styles.userDetails}>
+                   <span className={styles.userName}>{user.name}</span>
+                   <button onClick={onLogout} className={styles.logoutBtn}>Log out</button>
+                </div>
+            </div>
+          ) : (
+              <Link to={loginUrl} className={styles.headerLoginButton}>
+                  Sign In
+              </Link>
+          )}
+        </div>
+      </nav>
+    </header>
+  );
+};
 
 const PublicLayout = () => {
   const { projectSlug } = useParams<{ projectSlug: string }>();
   const [searchTerm, setSearchTerm] = useState('');
   const { baseUrl } = useApi();
+  const { user, logout } = useAuth();
+  const location = useLocation();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const project = useMemo(() => ({
     name: projectSlug ? projectSlug.charAt(0).toUpperCase() + projectSlug.slice(1) : 'Project',
@@ -70,6 +102,9 @@ const PublicLayout = () => {
         project={project}
         searchTerm={searchTerm}
         onSearchChange={(e) => setSearchTerm(e.target.value)}
+        user={user}
+        onLogout={handleLogout}
+        currentPath={location.pathname + location.search}
       />
       <main className={styles.main}>
         <Outlet context={contextValue} />

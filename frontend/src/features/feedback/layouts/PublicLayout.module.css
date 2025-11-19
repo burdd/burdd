@@ -62,7 +62,7 @@
 
 .searchWrapper {
   flex: 1 1 0%;
-  max-width: 36rem;
+  max-width: 24rem; /* Slightly reduced to give space to user widget */
   position: relative;
 }
 
@@ -84,6 +84,18 @@
   border-radius: 0.5rem;
   background-color: var(--fb-panel);
   color: var(--fb-text);
+  transition: border-color 0.2s;
+}
+.searchInput:focus {
+    outline: none;
+    border-color: var(--fb-accent);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .submitButton {
@@ -96,6 +108,76 @@
   font-weight: 600;
   border-radius: 0.5rem;
   text-decoration: none;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+.submitButton:hover {
+    background-color: #4338ca;
+}
+
+.headerLoginButton {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--fb-text);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--fb-border);
+    background-color: #fff;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+.headerLoginButton:hover {
+    background-color: #f9fafb;
+}
+
+/* User Widget Styles - Matching provided screenshot */
+.userWidget {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.35rem 0.85rem 0.35rem 0.35rem;
+    border: 1px solid var(--fb-border);
+    border-radius: 2rem; /* Pill shape */
+    background-color: #ffffff;
+    flex-shrink: 0;
+}
+
+.userAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.userDetails {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    padding-right: 0.25rem;
+}
+
+.userName {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--fb-text);
+    white-space: nowrap;
+}
+
+.logoutBtn {
+    font-size: 0.75rem;
+    color: var(--fb-text-muted);
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    margin-top: -2px;
+}
+.logoutBtn:hover {
+    text-decoration: underline;
+    color: #dc2626;
 }
 
 .main {

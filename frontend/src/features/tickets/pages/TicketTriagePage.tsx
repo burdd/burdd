@@ -140,8 +140,6 @@ const TicketTriagePage = () => {
               <tbody>
                 {visibleTickets.map((ticket) => {
                   const projectSlug = projectLookup.get(ticket.projectId) || 'bur';
-                  const publicTicketId = "1";
-                  
                   return (
                     <tr key={ticket.id}>
                       <td>
@@ -160,10 +158,6 @@ const TicketTriagePage = () => {
                         </Tag>
                       </td>
                       <td>
-                        {/* Link to the public detail page. 
-                           NOTE: We are using the ticket.id from the triage list.
-                           Make sure `public-tickets.json` has an entry with this ID! 
-                        */}
                         <Link
                           to={`/${projectSlug}/feedback/${ticket.id}`} 
                           target="_blank"

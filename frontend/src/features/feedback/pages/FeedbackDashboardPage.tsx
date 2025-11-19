@@ -110,6 +110,7 @@ const FeedbackDashboardPage = () => {
                 item={item}
                 projectSlug={project.slug}
                 onUpvote={handleUpvote}
+                // Pass the maps down
                 statusDisplayMap={STATUS_DISPLAY_MAP}
                 categoryDisplayMap={CATEGORY_DISPLAY_MAP}
               />
