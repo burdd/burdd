@@ -1,0 +1,87 @@
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import styles from './FeedbackSubmitPage.module.css';
+
+const IconArrowLeft = ({ className }: { className: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+);
+
+const CATEGORY_DISPLAY_MAP: any = { 'feature_request': 'Feature Request', 'complaint': 'Issue' };
+
+const FormInput = ({ id, label, ...props }: any) => (
+  <div><label htmlFor={id} className={styles.label}>{label}</label><input id={id} className={styles.input} {...props} /></div>
+);
+
+const FormTextarea = ({ id, label, ...props }: any) => (
+  <div><label htmlFor={id} className={styles.label}>{label}</label><textarea id={id} className={styles.textarea} {...props} /></div>
+);
+
+const FeedbackSubmitPage = () => {
+  const { projectSlug } = useParams<{ projectSlug: string }>();
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("feature_request");
+  const [body, setBody] = useState("");
+  const [error, setError] = useState("");
+  
+  const [steps, setSteps] = useState("");
+  const [expected, setExpected] = useState("");
+  const [actual, setActual] = useState("");
+  const [environment, setEnvironment] = useState("");
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!title.trim() || !body.trim()) { setError("Title and description are required."); return; }
+    if (category === 'complaint' && (!steps.trim() || !expected.trim() || !actual.trim())) { setError("For issues, please fill in steps, expected, and actual results."); return; }
+    
+    const newTicket = { id: crypto.randomUUID(), title, category, body, steps, expected, actual, environment };
+    navigate(`/${projectSlug}/feedback/success/${newTicket.id}`);
+  };
+
+  const attachmentPlaceholder = category === 'complaint' ? "Upload screenshot of the issue" : "Upload a concept or mockup (optional)";
+
+  return (
+    <div className={styles.container}>
+      <button onClick={() => navigate(`/${projectSlug}/feedback`)} className={styles.backLink}><IconArrowLeft className="w-4 h-4" /> Back to Dashboard</button>
+      <div className={styles.panel}>
+        <h1 className={styles.title}>Submit new idea</h1>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          {error && <div className={styles.errorBox}>{error}</div>}
+          <div>
+            <label htmlFor="category" className={styles.label}>What kind of feedback is this?</label>
+            <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className={styles.select}>
+              <option value="feature_request">{CATEGORY_DISPLAY_MAP['feature_request']}</option>
+              <option value="complaint">{CATEGORY_DISPLAY_MAP['complaint']}</option>
+            </select>
+          </div>
+          <FormInput id="title" label="Title" type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} placeholder={category === 'complaint' ? 'e.g., "Video player freezes on Android"' : 'e.g., "Add bookmarks to main nav bar"'} />
+          <FormTextarea id="body" label={category === 'complaint' ? 'Please describe the issue' : 'Please describe your idea'} value={body} onChange={(e: any) => setBody(e.target.value)} rows={4} placeholder={category === 'complaint' ? 'What are you experiencing?' : 'How would this help you?'} />
+          {category === 'complaint' && (
+            <div className={styles.complaintBox}>
+              <h3 className={styles.complaintTitle}>Issue Details</h3>
+              <FormInput id="environment" label="Environment (Optional)" type="text" value={environment} onChange={(e: any) => setEnvironment(e.target.value)} placeholder="e.g., Chrome, iOS 17, Android 13" />
+              <FormTextarea id="steps" label="Steps to Reproduce" value={steps} onChange={(e: any) => setSteps(e.target.value)} rows={3} placeholder="1. Go to...\n2. Click on...\n3. See error..." />
+              <FormInput id="expected" label="Expected Result" type="text" value={expected} onChange={(e: any) => setExpected(e.target.value)} placeholder="What did you expect to happen?" />
+              <FormInput id="actual" label="Actual Result" type="text" value={actual} onChange={(e: any) => setActual(e.target.value)} placeholder="What actually happened?" />
+            </div>
+          )}
+          <div>
+            <label className={styles.label}>Attachments (Screenshots, etc.)</label>
+            <div className={styles.attachmentBox}>
+              <div className="space-y-1 text-center">
+                <div className={styles.attachmentTextWrap}>
+                  <label htmlFor="file-upload" className={styles.attachmentLink}><span>Upload a file</span><input id="file-upload" name="file-upload" type="file" className="sr-only" /></label>
+                  <p className="pl-1">or drag and drop</p>
+                </div>
+                <p className={styles.attachmentHint}>{attachmentPlaceholder}</p>
+              </div>
+            </div>
+          </div>
+          <div className={styles.submitRow}><button type="submit" className={styles.submitButton}>Submit</button></div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default FeedbackSubmitPage;

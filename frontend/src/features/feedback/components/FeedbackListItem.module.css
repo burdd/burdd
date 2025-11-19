@@ -1,0 +1,60 @@
+.item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  transition: background-color 150ms ease;
+}
+
+.item:hover {
+  background-color: #f9fafb;
+}
+
+.link {
+  flex: 1 1 0%;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.main {
+  min-width: 0;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--fb-text, #111827);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.metaText {
+  font-size: 0.875rem;
+  color: var(--fb-text-muted, #6b7280);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+.comments {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--fb-text-muted, #6b7280);
+}
+
+.commentsCount {
+  font-size: 0.875rem;
+  font-weight: 600;
+}

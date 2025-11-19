@@ -1,0 +1,10 @@
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: var(--fb-panel, #ffffff);
+  border-radius: 1rem;
+  border: 1px solid var(--fb-border, #e5e7eb);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
