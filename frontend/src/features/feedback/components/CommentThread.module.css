@@ -1,0 +1,87 @@
+.thread {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--fb-border, #e5e7eb);
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--fb-text, #111827);
+  margin-bottom: 1rem;
+}
+
+.form {
+  margin-bottom: 1.5rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--fb-border, #d1d5db);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  background-color: var(--fb-panel, #ffffff);
+  color: var(--fb-text, #111827);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.textarea::placeholder {
+  color: #9ca3af;
+}
+
+.submitButton {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--fb-accent, #4f46e5);
+  color: var(--fb-accent-text, #ffffff);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: background-color 150ms ease;
+  border: none;
+  cursor: pointer;
+}
+.submitButton:hover {
+  background-color: #4338ca;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--fb-border, #e5e7eb);
+}
+.list > :last-child {
+  border-bottom: none;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
+  flex-shrink: 0;
+}
+
+.commentAuthor {
+  font-weight: 600;
+  color: var(--fb-text, #111827);
+}
+
+.commentBody {
+  margin-top: 0.25rem;
+  color: var(--fb-text-muted, #374151);
+  line-height: 1.6;
+}
+
+.emptyText {
+  color: var(--fb-text-muted, #6b7280);
+  padding: 1rem 0;
+}

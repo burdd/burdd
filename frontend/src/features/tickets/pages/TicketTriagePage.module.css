@@ -171,3 +171,13 @@
   text-align: center;
   color: var(--color-text-muted);
 }
+
+.actionLink {
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.actionLink:hover {
+  text-decoration: underline;
+}

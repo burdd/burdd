@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import Tag from '@components/common/Tag/Tag';
-import { useApi } from '@contexts/ApiContext';
-import { getList } from '@lib/fetcher';
-import type { Ticket, TicketStatus } from '@/types/api';
+import { Link } from 'react-router-dom';
+import Tag from '../../../components/common/Tag/Tag';
+import { useApi } from '../../../contexts/ApiContext';
+import { getList } from '../../../lib/fetcher';
+import type { Ticket, TicketStatus, Project } from '../../../types/api';
 import styles from './TicketTriagePage.module.css';
 
 const filterOptions: Array<TicketStatus | 'all'> = ['all', 'new', 'triaged', 'closed'];
@@ -10,6 +11,7 @@ const filterOptions: Array<TicketStatus | 'all'> = ['all', 'new', 'triaged', 'cl
 const TicketTriagePage = () => {
   const { baseUrl } = useApi();
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [filter, setFilter] = useState<TicketStatus | 'all'>('new');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -19,10 +21,14 @@ const TicketTriagePage = () => {
     let ignore = false;
     setLoading(true);
 
-    getList<Ticket>(`${baseUrl}/tickets.json`)
-      .then((data) => {
+    Promise.all([
+      getList<Ticket>(`${baseUrl}/tickets.json`),
+      getList<Project>(`${baseUrl}/projects.json`),
+    ])
+      .then(([ticketsData, projectsData]) => {
         if (ignore) return;
-        setTickets(data);
+        setTickets(ticketsData);
+        setProjects(projectsData);
         setError(null);
       })
       .catch((err) => {
@@ -38,6 +44,12 @@ const TicketTriagePage = () => {
       ignore = true;
     };
   }, [baseUrl]);
+
+  const projectLookup = useMemo(() => {
+    const map = new Map<string, string>();
+    projects.forEach((p) => map.set(p.id, p.key.toLowerCase()));
+    return map;
+  }, [projects]);
 
   const filteredTickets = useMemo(() => {
     if (filter === 'all') return tickets;
@@ -122,28 +134,47 @@ const TicketTriagePage = () => {
                   <th>Reporter</th>
                   <th>Category</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {visibleTickets.map((ticket) => (
-                  <tr key={ticket.id}>
-                    <td>
-                      <p className={styles.title}>{ticket.title}</p>
-                      <p className={styles.summary}>{ticket.body}</p>
-                    </td>
-                    <td className={styles.meta}>
-                      {ticket.reporter}
-                      <br />
-                      <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
-                    </td>
-                    <td className={styles.meta}>{ticket.category.replace('_', ' ')}</td>
-                    <td>
-                      <Tag tone={ticket.status === 'closed' ? 'success' : ticket.status === 'triaged' ? 'info' : 'warning'}>
-                        {ticket.status}
-                      </Tag>
-                    </td>
-                  </tr>
-                ))}
+                {visibleTickets.map((ticket) => {
+                  const projectSlug = projectLookup.get(ticket.projectId) || 'bur';
+                  const publicTicketId = "1";
+                  
+                  return (
+                    <tr key={ticket.id}>
+                      <td>
+                        <p className={styles.title}>{ticket.title}</p>
+                        <p className={styles.summary}>{ticket.body}</p>
+                      </td>
+                      <td className={styles.meta}>
+                        {ticket.reporter}
+                        <br />
+                        <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                      </td>
+                      <td className={styles.meta}>{ticket.category.replace('_', ' ')}</td>
+                      <td>
+                        <Tag tone={ticket.status === 'closed' ? 'success' : ticket.status === 'triaged' ? 'info' : 'warning'}>
+                          {ticket.status}
+                        </Tag>
+                      </td>
+                      <td>
+                        {/* Link to the public detail page. 
+                           NOTE: We are using the ticket.id from the triage list.
+                           Make sure `public-tickets.json` has an entry with this ID! 
+                        */}
+                        <Link
+                          to={`/${projectSlug}/feedback/${ticket.id}`} 
+                          target="_blank"
+                          className={styles.actionLink}
+                        >
+                          View Public
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

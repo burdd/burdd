@@ -1,0 +1,44 @@
+.container {
+  width: 100%;
+  max-width: 72rem;
+  margin: 2rem auto 0;
+  padding: 0 1rem;
+}
+
+.listContainer {
+  background-color: var(--fb-panel, #ffffff);
+  border-radius: 1rem;
+  border: 1px solid var(--fb-border, #e5e7eb);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  divide-y: 1px solid var(--fb-border, #e5e7eb);
+}
+
+.metaText {
+  padding: 2rem;
+  text-align: center;
+  color: var(--fb-text-muted, #6b7280);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.emptyTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--fb-text, #111827);
+}
+
+.emptyText {
+  color: var(--fb-text-muted, #6b7280);
+  margin-top: 0.5rem;
+}
