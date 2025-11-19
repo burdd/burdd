@@ -6,6 +6,8 @@ import session from 'express-session'
 import { GitHub } from './config/auth.js'
 import { pool } from './config/database.js'
 import authRoutes from './routes/auth.js'
+import { notFoundHandler } from './middleware/notFoundHandler.js'
+import { errorHandler } from './middleware/errorHandler.js'
 
 const app = express()
 
@@ -48,6 +50,9 @@ app.use(cors({
 }))
 
 app.use('/auth', authRoutes)
+
+app.use(notFoundHandler)
+app.use(errorHandler)
 
 const PORT = process.env.PORT 
 app.listen(PORT, () => {
