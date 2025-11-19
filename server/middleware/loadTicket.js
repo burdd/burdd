@@ -10,9 +10,27 @@ export const loadTicket = asyncHandler(async (req, res, next) => {
     }
 
     const query = `
-        SELECT id, project_id, user_id, title, body, category, expected, actual, steps, environment, status, created_at
-        FROM tickets
-        WHERE id = $1
+        SELECT 
+            t.id, 
+            t.project_id, 
+            t.user_id, 
+            t.title, 
+            t.body, 
+            t.category, 
+            t.expected, 
+            t.actual, 
+            t.steps, 
+            t.environment, 
+            t.status, 
+            t.created_at,
+            p.id AS project_id,
+            p.name AS project_name,
+            p.key AS project_key,
+            p.created_at AS project_created_at
+        FROM tickets AS t
+        INNER JOIN projects AS p
+            ON p.id = t.project_id
+        WHERE t.id = $1
     `
 
     const { rows } = await pool.query(query, [id])
@@ -24,7 +42,26 @@ export const loadTicket = asyncHandler(async (req, res, next) => {
         throw err
     }
 
-    req.ticket = ticket
+    req.ticket = {
+        id: ticket.id,
+        project_id: ticket.project_id,
+        user_id: ticket.user_id,
+        title: ticket.title,
+        body: ticket.body,
+        category: ticket.category,
+        expected: ticket.expected,
+        actual: ticket.actual,
+        steps: ticket.steps,
+        environment: ticket.environment,
+        status: ticket.status,
+        created_at: ticket.created_at
+    }
+    req.project = {
+        id: ticket.project_id,
+        name: ticket.project_name,
+        key: ticket.project_key,
+        created_at: ticket.project_created_at
+    }
 
     return next()
 })
