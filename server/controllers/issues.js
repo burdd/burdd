@@ -178,3 +178,30 @@ export const linkIssueToTicket = asyncHandler(async (req, res) => {
 
     return res.status(201).json({ link: rows[0] })
 })
+
+export const getTicketsForIssue = asyncHandler(async (req, res) => {
+    const issueId = req.issue.id
+
+    const query = `
+        SELECT 
+            t.id,
+            t.project_id,
+            t.user_id,
+            t.title,
+            t.body,
+            t.category,
+            t.expected,
+            t.actual,
+            t.steps,
+            t.environment,
+            t.status,
+            t.created_at
+        FROM tickets AS t
+        INNER JOIN ticket_issues AS ti 
+            ON t.id = ti.ticket_id
+        WHERE ti.issue_id = $1
+        ORDER BY t.created_at DESC
+    `
+    const { rows } = await pool.query(query, [issueId])
+    return res.status(200).json({ tickets: rows })
+})

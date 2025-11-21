@@ -1,12 +1,12 @@
 import { API_BASE_URL, fetchJson } from './config';
-async function getUserById(userId, projectId) {
+async function getUserById(userId) {
     try {
-        const response = await fetchJson(`${API_BASE_URL}/projects/${projectId}/members/${userId}`);
+        const response = await fetchJson(`${API_BASE_URL}/users/${userId}`);
         return {
-            id: response.member.user_id,
-            name: response.member.full_name || response.member.handle,
-            handle: response.member.handle,
-            avatar_url: response.member.avatar_url || undefined,
+            id: response.user.id,
+            name: response.user.full_name || response.user.handle,
+            handle: response.user.handle,
+            avatarUrl: response.user.avatar_url || undefined,
         };
     }
     catch {
@@ -14,15 +14,44 @@ async function getUserById(userId, projectId) {
             id: userId,
             name: 'Unknown User',
             handle: 'unknown',
-            avatar_url: undefined,
+            avatarUrl: undefined,
         };
     }
 }
 async function transformTicket(t) {
-    const [user, issuesResponse] = await Promise.all([
-        getUserById(t.user_id, t.project_id),
-        fetchJson(`${API_BASE_URL}/tickets/${t.id}/issues`).catch(() => ({ issues: [] }))
+    const [user, issuesResponse, commentsResponse] = await Promise.all([
+        getUserById(t.user_id),
+        fetchJson(`${API_BASE_URL}/tickets/${t.id}/issues`).catch(() => ({ issues: [] })),
+        fetchJson(`${API_BASE_URL}/tickets/${t.id}/comments`).catch(() => ({ comments: [] }))
     ]);
+    
+    const relatedIssues = issuesResponse.issues.map(issue => ({
+        id: issue.id,
+        title: issue.title,
+        status: issue.status,
+        description: issue.description,
+        sprintId: issue.sprint_id,
+        projectId: issue.project_id,
+        assigneeId: issue.assignee_id,
+        createdAt: issue.created_at
+    }));
+    
+    const commentsWithUsers = await Promise.all(
+        commentsResponse.comments.map(async (comment) => {
+            const commentUser = await getUserById(comment.user_id);
+            return {
+                id: comment.id,
+                body: comment.body,
+                userId: comment.user_id,
+                createdAt: comment.created_at,
+                user: {
+                    handle: commentUser.handle,
+                    avatarUrl: commentUser.avatarUrl
+                }
+            };
+        })
+    );
+    
     return {
         id: t.id,
         projectId: t.project_id,
@@ -31,11 +60,12 @@ async function transformTicket(t) {
         category: t.category || 'complaint',
         user: {
             handle: user.handle,
-            avatar_url: user.avatar_url
+            avatarUrl: user.avatarUrl
         },
         createdAt: t.created_at,
         body: t.body,
-        relatedIssueIds: issuesResponse.issues.map(issue => issue.id),
+        relatedIssues,
+        comments: commentsWithUsers,
         ...(t.upvote_count !== undefined && { upvoteCount: parseInt(t.upvote_count, 10) }),
         ...(t.has_voted !== undefined && { hasVoted: t.has_voted }),
     };

@@ -17,7 +17,7 @@ const statusToneMap= {
 
 const FeedbackListItem = ({ 
   item, 
-  projectSlug, 
+  projectId, 
   onUpvote,
   statusDisplayMap = {}, 
   categoryDisplayMap = {} 
@@ -28,7 +28,7 @@ const FeedbackListItem = ({
 
   return (
     <li className={styles.item}>
-      <Link to={`/${projectSlug}/feedback/${item.id}`} className={styles.link}>
+      <Link to={`/projects/${projectId}/feedback/${item.id}`} className={styles.link}>
         <div className={styles.main}>
           <h3 className={styles.title}>{item.title}</h3>
           <div className={styles.meta}>
@@ -48,7 +48,7 @@ const FeedbackListItem = ({
       <div className={styles.actions}>
         <div className={styles.comments}>
           <IconMessageSquare className="w-4 h-4" />
-          <span className={styles.commentsCount}>{item.comments.length}</span>
+          <span className={styles.commentsCount}>{item.comments?.length || 0}</span>
         </div>
         <UpvoteButton 
           initialUpvoteCount={item.upvoteCount}

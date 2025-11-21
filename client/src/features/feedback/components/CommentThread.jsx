@@ -4,7 +4,7 @@ import styles from './CommentThread.module.css';
 const Comment = ({ comment }) => (
   <div className={styles.comment}>
     <img
-      src={comment.user.avatar_url}
+      src={comment.user.avatarUrl}
       alt={comment.user.handle}
       className={styles.avatar}
       onError={(e) => { (e.target).src = 'https=?'; }}

@@ -1,7 +1,8 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState, useCallback } from 'react';
-import { useParams, Link, useOutletContext } from 'react-router-dom';
-import { getTicketById } from '@/api';
+import { useParams, Link } from 'react-router-dom';
+import { getTicketById, createTicketComment } from '@/api';
+import { useAuth } from '@contexts/AuthContext';
 import { formatTimeAgo } from '../utils/time';
 import UpvoteButton from '../components/UpvoteButton';
 import CommentThread from '../components/CommentThread';
@@ -15,8 +16,8 @@ const CATEGORY_DISPLAY_MAP = { 'feature_request': 'Feature Request', 'complaint'
 const STATUS_DISPLAY_MAP = { 'new': 'Under Review', 'triaged': 'In Progress', 'closed': 'Shipped', 'rejected': 'Rejected' };
 const statusToneMap = { 'new': 'warning', 'triaged': 'info', 'closed': 'success', 'rejected': 'danger' };
 const FeedbackDetailPage = () => {
-    const { ticketId } = useParams();
-    const { project } = useOutletContext();
+    const { ticketId, projectId } = useParams();
+    const { user } = useAuth();
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -47,7 +48,7 @@ const FeedbackDetailPage = () => {
         });
         return () => { ignore = true; };
     }, [ticketId]);
-    const trackingLink = `burdd.com/${project.slug}/feedback/${item?.id}`;
+    const trackingLink = `burdd.com/projects/${projectId}/feedback/${item?.id}`;
     const copyToClipboard = () => {
         navigator.clipboard.writeText(trackingLink).then(() => {
             setCopied(true);
@@ -58,13 +59,25 @@ const FeedbackDetailPage = () => {
         setItem(currentItem => currentItem ? { ...currentItem, upvoteCount: newCount, hasVoted: newHasVoted } : null);
     }, []);
     const handleAddComment = useCallback((commentBody) => {
-        const newComment = {
-            id: `c${new Date().getTime()}`,
-            user: { handle: 'GuestUser', avatar_url: 'https://placehold.co/40x40/A1A1AA/FFFFFF?text=G' },
-            body: commentBody,
-        };
-        setItem(currentItem => currentItem ? { ...currentItem, comments: [...currentItem.comments, newComment] } : null);
-    }, []);
+        if (!ticketId || !user) return;
+        
+        createTicketComment(ticketId, commentBody)
+            .then((response) => {
+                const newComment = {
+                    id: response.comment.id,
+                    user: { 
+                        handle: user.handle, 
+                        avatarUrl: user.avatarUrl 
+                    },
+                    body: commentBody,
+                    createdAt: response.comment.created_at
+                };
+                setItem(currentItem => currentItem ? { ...currentItem, comments: [...currentItem.comments, newComment] } : null);
+            })
+            .catch((err) => {
+                console.error('Failed to add comment:', err);
+            });
+    }, [ticketId, user]);
     if (loading)
         return _jsx("p", { className: styles.metaText, children: "Loading ticket..." });
     if (error)
@@ -73,7 +86,7 @@ const FeedbackDetailPage = () => {
         return _jsx("p", { className: styles.metaText, children: "Ticket not found." });
     return (
     <div className={styles.container}>
-      <Link to={`/${project.slug}/feedback`} className={styles.backLink}><IconArrowLeft className="w-4 h-4" /> Back to Dashboard</Link>
+      <Link to={`/projects/${projectId}/feedback`} className={styles.backLink}><IconArrowLeft className="w-4 h-4" /> Back to Dashboard</Link>
       <div className={styles.panel}>
         <div className={styles.header}>
           <div>

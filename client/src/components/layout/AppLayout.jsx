@@ -1,5 +1,4 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import SidebarNav from '@components/navigation/SidebarNav';
 import ProjectSwitcher from '@components/navigation/ProjectSwitcher';
 import { useAuth } from '@contexts/AuthContext';
 import styles from './AppLayout.module.css';
@@ -15,12 +14,10 @@ const AppLayout = () => {
 
   return (
     <div className={styles.shell}>
-      <SidebarNav />
       <div className={styles.mainRegion}>
         <header className={styles.header}>
           <div>
-            <p className={styles.eyebrow}>Sprint control</p>
-            <h1 className={styles.title}>Burdd</h1>
+            <p className={styles.eyebrow}>Burdd</p>
           </div>
           <div className={styles.headerActions}>
             <ProjectSwitcher />

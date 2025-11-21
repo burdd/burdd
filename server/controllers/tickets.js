@@ -56,7 +56,7 @@ export const createTicketInProject = asyncHandler(async (req, res) => {
             expected, 
             actual, 
             steps, 
-            environment, 
+            environment
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id, project_id, user_id, title, body, category, expected, actual, steps, environment, status, created_at

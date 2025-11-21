@@ -5,45 +5,29 @@ import ProjectsListPage from '@features/projects/pages/ProjectsListPage';
 import ProjectDetailsPage from '@features/projects/pages/ProjectDetailsPage';
 import SprintBoardPage from '@features/sprints/pages/SprintBoardPage';
 import IssueDetailsPage from '@features/issues/pages/IssueDetailsPage';
-import TicketTriagePage from '@features/tickets/pages/TicketTriagePage';
 import NotFoundPage from './pages/NotFoundPage';
 import { AuthProvider } from '@contexts/AuthContext';
-
-import PublicLayout from '@features/feedback/layouts/PublicLayout';
 import FeedbackDashboardPage from '@features/feedback/pages/FeedbackDashboardPage';
 import FeedbackDetailPage from '@features/feedback/pages/FeedbackDetailPage';
 import FeedbackSubmitPage from '@features/feedback/pages/FeedbackSubmitPage';
-import FeedbackSuccessPage from '@features/feedback/pages/FeedbackSuccessPage';
 
 const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
           <Routes>
-            <Route path="/:projectSlug/feedback" element={<PublicLayout />}>
-              <Route index element={<FeedbackDashboardPage />} />
-              <Route path=":ticketId" element={<FeedbackDetailPage />} />
-            </Route>
-            <Route
-              path="/:projectSlug/feedback/submit"
-              element={<FeedbackSubmitPage />}
-            />
-            <Route
-              path="/:projectSlug/feedback/success/:ticketId"
-              element={<FeedbackSuccessPage />}
-            />
-
             <Route path="/login" element={<LoginPage />} />
             <Route element={<AppLayout />}>
               <Route index element={<Navigate to="/projects" replace />} />
               <Route path="/projects" element={<ProjectsListPage />} />
               <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
+              <Route path="/projects/:projectId/feedback" element={<FeedbackDashboardPage />} />
+              <Route path="/projects/:projectId/feedback/submit" element={<FeedbackSubmitPage />} />
+              <Route path="/projects/:projectId/feedback/:ticketId" element={<FeedbackDetailPage />} />
               <Route path="/sprints/:sprintId" element={<SprintBoardPage />} />
               <Route path="/issues/:issueId" element={<IssueDetailsPage />} />
-              <Route path="/tickets/triage" element={<TicketTriagePage />} />
             </Route>
 
-            {/* --- Catch All --- */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
       </AuthProvider>

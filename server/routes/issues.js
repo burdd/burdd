@@ -2,7 +2,7 @@ import express from 'express'
 import { requireMember } from '../middleware/requireMember.js'
 import { requireAdmin } from '../middleware/requireAdmin.js'
 import { loadIssue } from '../middleware/loadIssue.js'
-import { getIssuesInProject, createIssueInProject, getIssuesInSprint, getIssuesForTicket, getIssueById, updateIssueById, deleteIssueById, linkIssueToTicket } from '../controllers/issues.js'
+import { getIssuesInProject, createIssueInProject, getIssuesInSprint, getIssuesForTicket, getIssueById, updateIssueById, deleteIssueById, linkIssueToTicket, getTicketsForIssue } from '../controllers/issues.js'
 
 const router = express.Router()
 
@@ -31,6 +31,7 @@ router.post('/', requireMember, (req, res, next) => {
 router.use('/:issueId', loadIssue)
 
 router.get('/:issueId', requireMember, getIssueById)
+router.get('/:issueId/tickets', requireMember, getTicketsForIssue)
 router.patch('/:issueId', requireMember, updateIssueById)
 router.delete('/:issueId', requireAdmin, deleteIssueById)
 

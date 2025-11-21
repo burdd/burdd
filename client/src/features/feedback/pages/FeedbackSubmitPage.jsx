@@ -1,18 +1,20 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { createTicket } from '@/api';
 import styles from './FeedbackSubmitPage.module.css';
 const IconArrowLeft = ({ className }) => (_jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className, children: [_jsx("line", { x1: "19", y1: "12", x2: "5", y2: "12" }), _jsx("polyline", { points: "12 19 5 12 12 5" })] }));
 const CATEGORY_DISPLAY_MAP = { 'feature_request': 'Feature Request', 'complaint': 'Issue' };
 const FormInput = ({ id, label, ...props }) => (_jsxs("div", { children: [_jsx("label", { htmlFor: id, className: styles.label, children: label }), _jsx("input", { id: id, className: styles.input, ...props })] }));
 const FormTextarea = ({ id, label, ...props }) => (_jsxs("div", { children: [_jsx("label", { htmlFor: id, className: styles.label, children: label }), _jsx("textarea", { id: id, className: styles.textarea, ...props })] }));
 const FeedbackSubmitPage = () => {
-    const { projectSlug } = useParams();
+    const { projectId } = useParams();
     const navigate = useNavigate();
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("feature_request");
     const [body, setBody] = useState("");
     const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
     const [steps, setSteps] = useState("");
     const [expected, setExpected] = useState("");
     const [actual, setActual] = useState("");
@@ -27,14 +29,36 @@ const FeedbackSubmitPage = () => {
             setError("For issues, please fill in steps, expected, and actual results.");
             return;
         }
-        const newTicket = { id: crypto.randomUUID(), title, category, body, steps, expected, actual, environment };
-        navigate(`/${projectSlug}/feedback/success/${newTicket.id}`);
+        
+        setSubmitting(true);
+        setError("");
+        
+        const ticketData = {
+            title,
+            body,
+            category,
+            ...(category === 'complaint' && {
+                steps,
+                expected,
+                actual,
+                environment: environment || null
+            })
+        };
+        
+        createTicket(projectId, ticketData)
+            .then(() => {
+                navigate(`/projects/${projectId}/feedback`);
+            })
+            .catch((err) => {
+                setError(err.message || "Failed to submit ticket. Please try again.");
+                setSubmitting(false);
+            });
     };
     const attachmentPlaceholder = category === 'complaint' ? "Upload screenshot of the issue" : "Upload a concept or mockup (optional)";
 
     return (
     <div className={styles.container}>
-      <button onClick={() => navigate(`/${projectSlug}/feedback`)} className={styles.backLink}><IconArrowLeft className="w-4 h-4" /> Back to Dashboard</button>
+      <button onClick={() => navigate(`/projects/${projectId}/feedback`)} className={styles.backLink}><IconArrowLeft className="w-4 h-4" /> Back to Dashboard</button>
       <div className={styles.panel}>
         <h1 className={styles.title}>Submit new idea</h1>
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -69,7 +93,7 @@ const FeedbackSubmitPage = () => {
               </div>
             </div>
           </div>
-          <div className={styles.submitRow}><button type="submit" className={styles.submitButton}>Submit</button></div>
+          <div className={styles.submitRow}><button type="submit" className={styles.submitButton} disabled={submitting}>{submitting ? 'Submitting...' : 'Submit'}</button></div>
         </form>
       </div>
     </div>

@@ -57,15 +57,9 @@ const ProjectDetailsPage = () => {
     };
   }, [projectId]);
 
-  const statusBuckets = useMemo(() => issues.reduce((acc, issue) => {
-        acc[issue.status] += 1;
-        return acc;
-    }, {
-        queue: 0,
-        progress: 0,
-        review: 0,
-        done: 0,
-    }), [issues]);
+  const backlogIssues = useMemo(() => {
+    return issues.filter(issue => !issue.sprintId);
+  }, [issues]);
 
   if (!projectId) {
     return <EmptyState title="No project specified" description="Pick a project from the list." />;
@@ -90,16 +84,10 @@ const ProjectDetailsPage = () => {
           <p className={styles.eyebrow}>{project.key}</p>
           <h2>{project.name}</h2>
         </div>
+        <Link to={`/projects/${projectId}/feedback`} className={styles.viewTicketsLink}>
+          View Tickets
+        </Link>
       </header>
-
-      <div className={styles.grid}>
-        {Object.entries(statusBuckets).map(([status, count]) => (
-          <div key={status} className={styles.card}>
-            <p className={styles.cardLabel}>{statusLabels[status]}</p>
-            <p className={styles.cardValue}>{count}</p>
-          </div>
-        ))}
-      </div>
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
@@ -138,6 +126,40 @@ const ProjectDetailsPage = () => {
                   </p>
                 </Link>
               ))}
+          </div>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h3>Backlog</h3>
+          <p className={styles.muted}>{backlogIssues.length} issues not in any sprint</p>
+        </div>
+        {backlogIssues.length === 0 ? (
+          <EmptyState title="No backlog issues" description="All issues are assigned to sprints." />
+        ) : (
+          <div className={styles.issueList}>
+            {backlogIssues.map((issue) => (
+              <Link key={issue.id} className={styles.issueCard} to={`/issues/${issue.id}`}>
+                <div className={styles.issueHeader}>
+                  <p className={styles.issueTitle}>{issue.title}</p>
+                  <Tag tone={
+                    issue.status === 'done' ? 'success' : 
+                    issue.status === 'progress' ? 'info' : 
+                    issue.status === 'review' ? 'warning' : 
+                    'neutral'
+                  }>
+                    {statusLabels[issue.status]}
+                  </Tag>
+                </div>
+                {issue.description && (
+                  <p className={styles.issueDescription}>{issue.description}</p>
+                )}
+                <div className={styles.issueMeta}>
+                  <span>{formatDate(issue.createdAt)}</span>
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </section>

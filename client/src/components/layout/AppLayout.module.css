@@ -1,6 +1,6 @@
 .shell {
-  display: grid;
-  grid-template-columns: var(--layout-sidebar-width) 1fr;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: linear-gradient(180deg, #fdfefe 0%, #f5f6fa 45%, #eef1f6 100%);
 }
@@ -113,16 +113,19 @@
   flex: 1;
   padding: 2rem;
   overflow: auto;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 @media (max-width: 960px) {
-  .shell {
-    grid-template-columns: 1fr;
-  }
-
   .header {
     position: sticky;
     top: 0;
     z-index: 5;
+  }
+
+  .content {
+    padding: 1rem;
   }
 }

@@ -1,6 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { getTicketsByProject } from '@/api';
 import FilterControls from '../components/FilterControls';
 import FeedbackListItem from '../components/FeedbackListItem';
 import styles from './FeedbackDashboardPage.module.css';
@@ -18,18 +19,18 @@ const STATUS_DISPLAY_MAP = {
     'rejected': 'Rejected'
 };
 const FeedbackDashboardPage = () => {
-    const { project, searchTerm } = useOutletContext();
+    const { projectId } = useParams();
     const [feedbackItems, setFeedbackItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filters, setFilters] = useState({ category: 'All', status: 'All' });
     const [sortBy, setSortBy] = useState('Top');
+    const [searchTerm, setSearchTerm] = useState('');
     useEffect(() => {
+        if (!projectId) return;
         let ignore = false;
         setLoading(true);
-        // TODO: Replace with getTicketsByProject from API when public feedback is connected
-        fetch('/mock-api/public-tickets.json')
-            .then(res => res.json())
+        getTicketsByProject(projectId)
             .then((data) => {
             if (ignore)
                 return;
@@ -49,7 +50,7 @@ const FeedbackDashboardPage = () => {
         return () => {
             ignore = true;
         };
-    }, []);
+    }, [projectId]);
     const handleUpvote = (id, newCount, newHasVoted) => {
         setFeedbackItems(currentItems => currentItems.map(item => item.id === id ? { ...item, upvoteCount: newCount, hasVoted: newHasVoted } : item));
     };
@@ -78,6 +79,22 @@ const FeedbackDashboardPage = () => {
     }, [feedbackItems, filters, sortBy, searchTerm]);
     return (
     <div className={styles.container}>
+      <div className={styles.header}>
+        <h2>User Feedback</h2>
+        <div className={styles.headerActions}>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={styles.searchInput}
+            placeholder="Search by title or description..."
+          />
+          <Link to={`/projects/${projectId}/feedback/submit`} className={styles.submitLink}>
+            Submit Feedback
+          </Link>
+        </div>
+      </div>
+      
       <FilterControls
         filters={filters}
         setFilters={setFilters}
@@ -99,7 +116,7 @@ const FeedbackDashboardPage = () => {
               <FeedbackListItem
                 key={item.id}
                 item={item}
-                projectSlug={project.slug}
+                projectId={projectId}
                 onUpvote={handleUpvote}
                 statusDisplayMap={STATUS_DISPLAY_MAP}
                 categoryDisplayMap={CATEGORY_DISPLAY_MAP}

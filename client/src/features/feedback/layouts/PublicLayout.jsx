@@ -31,7 +31,7 @@ const Header = ({ project, searchTerm, onSearchChange }) => (
         />
       </div>
       <Link
-        to={`/${project.slug}/feedback/submit`}
+        to={`/projects/${project.id}/feedback/submit`}
         className={styles.submitButton}
       >
         <IconPlus className="w-5 h-5" />
@@ -42,12 +42,12 @@ const Header = ({ project, searchTerm, onSearchChange }) => (
 );
 
 const PublicLayout = () => {
-  const { projectSlug } = useParams();
+  const { projectId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const project = useMemo(() => ({
-      name: projectSlug ? projectSlug.charAt(0).toUpperCase() + projectSlug.slice(1) : 'Project',
-      slug: projectSlug || 'default',
-  }), [projectSlug]);
+      name: 'Project',
+      id: projectId || 'default',
+  }), [projectId]);
 
   const contextValue = useMemo(() => ({
     project,

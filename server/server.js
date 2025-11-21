@@ -7,6 +7,7 @@ import { GitHub } from './config/auth.js'
 import { pool } from './config/database.js'
 import authRouter from './routes/auth.js'
 import meRouter from './routes/me.js'
+import usersRouter from './routes/users.js'
 import projectsRouter from './routes/projects.js'
 import sprintsRouter from './routes/sprints.js'
 import issuesRouter from './routes/issues.js'
@@ -66,6 +67,7 @@ app.use('/auth', authRouter)
 
 app.use(requireAuth)
 app.use('/me', meRouter)
+app.use('/users', usersRouter)
 app.use('/projects', projectsRouter)
 app.use('/sprints', sprintsRouter)
 app.use('/issues', issuesRouter)

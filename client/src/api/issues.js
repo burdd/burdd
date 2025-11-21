@@ -8,6 +8,7 @@ function transformIssue(i) {
         status: i.status,
         assigneeId: i.assignee_id,
         description: i.description,
+        createdAt: i.created_at
     };
 }
 export async function getIssuesByProject(projectId) {
