@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import DataTable from '@components/common/DataTable/DataTable';
 import EmptyState from '@components/common/EmptyState/EmptyState';
-import { getProjects } from '@/api';
+import { getProjects, createProject } from '@/api';
 import styles from './ProjectsListPage.module.css';
 
 const ProjectsListPage = () => {
@@ -10,6 +10,11 @@ const ProjectsListPage = () => {
   const [search, setSearch] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectKey, setNewProjectKey] = useState('');
+  const [createError, setCreateError] = useState('');
 
   useEffect(() => {
     let ignore = false;
@@ -34,6 +39,43 @@ const ProjectsListPage = () => {
       ignore = true;
     };
   }, []);
+
+  const handleCreateProject = async (e) => {
+    e.preventDefault();
+    
+    if (!newProjectName.trim() || !newProjectKey.trim()) {
+      setCreateError('Both name and key are required');
+      return;
+    }
+    
+    setCreating(true);
+    setCreateError('');
+    
+    try {
+      const response = await createProject({ 
+        name: newProjectName, 
+        key: newProjectKey.toUpperCase() 
+      });
+      
+      // Add the new project to the list
+      setProjects([...projects, {
+        id: response.project.id,
+        name: response.project.name,
+        key: response.project.key,
+        members: [],
+        stats: { totalIssues: 0, activeIssues: 0, openTickets: 0 }
+      }]);
+      
+      // Reset and close modal
+      setNewProjectName('');
+      setNewProjectKey('');
+      setShowCreateModal(false);
+    } catch (err) {
+      setCreateError(err.message || 'Failed to create project');
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -97,13 +139,21 @@ const ProjectsListPage = () => {
           <p className={styles.eyebrow}>Projects</p>
           <h2>Choose a workspace</h2>
         </div>
-        <input
-          className={styles.search}
-          type="search"
-          placeholder="Search name or key"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
+        <div className={styles.headerActions}>
+          <input
+            className={styles.search}
+            type="search"
+            placeholder="Search name or key"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <button 
+            className={styles.createButton}
+            onClick={() => setShowCreateModal(true)}
+          >
+            Create Project
+          </button>
+        </div>
       </header>
 
       {loading && <p className={styles.muted}>Loading projects…</p>}
@@ -115,6 +165,72 @@ const ProjectsListPage = () => {
           rowKey={(project) => project.id}
           emptyState={<EmptyState title="No projects" description="Try a different search term." />}
         />
+      )}
+
+      {showCreateModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>Create New Project</h3>
+            <form onSubmit={handleCreateProject} className={styles.form}>
+              {createError && <div className={styles.errorBox}>{createError}</div>}
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="projectName" className={styles.label}>
+                  Project Name *
+                </label>
+                <input
+                  id="projectName"
+                  type="text"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  className={styles.input}
+                  placeholder="e.g., My Awesome Project"
+                  disabled={creating}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="projectKey" className={styles.label}>
+                  Project Key *
+                </label>
+                <input
+                  id="projectKey"
+                  type="text"
+                  value={newProjectKey}
+                  onChange={(e) => setNewProjectKey(e.target.value.toUpperCase())}
+                  className={styles.input}
+                  placeholder="e.g., MAP"
+                  maxLength={10}
+                  disabled={creating}
+                />
+                <p className={styles.helpText}>Short identifier (will be uppercased)</p>
+              </div>
+              
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setNewProjectName('');
+                    setNewProjectKey('');
+                    setCreateError('');
+                  }}
+                  className={styles.cancelButton}
+                  disabled={creating}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={creating || !newProjectName.trim() || !newProjectKey.trim()}
+                >
+                  {creating ? 'Creating...' : 'Create Project'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </section>
   );

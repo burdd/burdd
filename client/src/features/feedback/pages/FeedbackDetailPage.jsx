@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getTicketById, createTicketComment } from '@/api';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { getTicketById, createTicketComment, getIssuesByProject, createIssue, linkIssueToTicket } from '@/api';
 import { useAuth } from '@contexts/AuthContext';
 import { formatTimeAgo } from '../utils/time';
 import UpvoteButton from '../components/UpvoteButton';
@@ -18,10 +18,21 @@ const statusToneMap = { 'new': 'warning', 'triaged': 'info', 'closed': 'success'
 const FeedbackDetailPage = () => {
     const { ticketId, projectId } = useParams();
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [showLinkIssue, setShowLinkIssue] = useState(false);
+    const [showCreateIssue, setShowCreateIssue] = useState(false);
+    const [projectIssues, setProjectIssues] = useState([]);
+    const [selectedIssueId, setSelectedIssueId] = useState('');
+    const [linkingIssue, setLinkingIssue] = useState(false);
+    const [creatingIssue, setCreatingIssue] = useState(false);
+    const [newIssueTitle, setNewIssueTitle] = useState('');
+    const [newIssueDescription, setNewIssueDescription] = useState('');
+    
+    const isProjectMember = user?.memberships?.some(m => m.project_id === projectId) || false;
     useEffect(() => {
         if (!ticketId)
             return;
@@ -78,6 +89,69 @@ const FeedbackDetailPage = () => {
                 console.error('Failed to add comment:', err);
             });
     }, [ticketId, user]);
+    
+    const handleCreateIssue = useCallback(() => {
+        if (!projectId || !newIssueTitle.trim()) {
+            alert('Please enter an issue title');
+            return;
+        }
+        
+        const issueData = {
+            title: newIssueTitle,
+            description: newIssueDescription,
+        };
+        
+        setCreatingIssue(true);
+        createIssue(projectId, issueData)
+            .then((response) => {
+                if (response?.issue?.id) {
+                    // Link the newly created issue to this ticket
+                    return linkIssueToTicket(ticketId, response.issue.id)
+                        .then(() => {
+                            navigate(`/issues/${response.issue.id}`);
+                        });
+                } else {
+                    throw new Error('Invalid response from createIssue');
+                }
+            })
+            .catch((err) => {
+                console.error('Failed to create issue:', err);
+                alert('Failed to create issue. Please try again.');
+            })
+            .finally(() => {
+                setCreatingIssue(false);
+            });
+    }, [projectId, newIssueTitle, newIssueDescription, ticketId, navigate]);
+    
+    const handleShowLinkIssue = useCallback(() => {
+        if (!projectId) return;
+        
+        setShowLinkIssue(true);
+        getIssuesByProject(projectId)
+            .then((issues) => {
+                setProjectIssues(issues);
+            })
+            .catch((err) => {
+                console.error('Failed to load issues:', err);
+            });
+    }, [projectId]);
+    
+    const handleLinkToExistingIssue = useCallback(() => {
+        if (!selectedIssueId || !ticketId) return;
+        
+        setLinkingIssue(true);
+        linkIssueToTicket(ticketId, selectedIssueId)
+            .then(() => {
+                navigate(`/issues/${selectedIssueId}`);
+            })
+            .catch((err) => {
+                console.error('Failed to link issue:', err);
+                alert('Failed to link issue. Please try again.');
+            })
+            .finally(() => {
+                setLinkingIssue(false);
+            });
+    }, [selectedIssueId, ticketId, projectId, navigate]);
     if (loading)
         return _jsx("p", { className: styles.metaText, children: "Loading ticket..." });
     if (error)
@@ -105,6 +179,83 @@ const FeedbackDetailPage = () => {
           </div>
         </div>
         <p className={styles.body}>{item.body}</p>
+        
+        {isProjectMember && (
+          <div className={styles.memberActions}>
+            <button onClick={() => setShowCreateIssue(true)} className={styles.actionBtn}>Create Issue from Ticket</button>
+            <button onClick={handleShowLinkIssue} className={styles.actionBtn}>Link to Existing Issue</button>
+          </div>
+        )}
+        
+        {showCreateIssue && (
+          <div className={styles.linkIssuePanel}>
+            <h4>Create New Issue</h4>
+            <div className={styles.formGroup}>
+              <label htmlFor="issueTitle" className={styles.formLabel}>Title *</label>
+              <input
+                id="issueTitle"
+                type="text"
+                value={newIssueTitle}
+                onChange={(e) => setNewIssueTitle(e.target.value)}
+                className={styles.formInput}
+                placeholder="Enter issue title"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="issueDescription" className={styles.formLabel}>Description</label>
+              <textarea
+                id="issueDescription"
+                value={newIssueDescription}
+                onChange={(e) => setNewIssueDescription(e.target.value)}
+                className={styles.formTextarea}
+                placeholder="Enter issue description (optional)"
+                rows={4}
+              />
+            </div>
+            <div className={styles.linkActions}>
+              <button 
+                onClick={handleCreateIssue} 
+                disabled={!newIssueTitle.trim() || creatingIssue}
+                className={styles.primaryBtn}
+              >
+                {creatingIssue ? 'Creating...' : 'Create Issue'}
+              </button>
+              <button onClick={() => {
+                setShowCreateIssue(false);
+                setNewIssueTitle('');
+                setNewIssueDescription('');
+              }} className={styles.cancelBtn}>Cancel</button>
+            </div>
+          </div>
+        )}
+        
+        {showLinkIssue && (
+          <div className={styles.linkIssuePanel}>
+            <h4>Link to Existing Issue</h4>
+            <select 
+              value={selectedIssueId} 
+              onChange={(e) => setSelectedIssueId(e.target.value)}
+              className={styles.issueSelect}
+            >
+              <option value="">Select an issue...</option>
+              {projectIssues.map((issue) => (
+                <option key={issue.id} value={issue.id}>{issue.title}</option>
+
+              ))}
+            </select>
+            <div className={styles.linkActions}>
+              <button 
+                onClick={handleLinkToExistingIssue} 
+                disabled={!selectedIssueId || linkingIssue}
+                className={styles.primaryBtn}
+              >
+                {linkingIssue ? 'Linking...' : 'Link Issue'}
+              </button>
+              <button onClick={() => setShowLinkIssue(false)} className={styles.cancelBtn}>Cancel</button>
+            </div>
+          </div>
+        )}
+        
         {item.category === 'complaint' && (
           <div className={styles.complaintDetails}>
             {item.environment && <div><strong>Environment:</strong> <span>{item.environment}</span></div>}

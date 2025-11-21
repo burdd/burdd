@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
 import Tag from '@components/common/Tag/Tag';
 import { getSprintById, getIssuesBySprint, getProjects } from '@/api';
@@ -107,10 +107,10 @@ const SprintBoardPage = () => {
                   <p className={styles.empty}>Nothing here yet.</p>
                 ) : (
                   columnIssues.map((issue) => (
-                    <article key={issue.id} className={styles.card}>
+                    <Link key={issue.id} to={`/issues/${issue.id}`} className={styles.card}>
                       <p className={styles.cardTitle}>{issue.title}</p>
                       <p className={styles.cardMeta}>{memberLookup.get(issue.assigneeId ?? '') ?? 'Unassigned'}</p>
-                    </article>
+                    </Link>
                   ))
                 )}
               </div>

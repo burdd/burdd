@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
 import Tag from '@components/common/Tag/Tag';
-import { getIssueById, getProjectById, getSprintById, getTicketsByIssue } from '@/api';
+import Select from '@components/common/Select/Select';
+import { getIssueById, getProjectById, getSprintById, getTicketsByIssue, updateIssue, getSprintsByProject } from '@/api';
+import { useAuth } from '@contexts/AuthContext';
 import styles from './IssueDetailsPage.module.css';
 
 const statusToneMap = {
@@ -14,12 +16,16 @@ const statusToneMap = {
 
 const IssueDetailsPage = () => {
   const { issueId } = useParams();
+  const { user } = useAuth();
   const [issue, setIssue] = useState(null);
   const [project, setProject] = useState(null);
   const [sprint, setSprint] = useState(null);
+  const [sprints, setSprints] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [updating, setUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState('');
 
   useEffect(() => {
     if (!issueId) return;
@@ -42,10 +48,11 @@ const IssueDetailsPage = () => {
 
         setIssue(issueData);
 
-        const [projectData, sprintData, ticketData] = await Promise.all([
+        const [projectData, sprintData, ticketData, sprintsData] = await Promise.all([
           getProjectById(issueData.projectId),
           issueData.sprintId ? getSprintById(issueData.sprintId) : Promise.resolve(undefined),
           getTicketsByIssue(issueId),
+          getSprintsByProject(issueData.projectId),
         ]);
 
         if (ignore) return;
@@ -53,6 +60,7 @@ const IssueDetailsPage = () => {
         setProject(projectData ?? null);
         setSprint(sprintData ?? null);
         setTickets(ticketData);
+        setSprints(sprintsData);
         setError(null);
       } catch (err) {
         if (ignore) return;
@@ -70,6 +78,68 @@ const IssueDetailsPage = () => {
       ignore = true;
     };
   }, [issueId]);
+
+  const isMember = useMemo(() => {
+    if (!user || !project) return false;
+    return user.memberships?.some(m => m.project_id === project.id);
+  }, [user, project]);
+
+  const handleStatusChange = async (newStatus) => {
+    if (!issue || updating) return;
+    
+    setUpdating(true);
+    setUpdateError('');
+    
+    try {
+      await updateIssue(issue.id, { status: newStatus });
+      setIssue({ ...issue, status: newStatus });
+    } catch (err) {
+      setUpdateError(err.message || 'Failed to update status');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleSprintChange = async (newSprintId) => {
+    if (!issue || updating) return;
+    
+    setUpdating(true);
+    setUpdateError('');
+    
+    try {
+      const sprintId = newSprintId === 'backlog' ? null : newSprintId;
+      await updateIssue(issue.id, { sprint_id: sprintId });
+      setIssue({ ...issue, sprintId });
+      
+      if (sprintId) {
+        const newSprint = await getSprintById(sprintId);
+        setSprint(newSprint);
+      } else {
+        setSprint(null);
+      }
+    } catch (err) {
+      setUpdateError(err.message || 'Failed to update sprint');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleAssigneeChange = async (newAssigneeId) => {
+    if (!issue || updating) return;
+    
+    setUpdating(true);
+    setUpdateError('');
+    
+    try {
+      const assigneeId = newAssigneeId === 'unassigned' ? null : newAssigneeId;
+      await updateIssue(issue.id, { assignee_id: assigneeId });
+      setIssue({ ...issue, assigneeId });
+    } catch (err) {
+      setUpdateError(err.message || 'Failed to update assignee');
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   if (!issueId) {
     return <EmptyState title="Select an issue" description="Pick an issue from the sprint board." />;
@@ -99,19 +169,79 @@ const IssueDetailsPage = () => {
         </div>
       </header>
 
+      {updateError && (
+        <div className={styles.errorBox}>{updateError}</div>
+      )}
+
       <article className={styles.panel}>
         <h3>Description</h3>
-        <p>{issue.description}</p>
+        <p>{issue.description || <span className={styles.muted}>No description provided</span>}</p>
       </article>
 
       <div className={styles.metaGrid}>
         <div className={styles.panel}>
-          <h3>Project</h3>
-          <p className={styles.muted}>{project?.name ?? 'Unassigned project'}</p>
+          <h3>Status</h3>
+          {isMember ? (
+            <Select
+              value={issue.status}
+              onChange={(e) => handleStatusChange(e.target.value)}
+              disabled={updating}
+            >
+              <option value="queue">In queue</option>
+              <option value="progress">In progress</option>
+              <option value="review">Code review</option>
+              <option value="done">Done</option>
+            </Select>
+          ) : (
+            <p className={styles.muted}>{issue.status}</p>
+          )}
         </div>
+
         <div className={styles.panel}>
           <h3>Sprint</h3>
-          <p className={styles.muted}>{sprint?.name ?? 'Backlog'}</p>
+          {isMember ? (
+            <Select
+              value={issue.sprintId || 'backlog'}
+              onChange={(e) => handleSprintChange(e.target.value)}
+              disabled={updating}
+            >
+              <option value="backlog">Backlog</option>
+              {sprints.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </Select>
+          ) : (
+            <p className={styles.muted}>{sprint?.name ?? 'Backlog'}</p>
+          )}
+        </div>
+
+        <div className={styles.panel}>
+          <h3>Assignee</h3>
+          {isMember ? (
+            <Select
+              value={issue.assigneeId || 'unassigned'}
+              onChange={(e) => handleAssigneeChange(e.target.value)}
+              disabled={updating}
+            >
+              <option value="unassigned">Unassigned</option>
+              {project?.members?.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.name}
+                </option>
+              ))}
+            </Select>
+          ) : (
+            <p className={styles.muted}>
+              {project?.members?.find(m => m.id === issue.assigneeId)?.name ?? 'Unassigned'}
+            </p>
+          )}
+        </div>
+
+        <div className={styles.panel}>
+          <h3>Project</h3>
+          <p className={styles.muted}>{project?.name ?? 'Unassigned project'}</p>
         </div>
       </div>
 

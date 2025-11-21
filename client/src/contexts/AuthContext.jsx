@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
                         name: userData.fullName || userData.handle,
                         handle: userData.handle,
                         avatarUrl: userData.avatarUrl,
+                        memberships: userData.memberships || [],
                     });
                 }
             })

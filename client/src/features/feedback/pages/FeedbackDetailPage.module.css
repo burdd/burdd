@@ -17,3 +17,21 @@
 .complaintDetails div { padding: 0.25rem 0; }
 .complaintDetails strong { color: var(--fb-text, #111827); font-weight: 600; margin-right: 0.5rem; }
 .complaintDetails pre { white-space: pre-wrap; font-family: inherit; margin-top: 0.25rem; padding-left: 0.5rem; }
+.memberActions { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--fb-border, #e5e7eb); }
+.actionBtn { padding: 0.625rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.5rem; transition: all 150ms ease; background-color: var(--fb-panel, #ffffff); color: var(--fb-accent, #4f46e5); border: 1px solid var(--fb-accent, #4f46e5); }
+.actionBtn:hover { background-color: var(--fb-accent, #4f46e5); color: white; }
+.linkIssuePanel { margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--fb-border, #e5e7eb); background-color: #f9fafb; }
+.linkIssuePanel h4 { margin: 0 0 0.75rem; font-size: 0.875rem; font-weight: 600; color: var(--fb-text, #111827); }
+.formGroup { margin-bottom: 0.75rem; }
+.formLabel { display: block; margin-bottom: 0.375rem; font-size: 0.875rem; font-weight: 500; color: var(--fb-text, #111827); }
+.formInput { width: 100%; padding: 0.5rem; border: 1px solid var(--fb-border, #d1d5db); border-radius: 0.375rem; font-size: 0.875rem; background-color: white; }
+.formInput:focus { outline: none; border-color: var(--fb-accent, #4f46e5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+.formTextarea { width: 100%; padding: 0.5rem; border: 1px solid var(--fb-border, #d1d5db); border-radius: 0.375rem; font-size: 0.875rem; background-color: white; font-family: inherit; resize: vertical; }
+.formTextarea:focus { outline: none; border-color: var(--fb-accent, #4f46e5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+.issueSelect { width: 100%; padding: 0.5rem; border: 1px solid var(--fb-border, #d1d5db); border-radius: 0.375rem; font-size: 0.875rem; background-color: white; }
+.linkActions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.primaryBtn { padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.375rem; background-color: var(--fb-accent, #4f46e5); color: white; border: none; transition: background-color 150ms ease; }
+.primaryBtn:hover:not(:disabled) { background-color: #4338ca; }
+.primaryBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.cancelBtn { padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.375rem; background-color: white; color: var(--fb-text-muted, #6b7280); border: 1px solid var(--fb-border, #d1d5db); transition: all 150ms ease; }
+.cancelBtn:hover { background-color: #f9fafb; }
