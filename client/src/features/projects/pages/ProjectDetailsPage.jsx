@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
 import Tag from '@components/common/Tag/Tag';
-import { useApi } from '@contexts/ApiContext';
-import { getById, getList } from '@lib/fetcher';
+import { getProjectById, getSprintsByProject, getIssuesByProject } from '@/api';
 import styles from './ProjectDetailsPage.module.css';
 
 const statusLabels = {
@@ -16,7 +15,6 @@ const formatDate = (isoString) => new Date(isoString).toLocaleDateString(undefin
 
 const ProjectDetailsPage = () => {
   const { projectId } = useParams();
-  const { baseUrl } = useApi();
   const [project, setProject] = useState(null);
   const [sprints, setSprints] = useState([]);
   const [issues, setIssues] = useState([]);
@@ -29,9 +27,9 @@ const ProjectDetailsPage = () => {
     setLoading(true);
 
     Promise.all([
-      getById(`${baseUrl}/projects.json`, projectId),
-      getList(`${baseUrl}/sprints.json`),
-      getList(`${baseUrl}/issues.json`),
+      getProjectById(projectId),
+      getSprintsByProject(projectId),
+      getIssuesByProject(projectId),
     ])
       .then(([projectData, sprintsData, issuesData]) => {
         if (ignore) return;
@@ -41,8 +39,8 @@ const ProjectDetailsPage = () => {
           return;
         }
         setProject(projectData);
-        setSprints(sprintsData.filter((sprint) => String(sprint.projectId) === projectId));
-        setIssues(issuesData.filter((issue) => String(issue.projectId) === projectId));
+        setSprints(sprintsData);
+        setIssues(issuesData);
         setError(null);
       })
       .catch((err) => {
@@ -57,7 +55,7 @@ const ProjectDetailsPage = () => {
     return () => {
       ignore = true;
     };
-  }, [baseUrl, projectId]);
+  }, [projectId]);
 
   const statusBuckets = useMemo(() => issues.reduce((acc, issue) => {
         acc[issue.status] += 1;

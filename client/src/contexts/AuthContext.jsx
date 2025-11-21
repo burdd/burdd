@@ -1,45 +1,71 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getCurrentUser, logout as apiLogout } from '@/api';
+
 const AuthContext = createContext(undefined);
-const storageKey = 'burdd:user';
-const mockUser = {
-    id: 'user-abdul',
-    name: 'Abdul-Rashid Zakaria',
-    avatarUrl: 'https://avatars.githubusercontent.com/u/000000?v=4',
-};
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const location = useLocation();
+
     useEffect(() => {
-        const stored = localStorage.getItem(storageKey);
-        if (stored) {
-            try {
-                setUser(JSON.parse(stored));
-            }
-            catch {
-                localStorage.removeItem(storageKey);
-            }
-        }
-        setLoading(false);
+        getCurrentUser()
+            .then((userData) => {
+                if (userData) {
+                    setUser({
+                        id: userData.id,
+                        name: userData.fullName || userData.handle,
+                        handle: userData.handle,
+                        avatarUrl: userData.avatarUrl,
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Failed to fetch current user:', error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, []);
-    const login = async () => {
-        setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        localStorage.setItem(storageKey, JSON.stringify(mockUser));
-        setUser(mockUser);
-        setLoading(false);
+
+    useEffect(() => {
+        if (!loading && !user && location.pathname !== '/login') {
+            navigate('/login', { replace: true });
+        }
+    }, [loading, user, location.pathname, navigate]);
+
+    const logout = async () => {
+        try {
+            await apiLogout();
+            setUser(null);
+            navigate('/login', { replace: true });
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
     };
-    const logout = () => {
-        localStorage.removeItem(storageKey);
-        setUser(null);
-    };
+
     const value = useMemo(() => ({
         user,
         loading,
-        login,
         logout,
     }), [user, loading]);
-    return _jsx(AuthContext.Provider, { value: value, children: children });
+
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 export const useAuth = () => {
     const ctx = useContext(AuthContext);

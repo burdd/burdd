@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Tag from '../../../components/common/Tag/Tag';
-import { useApi } from '../../../contexts/ApiContext';
-import { getList } from '../../../lib/fetcher';
+import { getProjects } from '@/api';
 import styles from './TicketTriagePage.module.css';
 
 const filterOptions= ['all', 'new', 'triaged', 'closed'];
 
 const TicketTriagePage = () => {
-  const { baseUrl } = useApi();
   const [tickets, setTickets] = useState([]);
   const [projects, setProjects] = useState([]);
   const [filter, setFilter] = useState('new');
@@ -20,14 +18,15 @@ const TicketTriagePage = () => {
     let ignore = false;
     setLoading(true);
 
-    Promise.all([
-      getList(`${baseUrl}/tickets.json`),
-      getList(`${baseUrl}/projects.json`),
-    ])
-      .then(([ticketsData, projectsData]) => {
+    // TODO: Need to fetch tickets from all projects or specific project
+    // For now, fetch projects and use first project's tickets
+    getProjects()
+      .then((projectsData) => {
         if (ignore) return;
-        setTickets(ticketsData);
         setProjects(projectsData);
+        // TODO: Implement getTicketsByProject for first project or aggregate
+        // For now, set empty array until backend supports cross-project ticket queries
+        setTickets([]);
         setError(null);
       })
       .catch((err) => {
@@ -42,7 +41,7 @@ const TicketTriagePage = () => {
     return () => {
       ignore = true;
     };
-  }, [baseUrl]);
+  }, []);
 
   const projectLookup = useMemo(() => {
     const map = new Map();

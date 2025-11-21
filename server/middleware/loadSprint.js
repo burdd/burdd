@@ -2,8 +2,9 @@ import { pool } from "../config/database.js"
 import { asyncHandler } from "./asyncHandler.js"
 
 export const loadSprint = asyncHandler(async (req, res, next) => {
-    const id = parseInt(req.params.sprintId)
-    if (Number.isNaN(id)) {
+    const id = req.params.sprintId
+    
+    if (!id) {
         const err = new Error('Invalid sprint Id')
         err.status = 400
         throw err

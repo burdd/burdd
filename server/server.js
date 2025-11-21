@@ -17,10 +17,23 @@ import { errorHandler } from './middleware/errorHandler.js'
 
 const app = express()
 
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    methods: 'GET,POST,PUT,DELETE,PATCH',
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // set to true in production with HTTPS
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
 }))
 
 app.use(passport.initialize())
@@ -48,12 +61,6 @@ passport.deserializeUser(async (id, done) => {
 })
 
 app.use(express.json())
-
-app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    methods: 'GET,POST,PUT,DELETE,PATCH',
-    credentials: true
-}))
 
 app.use('/auth', authRouter)
 

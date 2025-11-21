@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "reset": "cd config && node reset.js",
+    "seed": "cd config && node seed.js",
     "dev": "npm run reset && nodemon server",
+    "dev:seed": "npm run reset && npm run seed && nodemon server",
     "start": "node server"
   },
   "keywords": [],

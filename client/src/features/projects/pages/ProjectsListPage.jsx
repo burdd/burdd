@@ -2,12 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import DataTable from '@components/common/DataTable/DataTable';
 import EmptyState from '@components/common/EmptyState/EmptyState';
-import { useApi } from '@contexts/ApiContext';
-import { getList } from '@lib/fetcher';
+import { getProjects } from '@/api';
 import styles from './ProjectsListPage.module.css';
 
 const ProjectsListPage = () => {
-  const { baseUrl } = useApi();
   const [projects, setProjects] = useState([]);
   const [search, setSearch] = useState('');
   const [error, setError] = useState(null);
@@ -17,7 +15,7 @@ const ProjectsListPage = () => {
     let ignore = false;
     setLoading(true);
 
-    getList(`${baseUrl}/projects.json`)
+    getProjects()
       .then((data) => {
         if (ignore) return;
         setProjects(data);
@@ -35,7 +33,7 @@ const ProjectsListPage = () => {
     return () => {
       ignore = true;
     };
-  }, [baseUrl]);
+  }, []);
 
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLowerCase();

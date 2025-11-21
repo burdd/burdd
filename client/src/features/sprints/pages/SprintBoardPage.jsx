@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
 import Tag from '@components/common/Tag/Tag';
-import { useApi } from '@contexts/ApiContext';
-import { getById, getList } from '@lib/fetcher';
+import { getSprintById, getIssuesBySprint, getProjects } from '@/api';
 import styles from './SprintBoardPage.module.css';
 
 const columns= ['queue', 'progress', 'review', 'done'];
@@ -17,7 +16,6 @@ const formatDate = (isoString) => {
 
 const SprintBoardPage = () => {
   const { sprintId } = useParams();
-  const { baseUrl } = useApi();
   const [sprint, setSprint] = useState(null);
   const [issues, setIssues] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -30,9 +28,9 @@ const SprintBoardPage = () => {
     setLoading(true);
 
     Promise.all([
-      getById(`${baseUrl}/sprints.json`, sprintId),
-      getList(`${baseUrl}/issues.json`),
-      getList(`${baseUrl}/projects.json`),
+      getSprintById(sprintId),
+      getIssuesBySprint(sprintId),
+      getProjects(),
     ])
       .then(([sprintData, issuesData, projectsData]) => {
         if (ignore) return;
@@ -41,7 +39,7 @@ const SprintBoardPage = () => {
           return;
         }
         setSprint(sprintData);
-        setIssues(issuesData.filter((issue) => issue.sprintId === sprintId));
+        setIssues(issuesData);
         setProjects(projectsData);
         setError(null);
       })
@@ -57,7 +55,7 @@ const SprintBoardPage = () => {
     return () => {
       ignore = true;
     };
-  }, [baseUrl, sprintId]);
+  }, [sprintId]);
 
   const memberLookup = useMemo(() => {
     const map = new Map();

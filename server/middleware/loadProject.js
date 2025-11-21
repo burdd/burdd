@@ -2,8 +2,9 @@ import { pool } from "../config/database.js"
 import { asyncHandler } from "./asyncHandler.js"
 
 export const loadProject = asyncHandler(async (req, res, next) => {
-    const id = parseInt(req.params.projectId)
-    if (Number.isNaN(id)) {
+    const id = req.params.projectId
+    
+    if (!id) {
         const err = new Error('Invalid project Id')
         err.status = 400
         throw err

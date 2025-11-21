@@ -19,7 +19,7 @@ router.get('/:projectId', requireMember, getProjectById)
 router.patch('/:projectId', requireAdmin, updateProject)
 router.delete('/:projectId', requireAdmin, deleteProject)
 
-router.use('/:projectId/users', membersRouter)
+router.use('/:projectId/members', membersRouter)
 router.use('/:projectId/sprints', sprintsRouter)
 router.use('/:projectId/issues', issuesRouter)
 router.use('/:projectId/tickets', ticketsRouter)

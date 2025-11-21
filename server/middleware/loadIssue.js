@@ -2,8 +2,9 @@ import { pool } from '../config/database.js'
 import { asyncHandler } from './asyncHandler.js'
 
 export const loadIssue = asyncHandler(async (req, res, next) => {
-    const id = parseInt(req.params.issueId)
-    if (Number.isNaN(id)) {
+    const id = req.params.issueId
+    
+    if (!id) {
         const err = new Error('Invalid issue Id')
         err.status = 400
         throw err

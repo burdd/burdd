@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useOutletContext } from 'react-router-dom';
-import { getById } from '../../../lib/fetcher';
+import { getTicketById } from '@/api';
 import { formatTimeAgo } from '../utils/time';
 import UpvoteButton from '../components/UpvoteButton';
 import CommentThread from '../components/CommentThread';
@@ -16,7 +16,7 @@ const STATUS_DISPLAY_MAP = { 'new': 'Under Review', 'triaged': 'In Progress', 'c
 const statusToneMap = { 'new': 'warning', 'triaged': 'info', 'closed': 'success', 'rejected': 'danger' };
 const FeedbackDetailPage = () => {
     const { ticketId } = useParams();
-    const { project, baseUrl } = useOutletContext();
+    const { project } = useOutletContext();
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -26,7 +26,7 @@ const FeedbackDetailPage = () => {
             return;
         let ignore = false;
         setLoading(true);
-        getById(`${baseUrl}/public-tickets.json`, ticketId)
+        getTicketById(ticketId)
             .then((data) => {
             if (ignore)
                 return;
@@ -46,7 +46,7 @@ const FeedbackDetailPage = () => {
             setLoading(false);
         });
         return () => { ignore = true; };
-    }, [baseUrl, ticketId]);
+    }, [ticketId]);
     const trackingLink = `burdd.com/${project.slug}/feedback/${item?.id}`;
     const copyToClipboard = () => {
         navigator.clipboard.writeText(trackingLink).then(() => {

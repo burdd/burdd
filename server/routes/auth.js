@@ -16,9 +16,11 @@ router.get('/github',
 
 router.get('/github/callback',
     passport.authenticate('github', {
-        successRedirect: '/auth/login/success',
-        failureRedirect: '/auth/login/failed'
-    })
+        failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=auth_failed`
+    }),
+    (req, res) => {
+        res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173')
+    }
 )
 
 export default router

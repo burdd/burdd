@@ -1,7 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { getList } from '../../../lib/fetcher';
 import FilterControls from '../components/FilterControls';
 import FeedbackListItem from '../components/FeedbackListItem';
 import styles from './FeedbackDashboardPage.module.css';
@@ -19,7 +18,7 @@ const STATUS_DISPLAY_MAP = {
     'rejected': 'Rejected'
 };
 const FeedbackDashboardPage = () => {
-    const { project, searchTerm, baseUrl } = useOutletContext();
+    const { project, searchTerm } = useOutletContext();
     const [feedbackItems, setFeedbackItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,7 +27,9 @@ const FeedbackDashboardPage = () => {
     useEffect(() => {
         let ignore = false;
         setLoading(true);
-        getList(`${baseUrl}/public-tickets.json`)
+        // TODO: Replace with getTicketsByProject from API when public feedback is connected
+        fetch('/mock-api/public-tickets.json')
+            .then(res => res.json())
             .then((data) => {
             if (ignore)
                 return;
@@ -48,7 +49,7 @@ const FeedbackDashboardPage = () => {
         return () => {
             ignore = true;
         };
-    }, [baseUrl]);
+    }, []);
     const handleUpvote = (id, newCount, newHasVoted) => {
         setFeedbackItems(currentItems => currentItems.map(item => item.id === id ? { ...item, upvoteCount: newCount, hasVoted: newHasVoted } : item));
     };

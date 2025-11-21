@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
 import Tag from '@components/common/Tag/Tag';
-import { useApi } from '@contexts/ApiContext';
-import { getById, getList } from '@lib/fetcher';
+import { getIssueById, getProjectById, getSprintById, getTicketsByIssue } from '@/api';
 import styles from './IssueDetailsPage.module.css';
 
 const statusToneMap = {
@@ -15,7 +14,6 @@ const statusToneMap = {
 
 const IssueDetailsPage = () => {
   const { issueId } = useParams();
-  const { baseUrl } = useApi();
   const [issue, setIssue] = useState(null);
   const [project, setProject] = useState(null);
   const [sprint, setSprint] = useState(null);
@@ -30,7 +28,7 @@ const IssueDetailsPage = () => {
     const fetchIssue = async () => {
       setLoading(true);
       try {
-        const issueData = await getById(`${baseUrl}/issues.json`, issueId);
+        const issueData = await getIssueById(issueId);
         if (ignore) return;
 
         if (!issueData) {
@@ -45,9 +43,9 @@ const IssueDetailsPage = () => {
         setIssue(issueData);
 
         const [projectData, sprintData, ticketData] = await Promise.all([
-          getById(`${baseUrl}/projects.json`, issueData.projectId),
-          issueData.sprintId ? getById(`${baseUrl}/sprints.json`, issueData.sprintId) : Promise.resolve(undefined),
-          getList(`${baseUrl}/tickets.json?relatedIssueId=${issueData.id}`),
+          getProjectById(issueData.projectId),
+          issueData.sprintId ? getSprintById(issueData.sprintId) : Promise.resolve(undefined),
+          getTicketsByIssue(issueId),
         ]);
 
         if (ignore) return;
@@ -71,7 +69,7 @@ const IssueDetailsPage = () => {
     return () => {
       ignore = true;
     };
-  }, [baseUrl, issueId]);
+  }, [issueId]);
 
   if (!issueId) {
     return <EmptyState title="Select an issue" description="Pick an issue from the sprint board." />;

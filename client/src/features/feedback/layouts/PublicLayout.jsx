@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { Outlet, useParams, Link } from 'react-router-dom';
-import { useApi } from '../../../contexts/ApiContext';
 import styles from './PublicLayout.module.css';
 
 const IconSearch = ({ className }) => (
@@ -45,7 +44,6 @@ const Header = ({ project, searchTerm, onSearchChange }) => (
 const PublicLayout = () => {
   const { projectSlug } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
-  const { baseUrl } = useApi();
   const project = useMemo(() => ({
       name: projectSlug ? projectSlug.charAt(0).toUpperCase() + projectSlug.slice(1) : 'Project',
       slug: projectSlug || 'default',
@@ -54,8 +52,7 @@ const PublicLayout = () => {
   const contextValue = useMemo(() => ({
     project,
     searchTerm,
-    baseUrl,
-  }), [project, searchTerm, baseUrl]);
+  }), [project, searchTerm]);
 
   return (
     <div className={styles.shell}>

@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useApi } from '@contexts/ApiContext';
-import { getList } from '@lib/fetcher';
+import { getProjects } from '@/api';
 import styles from './ProjectSwitcher.module.css';
 
 const ProjectSwitcher = () => {
-  const { baseUrl } = useApi();
   const navigate = useNavigate();
   const location = useLocation();
   const [projects, setProjects] = useState([]);
@@ -14,7 +12,7 @@ const ProjectSwitcher = () => {
   useEffect(() => {
     let ignore = false;
 
-    getList(`${baseUrl}/projects.json`)
+    getProjects()
       .then((data) => {
         if (ignore) return;
         setProjects(data);
@@ -28,7 +26,7 @@ const ProjectSwitcher = () => {
     return () => {
       ignore = true;
     };
-  }, [baseUrl]);
+  }, []);
 
   const activeProjectId = useMemo(() => {
     const segments = location.pathname.split('/').filter(Boolean);
