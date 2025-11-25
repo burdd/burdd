@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import EmptyState from '@/common/EmptyState/EmptyState';
 import Select from '@/common/Select/Select';
 import { getProjectById, searchUsers, addMemberToProject, removeMemberFromProject, changeMemberRole } from '@/api';
