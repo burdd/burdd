@@ -19,6 +19,9 @@ router.get('/github/callback',
         failureRedirect: `${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`
     }),
     (req, res) => {
+        console.log('Auth successful, user:', req.user);
+        console.log('Session ID:', req.sessionID);
+        console.log('Session:', req.session);
         res.redirect(process.env.CLIENT_URL || 'http://localhost:5173')
     }
 )
