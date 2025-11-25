@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
-import Tag from '@components/common/Tag/Tag';
-import { getSprintById, getIssuesBySprint, getProjects } from '@/api';
+import { getSprintById, getIssuesBySprint, getProjects, updateIssue, updateLinkedTicketsStatus } from '@/api';
 import styles from './SprintBoardPage.module.css';
 
-const columns= ['queue', 'progress', 'review', 'done'];
 const formatDate = (isoString) => {
   const date = new Date(isoString);
   if (isNaN(date.getTime())) {
@@ -45,7 +43,8 @@ const SprintBoardPage = () => {
       })
       .catch((err) => {
         if (ignore) return;
-        setError(err.message);
+        console.error('Failed to load sprint:', err);
+        setError('Failed to load sprint. Please try again.');
       })
       .finally(() => {
         if (ignore) return;
@@ -64,6 +63,19 @@ const SprintBoardPage = () => {
     });
     return map;
   }, [projects]);
+
+  const handleStatusChange = async (issueId, newStatus, event) => {
+    event.stopPropagation();
+    try {
+      await updateIssue(issueId, { status: newStatus });
+      await updateLinkedTicketsStatus(issueId);
+      setIssues(issues.map(issue => 
+        issue.id === issueId ? { ...issue, status: newStatus } : issue
+      ));
+    } catch (err) {
+      console.error('Failed to update issue status:', err);
+    }
+  };
 
   if (!sprintId) {
     return <EmptyState title="No sprint selected" description="Pick a sprint from the project view." />;
@@ -93,30 +105,59 @@ const SprintBoardPage = () => {
         </p>
       </header>
 
-      <div className={styles.board}>
-        {columns.map((status) => {
-          const columnIssues = issues.filter((issue) => issue.status === status);
-          return (
-            <div key={status} className={styles.column}>
-              <div className={styles.columnHeader}>
-                <p>{status}</p>
-                <Tag tone={status === 'done' ? 'success' : 'info'}>{columnIssues.length}</Tag>
-              </div>
-              <div className={styles.columnBody}>
-                {columnIssues.length === 0 ? (
-                  <p className={styles.empty}>Nothing here yet.</p>
-                ) : (
-                  columnIssues.map((issue) => (
-                    <Link key={issue.id} to={`/issues/${issue.id}`} className={styles.card}>
-                      <p className={styles.cardTitle}>{issue.title}</p>
-                      <p className={styles.cardMeta}>{memberLookup.get(issue.assigneeId ?? '') ?? 'Unassigned'}</p>
-                    </Link>
-                  ))
-                )}
+      <div className={styles.issueList}>
+        {issues.length === 0 ? (
+          <EmptyState title="No issues in this sprint" description="Add issues to this sprint from the project backlog." />
+        ) : (
+          <>
+            <div className={styles.headerRow}>
+              <span className={styles.headerTitle}>Issue</span>
+              <span className={styles.headerAssignee}>Assigned To</span>
+              <div className={styles.headerCheckboxes}>
+                <span>IQ</span>
+                <span>IP</span>
+                <span>CR</span>
+                <span>D</span>
               </div>
             </div>
-          );
-        })}
+            {issues.map((issue) => (
+              <div key={issue.id} className={styles.issueRow}>
+                <Link to={`/issues/${issue.id}`} className={styles.issueTitle}>
+                  {issue.title}
+                </Link>
+                <span className={styles.assignee}>
+                  {memberLookup.get(issue.assigneeId ?? '') ?? ''}
+                </span>
+                <div className={styles.statusCheckboxes}>
+                  <input
+                    type="checkbox"
+                    checked={issue.status === 'queue'}
+                    onChange={(e) => handleStatusChange(issue.id, 'queue', e)}
+                    className={styles.checkbox}
+                  />
+                  <input
+                    type="checkbox"
+                    checked={issue.status === 'progress'}
+                    onChange={(e) => handleStatusChange(issue.id, 'progress', e)}
+                    className={styles.checkbox}
+                  />
+                  <input
+                    type="checkbox"
+                    checked={issue.status === 'review'}
+                    onChange={(e) => handleStatusChange(issue.id, 'review', e)}
+                    className={styles.checkbox}
+                  />
+                  <input
+                    type="checkbox"
+                    checked={issue.status === 'done'}
+                    onChange={(e) => handleStatusChange(issue.id, 'done', e)}
+                    className={styles.checkbox}
+                  />
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </section>
   );

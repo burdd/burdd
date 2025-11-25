@@ -50,7 +50,8 @@ const FeedbackSubmitPage = () => {
                 navigate(`/projects/${projectId}/feedback`);
             })
             .catch((err) => {
-                setError(err.message || "Failed to submit ticket. Please try again.");
+                console.error('Failed to submit ticket:', err);
+                setError('Failed to submit ticket. Please try again.');
                 setSubmitting(false);
             });
     };

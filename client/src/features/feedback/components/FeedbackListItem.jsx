@@ -26,13 +26,20 @@ const FeedbackListItem = ({
   const statusLabel = statusDisplayMap[item.status] || item.status;
   const categoryLabel = categoryDisplayMap[item.category] || item.category;
 
+  const truncatedBody = item.body && item.body.length > 100 
+    ? item.body.substring(0, 100) + '...' 
+    : item.body;
+
   return (
     <li className={styles.item}>
       <Link to={`/projects/${projectId}/feedback/${item.id}`} className={styles.link}>
         <div className={styles.main}>
           <h3 className={styles.title}>{item.title}</h3>
+          {truncatedBody && (
+            <p className={styles.description}>{truncatedBody}</p>
+          )}
           <div className={styles.meta}>
-            <Tag tone={statusToneMap[item.status] || 'neutral'}>
+            <Tag tone="neutral">
               {statusLabel}
             </Tag>
             <Tag tone="neutral">
@@ -51,8 +58,8 @@ const FeedbackListItem = ({
           <span className={styles.commentsCount}>{item.comments?.length || 0}</span>
         </div>
         <UpvoteButton 
-          initialUpvoteCount={item.upvoteCount}
-          initialHasVoted={item.hasVoted}
+          initialUpvoteCount={item.upvoteCount || 0}
+          initialHasVoted={item.hasVoted || false}
           onUpvote={onUpvote} 
           id={item.id} 
         />

@@ -30,7 +30,6 @@ const LoginPage = () => {
   }, [loading, user, redirectTo, navigate]);
 
   const handleGitHubSignIn = () => {
-    // Redirect to GitHub OAuth
     loginWithGitHub();
   };
 
@@ -47,9 +46,9 @@ const LoginPage = () => {
   return (
     <div className={styles.shell}>
       <div className={styles.form}>
-        <p className={styles.eyebrow}>Burdd developers</p>
-        <h1>Log in to triage</h1>
-        <p>Sign in with GitHub to access developer tools for your assigned projects.</p>
+        <p className={styles.eyebrow}>Burdd</p>
+        <h1>Log in</h1>
+        <p>Sign in below to access projects...</p>
         {error === 'auth_failed' && (
           <p className={styles.error}>Authentication failed. Please try again.</p>
         )}

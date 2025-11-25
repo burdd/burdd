@@ -3,15 +3,35 @@ import { useParams } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
 import Tag from '@components/common/Tag/Tag';
 import Select from '@components/common/Select/Select';
-import { getIssueById, getProjectById, getSprintById, getTicketsByIssue, updateIssue, getSprintsByProject } from '@/api';
+import FeedbackListItem from '@features/feedback/components/FeedbackListItem';
+import { getIssueById, getProjectById, getSprintById, getTicketsByIssue, updateIssue, getSprintsByProject, updateLinkedTicketsStatus } from '@/api';
 import { useAuth } from '@contexts/AuthContext';
 import styles from './IssueDetailsPage.module.css';
+
+const CATEGORY_DISPLAY_MAP = {
+  'feature_request': 'Feature Request',
+  'complaint': 'Issue'
+};
+
+const STATUS_DISPLAY_MAP = {
+  'new': 'NEW',
+  'triaged': 'TRIAGED',
+  'closed': 'CLOSED',
+  'rejected': 'REJECTED'
+};
 
 const statusToneMap = {
     queue: 'warning',
     progress: 'info',
     review: 'info',
     done: 'success',
+};
+
+const statusLabels = {
+  'queue': 'IN QUEUE',
+  'progress': 'IN PROGRESS',
+  'review': 'REVIEW',
+  'done': 'DONE'
 };
 
 const IssueDetailsPage = () => {
@@ -64,7 +84,8 @@ const IssueDetailsPage = () => {
         setError(null);
       } catch (err) {
         if (ignore) return;
-        setError(err instanceof Error ? err.message : 'Unknown Error');
+        console.error('Failed to load issue:', err);
+        setError('Failed to load issue. Please try again.');
       } finally {
         if (!ignore) {
           setLoading(false);
@@ -93,8 +114,11 @@ const IssueDetailsPage = () => {
     try {
       await updateIssue(issue.id, { status: newStatus });
       setIssue({ ...issue, status: newStatus });
+      
+      await updateLinkedTicketsStatus(issue.id);
     } catch (err) {
-      setUpdateError(err.message || 'Failed to update status');
+      console.error('Failed to update status:', err);
+      setUpdateError('Failed to update status.');
     } finally {
       setUpdating(false);
     }
@@ -118,7 +142,8 @@ const IssueDetailsPage = () => {
         setSprint(null);
       }
     } catch (err) {
-      setUpdateError(err.message || 'Failed to update sprint');
+      console.error('Failed to update sprint:', err);
+      setUpdateError('Failed to update sprint.');
     } finally {
       setUpdating(false);
     }
@@ -135,7 +160,8 @@ const IssueDetailsPage = () => {
       await updateIssue(issue.id, { assignee_id: assigneeId });
       setIssue({ ...issue, assigneeId });
     } catch (err) {
-      setUpdateError(err.message || 'Failed to update assignee');
+      console.error('Failed to update assignee:', err);
+      setUpdateError('Failed to update assignee.');
     } finally {
       setUpdating(false);
     }
@@ -163,9 +189,7 @@ const IssueDetailsPage = () => {
         <div>
           <p className={styles.eyebrow}>{project?.key}</p>
           <h2>{issue.title}</h2>
-        </div>
-        <div className={styles.tags}>
-          <Tag tone={statusToneMap[issue.status]}>{issue.status}</Tag>
+          <Tag tone="neutral">{statusLabels[issue.status] || issue.status.toUpperCase()}</Tag>
         </div>
       </header>
 
@@ -173,79 +197,76 @@ const IssueDetailsPage = () => {
         <div className={styles.errorBox}>{updateError}</div>
       )}
 
-      <article className={styles.panel}>
-        <h3>Description</h3>
-        <p>{issue.description || <span className={styles.muted}>No description provided</span>}</p>
-      </article>
+      <section className={styles.section}>
+        <p className={styles.description}>{issue.description || <span className={styles.muted}>No description provided</span>}</p>
+      </section>
 
-      <div className={styles.metaGrid}>
-        <div className={styles.panel}>
-          <h3>Status</h3>
+      <section className={styles.section}>
+        <div className={styles.detailsGrid}>
           {isMember ? (
-            <Select
-              value={issue.status}
-              onChange={(e) => handleStatusChange(e.target.value)}
-              disabled={updating}
-            >
-              <option value="queue">In queue</option>
-              <option value="progress">In progress</option>
-              <option value="review">Code review</option>
-              <option value="done">Done</option>
-            </Select>
+            <>
+              <Select
+                label="Status"
+                value={issue.status}
+                onChange={(e) => handleStatusChange(e.target.value)}
+                disabled={updating}
+              >
+                <option value="queue">In queue</option>
+                <option value="progress">In progress</option>
+                <option value="review">Code review</option>
+                <option value="done">Done</option>
+              </Select>
+
+              <Select
+                label="Sprint"
+                value={issue.sprintId || 'backlog'}
+                onChange={(e) => handleSprintChange(e.target.value)}
+                disabled={updating}
+              >
+                <option value="backlog">Backlog</option>
+                {sprints.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                label="Assignee"
+                value={issue.assigneeId || 'unassigned'}
+                onChange={(e) => handleAssigneeChange(e.target.value)}
+                disabled={updating}
+              >
+                <option value="unassigned">Unassigned</option>
+                {project?.members?.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </Select>
+            </>
           ) : (
-            <p className={styles.muted}>{issue.status}</p>
+            <>
+              <div className={styles.detailItem}>
+                <span className={styles.label}>Status:</span>
+                <span className={styles.value}>{statusLabels[issue.status] || issue.status.toUpperCase()}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.label}>Sprint:</span>
+                <span className={styles.value}>{sprint?.name ?? 'Backlog'}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.label}>Assignee:</span>
+                <span className={styles.value}>
+                  {project?.members?.find(m => m.id === issue.assigneeId)?.name ?? 'Unassigned'}
+                </span>
+              </div>
+            </>
           )}
         </div>
+      </section>
 
-        <div className={styles.panel}>
-          <h3>Sprint</h3>
-          {isMember ? (
-            <Select
-              value={issue.sprintId || 'backlog'}
-              onChange={(e) => handleSprintChange(e.target.value)}
-              disabled={updating}
-            >
-              <option value="backlog">Backlog</option>
-              {sprints.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </Select>
-          ) : (
-            <p className={styles.muted}>{sprint?.name ?? 'Backlog'}</p>
-          )}
-        </div>
-
-        <div className={styles.panel}>
-          <h3>Assignee</h3>
-          {isMember ? (
-            <Select
-              value={issue.assigneeId || 'unassigned'}
-              onChange={(e) => handleAssigneeChange(e.target.value)}
-              disabled={updating}
-            >
-              <option value="unassigned">Unassigned</option>
-              {project?.members?.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.name}
-                </option>
-              ))}
-            </Select>
-          ) : (
-            <p className={styles.muted}>
-              {project?.members?.find(m => m.id === issue.assigneeId)?.name ?? 'Unassigned'}
-            </p>
-          )}
-        </div>
-
-        <div className={styles.panel}>
-          <h3>Project</h3>
-          <p className={styles.muted}>{project?.name ?? 'Unassigned project'}</p>
-        </div>
-      </div>
-
-      <section className={styles.panel}>
+      <section className={styles.linkedTicketsSection}>
         <div className={styles.sectionHeader}>
           <h3>Linked tickets</h3>
           <span className={styles.muted}>{tickets.length}</span>
@@ -255,10 +276,14 @@ const IssueDetailsPage = () => {
         ) : (
           <ul className={styles.ticketList}>
             {tickets.map((ticket) => (
-              <li key={ticket.id}>
-                <p className={styles.ticketTitle}>{ticket.title}</p>
-                <p className={styles.muted}>{ticket.body}</p>
-              </li>
+              <FeedbackListItem 
+                key={ticket.id} 
+                item={ticket} 
+                projectId={ticket.projectId}
+                onUpvote={() => {}}
+                statusDisplayMap={STATUS_DISPLAY_MAP}
+                categoryDisplayMap={CATEGORY_DISPLAY_MAP}
+              />
             ))}
           </ul>
         )}

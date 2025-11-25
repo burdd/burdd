@@ -39,14 +39,66 @@
   color: var(--color-text);
 }
 
-.projectCell {
+.projectList {
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
+}
+
+.projectCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 120ms ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.projectCard:hover {
+  border-color: var(--color-accent);
+}
+
+.projectInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.projectKey {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .projectName {
   margin: 0;
   font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.projectMeta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.projectCell {
+  display: flex;
+  flex-direction: column;
 }
 
 .projectDescription {
@@ -57,14 +109,6 @@
 
 .muted {
   margin: 0;
-  color: var(--color-text-muted);
-}
-
-.statRow {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-size: 0.85rem;
   color: var(--color-text-muted);
 }
 
@@ -228,5 +272,13 @@
   
   .createButton {
     width: 100%;
+  }
+
+  .projectCard {
+    flex-direction: column;
+  }
+
+  .projectMeta {
+    gap: 0.75rem;
   }
 }

@@ -1,8 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
 
-// --- ICONS ---
-// Added IconSearch
-
 const IconMessageSquare = ({ className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -166,27 +163,20 @@ const IconSearch = ({ className }) => (
 );
 
 
-// --- MOCK DATA ---
-// Strictly aligned to the data model:
-// - Removed importanceCounts, myImportanceVote, sprint, imageUrl
-// - Added user object, expected, actual, steps, environment (for complaints)
-// - Categories are 'feature_request' or 'complaint'
-// - Statuses are 'new', 'triaged', 'closed', 'rejected'
 const mockFeedbackData = [
   {
     id: '1',
     user: { handle: 'TimelineFan', avatar_url: 'https://placehold.co/40x40/EC4899/FFFFFF?text=T' },
     title: 'Bring back chronological timeline by default',
     body: "I don't want the 'For You' algorithmic feed. Please make the 'Following' (chronological) timeline the default tab, or at least remember my choice.",
-    category: 'feature_request', // 'suggestion' maps to 'feature_request'
+    category: 'feature_request', 
     status: 'new',
     upvoteCount: 128,
     hasVoted: false,
-    createdAt: "2025-11-08T14:30:00Z", // 3 days ago
+    createdAt: "2025-11-08T14:30:00Z", 
     comments: [
       { id: 'c1', user: { handle: 'User123', avatar_url: 'https://placehold.co/40x40/6366F1/FFFFFF?text=U' }, body: 'This!! 100% this.' },
     ],
-    // Fields for 'complaint' are null
     expected: null,
     actual: null,
     steps: null,
@@ -219,7 +209,7 @@ const mockFeedbackData = [
     status: 'triaged',
     upvoteCount: 76,
     hasVoted: false,
-    createdAt: "2025-11-01T09:12:00Z", // 10 days ago
+    createdAt: "2025-11-01T09:12:00Z", 
     comments: [
       { id: 'c6', user: { handle: 'DevTeam', avatar_url: 'https://placehold.co/40x40/F59E0B/FFFFFF?text=D' }, body: 'Thanks for the report, we are actively investigating this.' }
     ],
@@ -264,17 +254,14 @@ const mockFeedbackData = [
   },
 ];
 
-// --- CONSTANTS ---
-// Aligned to data model
+
 const CATEGORIES = ['All', 'feature_request', 'complaint'];
 const STATUSES = ['All', 'new', 'triaged', 'closed', 'rejected'];
 const SORT_OPTIONS = ['Top', 'Newest', 'Hot'];
 
-// Mock current time for "time ago" consistency
 const MOCK_CURRENT_TIME = new Date("2025-11-11T23:39:00Z");
 
 
-// --- MAPS ---
 const CATEGORY_DISPLAY_MAP = {
   'feature_request': 'Feature Request',
   'complaint': 'Issue'
@@ -287,7 +274,6 @@ const STATUS_DISPLAY_MAP = {
   'rejected': 'Rejected'
 };
 
-// --- HELPER FUNCTIONS ---
 
 const formatTimeAgo = (dateString) => {
   const date = new Date(dateString);
@@ -317,12 +303,6 @@ const formatTimeAgo = (dateString) => {
 };
 
 
-// --- REUSABLE COMPONENTS ---
-
-/**
- * UpvoteButton Component
- * Styled for light mode
- */
 const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size = 'md' }) => {
   const [upvoted, setUpvoted] = useState(initialHasVoted);
   const [count, setCount] = useState(initialUpvoteCount);
@@ -357,10 +337,7 @@ const UpvoteButton = ({ initialUpvoteCount, initialHasVoted, onUpvote, id, size 
   );
 };
 
-/**
- * StatusBadge Component
- * Styled for light mode
- */
+
 const StatusBadge = ({ status }) => {
   const styles = {
     'new': 'bg-yellow-100 text-yellow-800',
@@ -377,10 +354,6 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-/**
- * CategoryTag Component
- * Styled for light mode
- */
 const CategoryTag = ({ category }) => {
   return (
     <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
@@ -389,10 +362,7 @@ const CategoryTag = ({ category }) => {
   );
 };
 
-/**
- * Comment Component
- * Styled for light mode
- */
+
 const Comment = ({ comment }) => (
   <div className="flex gap-3 py-4 border-b border-gray-200">
     <img
@@ -408,10 +378,7 @@ const Comment = ({ comment }) => (
   </div>
 );
 
-/**
- * FilterPills Component
- * Styled for light mode
- */
+
 const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) => (
   <div>
     <h3 className="text-sm font-semibold text-gray-500 mb-2">{title}</h3>
@@ -434,12 +401,7 @@ const FilterPills = ({ options, selected, onSelect, title, displayMap = {} }) =>
 );
 
 
-// --- PAGE COMPONENTS ---
 
-/**
- * FeedbackDashboard Component
- * Now renders FeedbackListItem
- */
 const FeedbackDashboard = ({
   feedbackItems,
   filters,
@@ -450,11 +412,9 @@ const FeedbackDashboard = ({
   onUpvote,
   searchTerm
 }) => {
-  // Apply filters, search, and sorting
   const filteredAndSortedItems = useMemo(() => {
     let items = [...feedbackItems];
 
-    // Filter by Search Term
     if (searchTerm) {
       items = items.filter(item => 
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -462,17 +422,14 @@ const FeedbackDashboard = ({
       );
     }
     
-    // Filter by Category
     if (filters.category !== 'All') {
       items = items.filter(item => item.category === filters.category);
     }
 
-    // Filter by Status
     if (filters.status !== 'All') {
       items = items.filter(item => item.status === filters.status);
     }
 
-    // Sort
     if (sortBy === 'Top') {
       items.sort((a, b) => b.upvoteCount - a.upvoteCount);
     } else if (sortBy === 'Newest') {
@@ -486,7 +443,6 @@ const FeedbackDashboard = ({
   
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* --- Filter/Sort Controls --- */}
       <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-200 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <FilterPills
           title="Category"
@@ -512,7 +468,6 @@ const FeedbackDashboard = ({
         </div>
       </div>
       
-      {/* --- Feedback List --- */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         {filteredAndSortedItems.length > 0 ? (
           <ul className="divide-y divide-gray-200">
@@ -536,10 +491,7 @@ const FeedbackDashboard = ({
   );
 };
 
-/**
- * FeedbackListItem Component
- * New component for the list view
- */
+
 const FeedbackListItem = ({ item, onClick, onUpvote }) => {
   return (
     <li
@@ -573,11 +525,7 @@ const FeedbackListItem = ({ item, onClick, onUpvote }) => {
   );
 };
 
-/**
- * FeedbackDetailPage Component
- * Styled for light mode. Removed Importance and Sprint.
- * Added user handle.
- */
+
 const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) => {
   const [newComment, setNewComment] = useState("");
   const [copied, setCopied] = useState(false);
@@ -656,7 +604,6 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
           
           <p className="text-lg text-gray-700 mt-6 whitespace-pre-wrap">{item.body}</p>
 
-          {/* Show extra fields if it's a complaint */}
           {item.category === 'complaint' && (
             <div className="mt-6 space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
               {item.environment && <div><strong className="text-gray-600">Environment:</strong> <span className="text-gray-700">{item.environment}</span></div>}
@@ -666,13 +613,11 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
             </div>
           )}
           
-          {/* Comments Section */}
           <div className="mt-10">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Comments ({item.comments.length})
             </h2>
             
-            {/* New Comment Form */}
             <form onSubmit={handleSubmitComment} className="mb-6">
               <textarea
                 value={newComment}
@@ -689,7 +634,6 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
               </button>
             </form>
             
-            {/* Comments List */}
             <div className="space-y-4">
               {item.comments.length > 0 ? (
                 item.comments.map(comment => <Comment key={comment.id} comment={comment} />)
@@ -704,17 +648,13 @@ const FeedbackDetailPage = ({ item, onUpvote, onAddComment, onBack, project }) =
   );
 };
 
-/**
- * SubmissionFormPage Component
- * Now dynamic based on category
- */
+
 const SubmissionFormPage = ({ onSubmit, onBack }) => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("feature_request");
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
   
-  // Fields for 'complaint'
   const [steps, setSteps] = useState("");
   const [expected, setExpected] = useState("");
   const [actual, setActual] = useState("");
@@ -812,7 +752,6 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
             ></textarea>
           </div>
           
-          {/* --- DYNAMIC COMPLAINT FIELDS --- */}
           {category === 'complaint' && (
             <div className="space-y-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
               <h3 className="text-lg font-medium text-gray-900">Issue Details</h3>
@@ -871,7 +810,6 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
             </div>
           )}
           
-          {/* Mock Attachment Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Attachments (Screenshots, etc.)
@@ -907,10 +845,7 @@ const SubmissionFormPage = ({ onSubmit, onBack }) => {
   );
 };
 
-/**
- * SubmissionSuccessPage Component
- * Styled for light mode
- */
+
 const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
   const [copied, setCopied] = useState(false);
   
@@ -982,10 +917,6 @@ const SubmissionSuccessPage = ({ submittedTicket, onBack, project }) => {
 };
 
 
-/**
- * Header Component
- * Styled for light mode, added search
- */
 const Header = ({ onShowSubmitForm, project, searchTerm, onSearchChange }) => (
   <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
     <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1024,7 +955,6 @@ const Header = ({ onShowSubmitForm, project, searchTerm, onSearchChange }) => (
 );
 
 
-// --- MAIN APP COMPONENT ---
 export default function App() {
   const [project, setProject] = useState({
     projectId: 'a7c4a1f8-a28a-4b0d-9b0a-0b2a3d3c4e5f',
@@ -1056,7 +986,6 @@ export default function App() {
     setPage('success');
   };
 
-  // Simulates POST/DELETE /tickets/:ticketId/upvotes
   const handleUpvote = useCallback((id, newCount, newHasVoted) => {
     setFeedbackItems(currentItems =>
       currentItems.map(item =>
@@ -1065,11 +994,9 @@ export default function App() {
     );
   }, []);
   
-  // Simulates POST /tickets/:ticketId/comments
   const handleAddComment = useCallback((id, commentBody) => {
     const newComment = {
       id: `c${new Date().getTime()}`,
-      // In a real app, this user would come from `GET /me`
       user: { handle: 'GuestUser', avatar_url: 'https://placehold.co/40x40/A1A1AA/FFFFFF?text=G' },
       body: commentBody,
     };
@@ -1082,12 +1009,10 @@ export default function App() {
     );
   }, []);
   
-  // Simulates POST /projects/:projectId/tickets
   const handleSubmitFeedback = useCallback((newTicketData) => {
     const newTicket = {
       ...newTicketData,
       id: crypto.randomUUID(),
-      // This user_id would come from the session / `GET /me`
       user: { handle: 'GuestUser', avatar_url: 'https://placehold.co/40x40/A1A1AA/FFFFFF?text=G' },
       status: 'new',
       upvoteCount: 0,
@@ -1100,7 +1025,6 @@ export default function App() {
     showSuccess(newTicket);
   }, [project]);
 
-  // --- Render Logic ---
   
   const renderPage = () => {
     switch (page) {

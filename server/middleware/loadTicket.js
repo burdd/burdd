@@ -3,6 +3,7 @@ import { asyncHandler } from "./asyncHandler.js"
 
 export const loadTicket = asyncHandler(async (req, res, next) => {
     const id = req.params.ticketId
+    const userId = req.user?.id
     
     if (!id) {
         const err = new Error('Invalid ticket Id')
@@ -27,14 +28,22 @@ export const loadTicket = asyncHandler(async (req, res, next) => {
             p.id AS project_id,
             p.name AS project_name,
             p.key AS project_key,
-            p.created_at AS project_created_at
+            p.created_at AS project_created_at,
+            COUNT(DISTINCT tu.user_id) AS upvote_count,
+            EXISTS(
+                SELECT 1 FROM ticket_upvotes 
+                WHERE ticket_id = t.id AND user_id = $2
+            ) AS has_voted
         FROM tickets AS t
         INNER JOIN projects AS p
             ON p.id = t.project_id
+        LEFT JOIN ticket_upvotes AS tu 
+            ON tu.ticket_id = t.id
         WHERE t.id = $1
+        GROUP BY t.id, p.id, p.name, p.key, p.created_at
     `
 
-    const { rows } = await pool.query(query, [id])
+    const { rows } = await pool.query(query, [id, userId])
     const ticket = rows[0]
 
     if (!ticket) {
@@ -55,7 +64,9 @@ export const loadTicket = asyncHandler(async (req, res, next) => {
         steps: ticket.steps,
         environment: ticket.environment,
         status: ticket.status,
-        created_at: ticket.created_at
+        created_at: ticket.created_at,
+        upvote_count: ticket.upvote_count,
+        has_voted: ticket.has_voted
     }
     req.project = {
         id: ticket.project_id,

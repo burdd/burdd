@@ -34,74 +34,104 @@
   font-size: 0.9rem;
 }
 
-.board {
+.issueList {
+  display: flex;
+  flex-direction: column;
+}
+
+.headerRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.column {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-panel);
-  display: flex;
-  flex-direction: column;
-  min-height: 260px;
-}
-
-.columnHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.9rem 1rem;
+  grid-template-columns: 1fr 180px 140px;
+  gap: 2rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--color-border);
-  text-transform: capitalize;
-}
-
-.columnBody {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  transition: all 150ms ease;
-  cursor: pointer;
-}
-
-.card:hover {
-  border-color: var(--color-accent);
-  background: rgba(255, 255, 255, 0.06);
-  transform: translateY(-1px);
-}
-
-.cardTitle {
-  margin: 0 0 0.35rem;
-  font-weight: 600;
-}
-
-.cardMeta {
-  margin: 0;
   font-size: 0.85rem;
+  font-weight: 600;
   color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.empty {
-  margin: 0;
-  color: var(--color-text-muted);
+.headerTitle {
+  display: block;
+}
+
+.headerAssignee {
+  display: block;
+}
+
+.headerCheckboxes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
   text-align: center;
 }
 
+.issueRow {
+  display: grid;
+  grid-template-columns: 1fr 180px 140px;
+  gap: 2rem;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 150ms ease;
+}
+
+.issueRow:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.issueTitle {
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.issueTitle:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.assignee {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.statusCheckboxes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  justify-items: center;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 @media (max-width: 720px) {
-  .board {
+  .headerRow,
+  .issueRow {
     grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .headerAssignee,
+  .headerCheckboxes {
+    display: none;
+  }
+
+  .assignee {
+    font-size: 0.85rem;
+  }
+
+  .statusCheckboxes {
+    justify-items: start;
   }
 }

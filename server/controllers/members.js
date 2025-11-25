@@ -69,7 +69,7 @@ export const addMemberToProject = asyncHandler(async (req, res) => {
 
     const query = `
         INSERT INTO project_members (project_id, user_id, role, joined_at)
-        VALUES ($1, $2, $3)
+        VALUES ($1, $2, $3, NOW())
         RETURNING project_id, user_id, role, joined_at
     `
     const { rows } = await pool.query(query, [projectId, userId, role])

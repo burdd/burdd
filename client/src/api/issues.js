@@ -24,14 +24,8 @@ export async function getIssuesByTicket(ticketId) {
     return data.issues?.map(transformIssue) || [];
 }
 export async function getIssueById(issueId) {
-    try {
-        const data = await fetchJson(`${API_BASE_URL}/issues/${issueId}`);
-        return data.issue ? transformIssue(data.issue) : undefined;
-    }
-    catch (error) {
-        console.error('Failed to fetch issue:', error);
-        return undefined;
-    }
+    const data = await fetchJson(`${API_BASE_URL}/issues/${issueId}`);
+    return data.issue ? transformIssue(data.issue) : undefined;
 }
 export async function createIssue(projectId, data) {
     const response = await fetchJson(`${API_BASE_URL}/projects/${projectId}/issues`, {
@@ -57,4 +51,13 @@ export async function linkIssueToTicket(ticketId, issueId) {
         method: 'POST',
         body: JSON.stringify({ issueId }),
     });
+}
+export async function updateLinkedTicketsStatus(issueId) {
+    const { getTicketsByIssue, updateTicketStatusBasedOnIssues } = await import('./tickets');
+    
+    const tickets = await getTicketsByIssue(issueId);
+    
+    for (const ticket of tickets) {
+        await updateTicketStatusBasedOnIssues(ticket.id);
+    }
 }

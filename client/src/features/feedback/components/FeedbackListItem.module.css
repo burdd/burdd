@@ -1,12 +1,15 @@
 .item {
   display: flex;
   align-items: center;
-  padding: 1rem 1.5rem;
-  transition: background-color 150ms ease;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 150ms ease;
 }
 
 .item:hover {
-  background-color: #f9fafb;
+  border-color: var(--color-accent);
 }
 
 .link {
@@ -21,9 +24,17 @@
 }
 
 .title {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--fb-text, #111827);
+  color: var(--color-text);
+  margin: 0 0 0.5rem;
+}
+
+.description {
+  margin: 0 0 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .meta {
@@ -36,7 +47,7 @@
 
 .metaText {
   font-size: 0.875rem;
-  color: var(--fb-text-muted, #6b7280);
+  color: var(--color-text-muted);
 }
 
 .actions {
@@ -51,7 +62,7 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  color: var(--fb-text-muted, #6b7280);
+  color: var(--color-text-muted);
 }
 
 .commentsCount {

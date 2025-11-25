@@ -3,6 +3,7 @@ import AppLayout from '@components/layout/AppLayout';
 import LoginPage from '@features/auth/pages/LoginPage';
 import ProjectsListPage from '@features/projects/pages/ProjectsListPage';
 import ProjectDetailsPage from '@features/projects/pages/ProjectDetailsPage';
+import MembersPage from '@features/projects/pages/MembersPage';
 import SprintBoardPage from '@features/sprints/pages/SprintBoardPage';
 import IssueDetailsPage from '@features/issues/pages/IssueDetailsPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -21,6 +22,7 @@ const App = () => {
               <Route index element={<Navigate to="/projects" replace />} />
               <Route path="/projects" element={<ProjectsListPage />} />
               <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
+              <Route path="/projects/:projectId/members" element={<MembersPage />} />
               <Route path="/projects/:projectId/feedback" element={<FeedbackDashboardPage />} />
               <Route path="/projects/:projectId/feedback/submit" element={<FeedbackSubmitPage />} />
               <Route path="/projects/:projectId/feedback/:ticketId" element={<FeedbackDetailPage />} />

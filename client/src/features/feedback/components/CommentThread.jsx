@@ -3,12 +3,6 @@ import styles from './CommentThread.module.css';
 
 const Comment = ({ comment }) => (
   <div className={styles.comment}>
-    <img
-      src={comment.user.avatarUrl}
-      alt={comment.user.handle}
-      className={styles.avatar}
-      onError={(e) => { (e.target).src = 'https=?'; }}
-    />
     <div>
       <h4 className={styles.commentAuthor}>{comment.user.handle}</h4>
       <p className={styles.commentBody}>{comment.body}</p>
@@ -29,10 +23,6 @@ const CommentThread = ({ comments, onAddComment }) => {
 
   return (
     <div className={styles.thread}>
-      <h2 className={styles.title}>
-        Comments ({comments.length})
-      </h2>
-      
       <form onSubmit={handleSubmitComment} className={styles.form}>
         <textarea
           value={newComment}

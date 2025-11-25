@@ -1,37 +1,58 @@
-.container { max-width: 48rem; margin: 1.5rem auto 0; padding: 0 1rem; }
-.metaText { padding: 2rem; text-align: center; color: var(--fb-text-muted, #6b7280); }
-.backLink { display: flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: var(--fb-accent, #4f46e5); margin-bottom: 1.5rem; transition: color 150ms ease; }
-.backLink:hover { color: #4338ca; }
-.panel { background-color: var(--fb-panel, #ffffff); border-radius: 1rem; border: 1px solid var(--fb-border, #e5e7eb); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05); overflow: hidden; padding: 1.5rem 2rem; }
+.container { }
+.metaText { padding: 2rem; text-align: center; color: var(--color-text-muted); }
+.backLink { display: flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: var(--color-accent); margin-bottom: 1.5rem; transition: color 150ms ease; text-decoration: none; }
+.backLink:hover { color: var(--color-accent-hover, #3730a3); }
+.panel { padding: 0; }
 .header { display: flex; flex-direction: column-reverse; gap: 1rem; }
 @media (min-width: 640px) { .header { flex-direction: row; align-items: flex-start; justify-content: space-between; } }
-.title { font-size: 1.875rem; font-weight: 700; color: var(--fb-text, #111827); line-height: 1.2; }
+.title { font-size: 1.875rem; font-weight: 700; color: var(--color-text); line-height: 1.2; margin: 0; }
 .metaGrid { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin-top: 0.75rem; }
-.metaItem { display: flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; color: var(--fb-text-muted, #6b7280); }
+.metaItem { display: flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; color: var(--color-text-muted); }
 .actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
-.actionButton { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.625rem; font-weight: 600; border-radius: 0.5rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: all 150ms ease; background-color: var(--fb-panel, #ffffff); color: var(--fb-text-muted, #6b7280); border: 1px solid var(--fb-border, #d1d5db); }
-.actionButton:hover { background-color: #f9fafb; color: var(--fb-text, #111827); }
+.actionButton { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.625rem; font-weight: 600; border-radius: var(--radius-md); transition: all 150ms ease; background: transparent; color: var(--color-text); border: 1px solid var(--color-border); cursor: pointer; }
+.actionButton:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--color-accent); color: var(--color-accent); }
 .copiedButton { background-color: #dcfce7; color: #166534; border-color: #bbf7d0; }
-.body { font-size: 1.125rem; color: var(--fb-text-muted, #374151); margin-top: 1.5rem; white-space: pre-wrap; line-height: 1.7; }
-.complaintDetails { margin-top: 1.5rem; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--fb-border, #e5e7eb); background-color: #f9fafb; font-size: 0.875rem; color: var(--fb-text-muted, #374151); line-height: 1.6; }
+.body { font-size: 1rem; color: var(--color-text-muted); margin-top: 2rem; white-space: pre-wrap; line-height: 1.7; }
+.complaintDetails { margin-top: 2rem; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: rgba(255, 255, 255, 0.02); font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.6; }
 .complaintDetails div { padding: 0.25rem 0; }
-.complaintDetails strong { color: var(--fb-text, #111827); font-weight: 600; margin-right: 0.5rem; }
+.complaintDetails strong { color: var(--color-text); font-weight: 600; margin-right: 0.5rem; }
 .complaintDetails pre { white-space: pre-wrap; font-family: inherit; margin-top: 0.25rem; padding-left: 0.5rem; }
-.memberActions { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--fb-border, #e5e7eb); }
-.actionBtn { padding: 0.625rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.5rem; transition: all 150ms ease; background-color: var(--fb-panel, #ffffff); color: var(--fb-accent, #4f46e5); border: 1px solid var(--fb-accent, #4f46e5); }
-.actionBtn:hover { background-color: var(--fb-accent, #4f46e5); color: white; }
-.linkIssuePanel { margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--fb-border, #e5e7eb); background-color: #f9fafb; }
-.linkIssuePanel h4 { margin: 0 0 0.75rem; font-size: 0.875rem; font-weight: 600; color: var(--fb-text, #111827); }
+
+.linkedIssuesSection {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.linkedIssuesSection h3 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+
+.linkedIssuesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.memberActions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+.actionBtn { padding: 0.625rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: var(--radius-md); transition: all 150ms ease; background: transparent; color: var(--color-accent); border: 1px solid var(--color-accent); cursor: pointer; }
+.actionBtn:hover { background: var(--color-accent); color: white; }
+.rejectBtn { padding: 0.625rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: var(--radius-md); transition: all 150ms ease; background: transparent; color: rgb(239, 68, 68); border: 1px solid rgb(239, 68, 68); cursor: pointer; }
+.rejectBtn:hover { background: rgb(239, 68, 68); color: white; }
+.linkIssuePanel { margin-top: 1rem; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: rgba(255, 255, 255, 0.02); }
+.linkIssuePanel h4 { margin: 0 0 0.75rem; font-size: 0.875rem; font-weight: 600; color: var(--color-text); }
 .formGroup { margin-bottom: 0.75rem; }
-.formLabel { display: block; margin-bottom: 0.375rem; font-size: 0.875rem; font-weight: 500; color: var(--fb-text, #111827); }
-.formInput { width: 100%; padding: 0.5rem; border: 1px solid var(--fb-border, #d1d5db); border-radius: 0.375rem; font-size: 0.875rem; background-color: white; }
-.formInput:focus { outline: none; border-color: var(--fb-accent, #4f46e5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-.formTextarea { width: 100%; padding: 0.5rem; border: 1px solid var(--fb-border, #d1d5db); border-radius: 0.375rem; font-size: 0.875rem; background-color: white; font-family: inherit; resize: vertical; }
-.formTextarea:focus { outline: none; border-color: var(--fb-accent, #4f46e5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-.issueSelect { width: 100%; padding: 0.5rem; border: 1px solid var(--fb-border, #d1d5db); border-radius: 0.375rem; font-size: 0.875rem; background-color: white; }
+.formLabel { display: block; margin-bottom: 0.375rem; font-size: 0.875rem; font-weight: 500; color: var(--color-text); }
+.formInput { width: 100%; padding: 0.65rem 0.9rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.875rem; background: rgba(255, 255, 255, 0.04); color: var(--color-text); }
+.formInput:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.formTextarea { width: 100%; padding: 0.65rem 0.9rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.875rem; background: rgba(255, 255, 255, 0.04); color: var(--color-text); font-family: inherit; resize: vertical; }
+.formTextarea:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.issueSelect { width: 100%; padding: 0.65rem 0.9rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.875rem; background: rgba(255, 255, 255, 0.04); color: var(--color-text); }
 .linkActions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-.primaryBtn { padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.375rem; background-color: var(--fb-accent, #4f46e5); color: white; border: none; transition: background-color 150ms ease; }
-.primaryBtn:hover:not(:disabled) { background-color: #4338ca; }
+.primaryBtn { padding: 0.65rem 1.25rem; font-size: 0.875rem; font-weight: 600; border-radius: var(--radius-md); background: var(--color-accent); color: white; border: none; cursor: pointer; transition: background 150ms ease; }
+.primaryBtn:hover:not(:disabled) { background: var(--color-accent-hover, #3730a3); }
 .primaryBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-.cancelBtn { padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.375rem; background-color: white; color: var(--fb-text-muted, #6b7280); border: 1px solid var(--fb-border, #d1d5db); transition: all 150ms ease; }
-.cancelBtn:hover { background-color: #f9fafb; }
+.cancelBtn { padding: 0.65rem 1.25rem; font-size: 0.875rem; font-weight: 600; border-radius: var(--radius-md); background: transparent; color: var(--color-text); border: 1px solid var(--color-border); cursor: pointer; transition: all 150ms ease; }
+.cancelBtn:hover { background: rgba(255, 255, 255, 0.04); }

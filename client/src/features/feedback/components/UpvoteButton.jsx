@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './UpvoteButton.module.css';
 
 const IconChevronUp = ({ className }) => (
@@ -14,6 +14,11 @@ const UpvoteButton = ({
 }) => {
   const [upvoted, setUpvoted] = useState(initialHasVoted);
   const [count, setCount] = useState(initialUpvoteCount);
+
+  useEffect(() => {
+    setUpvoted(initialHasVoted);
+    setCount(initialUpvoteCount);
+  }, [initialHasVoted, initialUpvoteCount]);
 
   const handleClick = (e) => {
     e.stopPropagation();

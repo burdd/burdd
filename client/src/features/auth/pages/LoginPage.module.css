@@ -2,19 +2,20 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, #fefefe 0%, #f5f6fa 45%, #eceff3 100%);
+  background: var(--color-bg);
+  padding: 2rem;
 }
 
 .form {
   width: min(90vw, 420px);
-  background: var(--color-panel);
+  background: transparent;
   padding: 2.5rem;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-bottom: 10vh;
 }
 
 .eyebrow {

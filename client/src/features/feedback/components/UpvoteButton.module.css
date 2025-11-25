@@ -18,27 +18,28 @@
 }
 
 .active {
-  background-color: var(--fb-accent, #4f46e5);
-  border-color: var(--fb-accent, #4f46e5);
-  color: var(--fb-accent-text, #ffffff);
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
 }
 
 .active .icon {
-  color: var(--fb-accent-text, #ffffff);
+  color: white;
 }
 
 .inactive {
-  background-color: var(--fb-panel, #ffffff);
-  border-color: var(--fb-border, #d1d5db);
-  color: var(--fb-text, #1f2937);
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
 }
 
 .inactive:hover {
-  background-color: #f9fafb;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--color-accent);
 }
 
 .inactive .icon {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .icon {

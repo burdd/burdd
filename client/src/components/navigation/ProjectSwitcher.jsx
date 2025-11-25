@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Select from '@components/common/Select/Select';
 import { getProjects } from '@/api';
 import styles from './ProjectSwitcher.module.css';
 
@@ -20,7 +21,8 @@ const ProjectSwitcher = () => {
       })
       .catch((err) => {
         if (ignore) return;
-        setError(err.message);
+        console.error('Failed to load projects:', err);
+        setError('Failed to load projects.');
       });
 
     return () => {
@@ -44,10 +46,9 @@ const ProjectSwitcher = () => {
   };
 
   return (
-    <label className={styles.switcher}>
+    <div className={styles.switcher}>
       <span className={styles.label}>Project</span>
-      <select
-        className={styles.select}
+      <Select
         value={activeProjectId}
         onChange={handleChange}
         disabled={!!error || projects.length === 0}
@@ -58,9 +59,9 @@ const ProjectSwitcher = () => {
             {project.name}
           </option>
         ))}
-      </select>
+      </Select>
       {error && <span className={styles.error}>Offline</span>}
-    </label>
+    </div>
   );
 };
 

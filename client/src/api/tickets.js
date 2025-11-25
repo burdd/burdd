@@ -1,22 +1,12 @@
 import { API_BASE_URL, fetchJson } from './config';
 async function getUserById(userId) {
-    try {
-        const response = await fetchJson(`${API_BASE_URL}/users/${userId}`);
-        return {
-            id: response.user.id,
-            name: response.user.full_name || response.user.handle,
-            handle: response.user.handle,
-            avatarUrl: response.user.avatar_url || undefined,
-        };
-    }
-    catch {
-        return {
-            id: userId,
-            name: 'Unknown User',
-            handle: 'unknown',
-            avatarUrl: undefined,
-        };
-    }
+    const response = await fetchJson(`${API_BASE_URL}/users/${userId}`);
+    return {
+        id: response.user.id,
+        name: response.user.full_name || response.user.handle,
+        handle: response.user.handle,
+        avatarUrl: response.user.avatar_url || undefined,
+    };
 }
 async function transformTicket(t) {
     const [user, issuesResponse, commentsResponse] = await Promise.all([
@@ -83,14 +73,8 @@ export async function getTicketsByIssue(issueId) {
     return Promise.all(data.tickets.map(transformTicket));
 }
 export async function getTicketById(ticketId) {
-    try {
-        const data = await fetchJson(`${API_BASE_URL}/tickets/${ticketId}`);
-        return data.ticket ? await transformTicket(data.ticket) : undefined;
-    }
-    catch (error) {
-        console.error('Failed to fetch ticket:', error);
-        return undefined;
-    }
+    const data = await fetchJson(`${API_BASE_URL}/tickets/${ticketId}`);
+    return data.ticket ? await transformTicket(data.ticket) : undefined;
 }
 export async function createTicket(projectId, data) {
     const response = await fetchJson(`${API_BASE_URL}/projects/${projectId}/tickets`, {
@@ -129,4 +113,31 @@ export async function createTicketComment(ticketId, body) {
 export async function getTicketAttachments(ticketId) {
     const data = await fetchJson(`${API_BASE_URL}/tickets/${ticketId}/attachments`);
     return data.attachments || [];
+}
+export async function updateTicketStatusBasedOnIssues(ticketId) {
+    const ticket = await getTicketById(ticketId);
+    
+    if (!ticket || !ticket.relatedIssues) {
+        return;
+    }
+    
+    if (ticket.relatedIssues.length === 0) {
+        if (ticket.status !== 'new' && ticket.status !== 'rejected') {
+            await updateTicket(ticketId, { status: 'new' });
+        }
+        return;
+    }
+    
+    const allDone = ticket.relatedIssues.every(issue => issue.status === 'done');
+    
+    let newStatus;
+    if (allDone) {
+        newStatus = 'closed';
+    } else {
+        newStatus = 'triaged';
+    }
+    
+    if (ticket.status !== newStatus && ticket.status !== 'rejected') {
+        await updateTicket(ticketId, { status: newStatus });
+    }
 }

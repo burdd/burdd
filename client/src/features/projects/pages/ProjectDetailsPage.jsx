@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import EmptyState from '@components/common/EmptyState/EmptyState';
 import Tag from '@components/common/Tag/Tag';
-import { getProjectById, getSprintsByProject, getIssuesByProject, updateProject, deleteProject, createSprint, createIssue } from '@/api';
+import Select from '@components/common/Select/Select';
+import IssueListItem from '@/features/issues/components/IssueListItem';
+import { getProjectById, getSprintsByProject, getIssuesByProject, updateProject, createSprint, createIssue, searchUsers, addMemberToProject, deleteProject } from '@/api';
 import { useAuth } from '@contexts/AuthContext';
 import styles from './ProjectDetailsPage.module.css';
 
@@ -24,7 +26,6 @@ const ProjectDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateSprintModal, setShowCreateSprintModal] = useState(false);
   const [showCreateIssueModal, setShowCreateIssueModal] = useState(false);
   const [editName, setEditName] = useState('');
@@ -35,10 +36,18 @@ const ProjectDetailsPage = () => {
   const [issueTitle, setIssueTitle] = useState('');
   const [issueDescription, setIssueDescription] = useState('');
   const [updating, setUpdating] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [creatingSprint, setCreatingSprint] = useState(false);
   const [creatingIssue, setCreatingIssue] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [sprintSearchTerm, setSprintSearchTerm] = useState('');
+  const [issueSearchTerm, setIssueSearchTerm] = useState('');
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('dev');
+  const [addingMember, setAddingMember] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!projectId) return;
@@ -64,7 +73,8 @@ const ProjectDetailsPage = () => {
       })
       .catch((err) => {
         if (ignore) return;
-        setError(err.message);
+        console.error('Failed to load project:', err);
+        setError('Failed to load project. Please try again.');
       })
       .finally(() => {
         if (ignore) return;
@@ -79,6 +89,21 @@ const ProjectDetailsPage = () => {
   const backlogIssues = useMemo(() => {
     return issues.filter(issue => !issue.sprintId);
   }, [issues]);
+
+  const filteredSprints = useMemo(() => {
+    if (!sprintSearchTerm) return sprints;
+    return sprints.filter(sprint => 
+      sprint.name.toLowerCase().includes(sprintSearchTerm.toLowerCase())
+    );
+  }, [sprints, sprintSearchTerm]);
+
+  const filteredBacklogIssues = useMemo(() => {
+    if (!issueSearchTerm) return backlogIssues;
+    return backlogIssues.filter(issue => 
+      issue.title.toLowerCase().includes(issueSearchTerm.toLowerCase()) ||
+      (issue.description && issue.description.toLowerCase().includes(issueSearchTerm.toLowerCase()))
+    );
+  }, [backlogIssues, issueSearchTerm]);
 
   const isAdmin = useMemo(() => {
     if (!user || !project) return false;
@@ -111,22 +136,10 @@ const ProjectDetailsPage = () => {
       setProject({ ...project, name: editName, key: editKey.toUpperCase() });
       setShowEditModal(false);
     } catch (err) {
-      setActionError(err.message || 'Failed to update project');
+      console.error('Failed to update project:', err);
+      setActionError('Failed to update project.');
     } finally {
       setUpdating(false);
-    }
-  };
-
-  const handleDeleteProject = async () => {
-    setDeleting(true);
-    setActionError('');
-    
-    try {
-      await deleteProject(projectId);
-      navigate('/projects');
-    } catch (err) {
-      setActionError(err.message || 'Failed to delete project');
-      setDeleting(false);
     }
   };
 
@@ -135,6 +148,24 @@ const ProjectDetailsPage = () => {
     setEditKey(project.key);
     setActionError('');
     setShowEditModal(true);
+  };
+
+  const handleDeleteProject = async () => {
+    if (!confirm(`Are you sure you want to delete "${project.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    setDeleting(true);
+    setActionError('');
+
+    try {
+      await deleteProject(projectId);
+      navigate('/projects');
+    } catch (err) {
+      console.error('Failed to delete project:', err);
+      setActionError('Failed to delete project.');
+      setDeleting(false);
+    }
   };
 
   const handleCreateSprint = async (e) => {
@@ -166,7 +197,8 @@ const ProjectDetailsPage = () => {
       setSprintEnd('');
       setShowCreateSprintModal(false);
     } catch (err) {
-      setActionError(err.message || 'Failed to create sprint');
+      console.error('Failed to create sprint:', err);
+      setActionError('Failed to create sprint.');
     } finally {
       setCreatingSprint(false);
     }
@@ -195,9 +227,58 @@ const ProjectDetailsPage = () => {
       setIssueDescription('');
       setShowCreateIssueModal(false);
     } catch (err) {
-      setActionError(err.message || 'Failed to create issue');
+      console.error('Failed to create issue:', err);
+      setActionError('Failed to create issue.');
     } finally {
       setCreatingIssue(false);
+    }
+  };
+
+  const handleUserSearch = async (term) => {
+    setUserSearchTerm(term);
+    if (term.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    
+    try {
+      const users = await searchUsers(term);
+      const existingMemberIds = new Set(project.members.map(m => m.id));
+      const filteredUsers = users.filter(u => !existingMemberIds.has(u.id));
+      setSearchResults(filteredUsers);
+    } catch (err) {
+      console.error('Failed to search users:', err);
+      setSearchResults([]);
+    }
+  };
+
+  const handleAddMember = async (e) => {
+    e.preventDefault();
+    
+    if (!selectedUserId) {
+      setActionError('Please select a user');
+      return;
+    }
+    
+    setAddingMember(true);
+    setActionError('');
+    
+    try {
+      await addMemberToProject(projectId, selectedUserId, selectedRole);
+      
+      const updatedProject = await getProjectById(projectId);
+      setProject(updatedProject);
+      
+      setShowAddMemberModal(false);
+      setUserSearchTerm('');
+      setSearchResults([]);
+      setSelectedUserId(null);
+      setSelectedRole('dev');
+    } catch (err) {
+      console.error('Failed to add member:', err);
+      setActionError('Failed to add member.');
+    } finally {
+      setAddingMember(false);
     }
   };
 
@@ -229,14 +310,9 @@ const ProjectDetailsPage = () => {
             View Tickets
           </Link>
           {isAdmin && (
-            <>
-              <button onClick={openEditModal} className={styles.editButton}>
-                Edit Project
-              </button>
-              <button onClick={() => setShowDeleteModal(true)} className={styles.deleteButton}>
-                Delete
-              </button>
-            </>
+            <button onClick={openEditModal} className={styles.editButton}>
+              Edit Project
+            </button>
           )}
         </div>
       </header>
@@ -244,13 +320,21 @@ const ProjectDetailsPage = () => {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h3>Team</h3>
-          <p className={styles.muted}>{project.members.length} members</p>
+          <div className={styles.sectionActions}>
+            <p className={styles.muted}>{project.members.length} members</p>
+            <Link to={`/projects/${projectId}/members`} className={styles.viewTicketsLink}>
+              Manage Team
+            </Link>
+          </div>
         </div>
         <div className={styles.memberGrid}>
           {project.members.map((member) => (
             <div key={member.id} className={styles.memberCard}>
-              <p className={styles.memberName}>{member.name}</p>
-              <Tag tone={member.role === 'admin' ? 'info' : 'neutral'}>{member.role}</Tag>
+              <div className={styles.memberInfo}>
+                <p className={styles.memberName}>{member.name}</p>
+                <p className={styles.memberHandle}>{member.handle}</p>
+              </div>
+              <Tag tone="neutral">{member.role}</Tag>
             </div>
           ))}
         </div>
@@ -260,7 +344,13 @@ const ProjectDetailsPage = () => {
         <div className={styles.sectionHeader}>
           <h3>Sprints</h3>
           <div className={styles.sectionActions}>
-            <p className={styles.muted}>Most recent first</p>
+            <input
+              type="text"
+              placeholder="Search sprints..."
+              className={styles.searchInput}
+              value={sprintSearchTerm}
+              onChange={(e) => setSprintSearchTerm(e.target.value)}
+            />
             {isAdmin && (
               <button 
                 onClick={() => setShowCreateSprintModal(true)} 
@@ -271,11 +361,11 @@ const ProjectDetailsPage = () => {
             )}
           </div>
         </div>
-        {sprints.length === 0 ? (
-          <EmptyState title="No sprints yet" description="Create a sprint to start planning." />
+        {filteredSprints.length === 0 ? (
+          <EmptyState title="No sprints found" description={sprintSearchTerm ? "Try a different search term." : "Create a sprint to start planning."} />
         ) : (
           <div className={styles.sprintList}>
-            {sprints
+            {filteredSprints
               .slice()
               .reverse()
               .map((sprint) => (
@@ -296,7 +386,13 @@ const ProjectDetailsPage = () => {
         <div className={styles.sectionHeader}>
           <h3>Backlog</h3>
           <div className={styles.sectionActions}>
-            <p className={styles.muted}>{backlogIssues.length} issues not in any sprint</p>
+            <input
+              type="text"
+              placeholder="Search issues..."
+              className={styles.searchInput}
+              value={issueSearchTerm}
+              onChange={(e) => setIssueSearchTerm(e.target.value)}
+            />
             {isMember && (
               <button 
                 onClick={() => setShowCreateIssueModal(true)} 
@@ -307,30 +403,16 @@ const ProjectDetailsPage = () => {
             )}
           </div>
         </div>
-        {backlogIssues.length === 0 ? (
-          <EmptyState title="No backlog issues" description="All issues are assigned to sprints." />
+        {filteredBacklogIssues.length === 0 ? (
+          <EmptyState title="No issues found" description={issueSearchTerm ? "Try a different search term." : "All issues are assigned to sprints."} />
         ) : (
           <div className={styles.issueList}>
-            {backlogIssues.map((issue) => (
-              <Link key={issue.id} className={styles.issueCard} to={`/issues/${issue.id}`}>
-                <div className={styles.issueHeader}>
-                  <p className={styles.issueTitle}>{issue.title}</p>
-                  <Tag tone={
-                    issue.status === 'done' ? 'success' : 
-                    issue.status === 'progress' ? 'info' : 
-                    issue.status === 'review' ? 'warning' : 
-                    'neutral'
-                  }>
-                    {statusLabels[issue.status]}
-                  </Tag>
-                </div>
-                {issue.description && (
-                  <p className={styles.issueDescription}>{issue.description}</p>
-                )}
-                <div className={styles.issueMeta}>
-                  <span>{formatDate(issue.createdAt)}</span>
-                </div>
-              </Link>
+            {filteredBacklogIssues.map((issue) => (
+              <IssueListItem
+                key={issue.id}
+                issue={issue}
+                showDescription={true}
+              />
             ))}
           </div>
         )}
@@ -345,7 +427,7 @@ const ProjectDetailsPage = () => {
               
               <div className={styles.formGroup}>
                 <label htmlFor="editProjectName" className={styles.label}>
-                  Project Name *
+                  Project Name*
                 </label>
                 <input
                   id="editProjectName"
@@ -359,7 +441,7 @@ const ProjectDetailsPage = () => {
               
               <div className={styles.formGroup}>
                 <label htmlFor="editProjectKey" className={styles.label}>
-                  Project Key *
+                  Project Key*
                 </label>
                 <input
                   id="editProjectKey"
@@ -375,58 +457,34 @@ const ProjectDetailsPage = () => {
               <div className={styles.modalActions}>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowEditModal(false);
-                    setActionError('');
-                  }}
-                  className={styles.cancelButton}
-                  disabled={updating}
+                  onClick={handleDeleteProject}
+                  className={styles.removeButton}
+                  disabled={updating || deleting}
                 >
-                  Cancel
+                  {deleting ? 'Deleting...' : 'Delete'}
                 </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={updating || !editName.trim() || !editKey.trim()}
-                >
-                  {updating ? 'Updating...' : 'Update Project'}
-                </button>
+                <div className={styles.rightActions}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setActionError('');
+                    }}
+                    className={styles.cancelButton}
+                    disabled={updating || deleting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className={styles.submitButton}
+                    disabled={updating || deleting || !editName.trim() || !editKey.trim()}
+                  >
+                    {updating ? 'Updating...' : 'Update'}
+                  </button>
+                </div>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {showDeleteModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowDeleteModal(false)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitle}>Delete Project</h3>
-            <p className={styles.deleteWarning}>
-              Are you sure you want to delete <strong>{project.name}</strong>? This action cannot be undone and will delete all sprints, issues, and tickets associated with this project.
-            </p>
-            {actionError && <div className={styles.errorBox}>{actionError}</div>}
-            
-            <div className={styles.modalActions}>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setActionError('');
-                }}
-                className={styles.cancelButton}
-                disabled={deleting}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleDeleteProject}
-                className={styles.dangerButton}
-                disabled={deleting}
-              >
-                {deleting ? 'Deleting...' : 'Delete Project'}
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -440,7 +498,7 @@ const ProjectDetailsPage = () => {
               
               <div className={styles.formGroup}>
                 <label htmlFor="sprintName" className={styles.label}>
-                  Sprint Name *
+                  Sprint Name*
                 </label>
                 <input
                   id="sprintName"
@@ -455,7 +513,7 @@ const ProjectDetailsPage = () => {
               
               <div className={styles.formGroup}>
                 <label htmlFor="sprintStart" className={styles.label}>
-                  Start Date *
+                  Start Date*
                 </label>
                 <input
                   id="sprintStart"
@@ -469,7 +527,7 @@ const ProjectDetailsPage = () => {
               
               <div className={styles.formGroup}>
                 <label htmlFor="sprintEnd" className={styles.label}>
-                  End Date *
+                  End Date*
                 </label>
                 <input
                   id="sprintEnd"
@@ -518,7 +576,7 @@ const ProjectDetailsPage = () => {
               
               <div className={styles.formGroup}>
                 <label htmlFor="issueTitle" className={styles.label}>
-                  Issue Title *
+                  Issue Title*
                 </label>
                 <input
                   id="issueTitle"
@@ -566,6 +624,91 @@ const ProjectDetailsPage = () => {
                   disabled={creatingIssue || !issueTitle.trim()}
                 >
                   {creatingIssue ? 'Creating...' : 'Create Issue'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showAddMemberModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowAddMemberModal(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>Add Team Member</h3>
+            <form onSubmit={handleAddMember} className={styles.form}>
+              {actionError && <div className={styles.errorBox}>{actionError}</div>}
+              
+              <Select
+                label="Role"
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+                disabled={addingMember}
+              >
+                <option value="dev">Developer</option>
+                <option value="admin">Admin</option>
+              </Select>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="userSearch" className={styles.label}>
+                  Search User*
+                </label>
+                <input
+                  id="userSearch"
+                  type="text"
+                  value={userSearchTerm}
+                  onChange={(e) => handleUserSearch(e.target.value)}
+                  className={styles.input}
+                  placeholder="Type name or handle..."
+                  disabled={addingMember}
+                  autoComplete="off"
+                />
+                {searchResults.length > 0 && (
+                  <div className={styles.searchResults}>
+                    {searchResults.map((user) => (
+                      <div
+                        key={user.id}
+                        className={`${styles.searchResultItem} ${selectedUserId === user.id ? styles.selected : ''}`}
+                        onClick={() => {
+                          setSelectedUserId(user.id);
+                          setUserSearchTerm(user.full_name);
+                          setSearchResults([]);
+                        }}
+                      >
+                        {user.avatar_url && (
+                          <img src={user.avatar_url} alt={user.full_name} className={styles.userAvatar} />
+                        )}
+                        <div>
+                          <p className={styles.userName}>{user.full_name}</p>
+                          <p className={styles.userHandle}>@{user.handle}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddMemberModal(false);
+                    setUserSearchTerm('');
+                    setSearchResults([]);
+                    setSelectedUserId(null);
+                    setSelectedRole('dev');
+                    setActionError('');
+                  }}
+                  className={styles.cancelButton}
+                  disabled={addingMember}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={addingMember || !selectedUserId}
+                >
+                  {addingMember ? 'Adding...' : 'Add Member'}
                 </button>
               </div>
             </form>

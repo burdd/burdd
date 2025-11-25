@@ -23,13 +23,13 @@ const AppLayout = () => {
             <ProjectSwitcher />
             {user && (
               <div className={styles.userControls}>
-                {user.avatarUrl && <img className={styles.userAvatar} src={user.avatarUrl} alt={user.name} />}
                 <div>
                   <p className={styles.userName}>{user.name}</p>
                   <button type="button" className={styles.logoutButton} onClick={handleLogout}>
                     Log out
                   </button>
                 </div>
+                {user.avatarUrl && <img className={styles.userAvatar} src={user.avatarUrl} alt={user.name} />}
               </div>
             )}
           </div>

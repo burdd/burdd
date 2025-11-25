@@ -13,14 +13,8 @@ export async function getSprintsByProject(projectId) {
     return data.sprints?.map(transformSprint) || [];
 }
 export async function getSprintById(sprintId) {
-    try {
-        const data = await fetchJson(`${API_BASE_URL}/sprints/${sprintId}`);
-        return data.sprint ? transformSprint(data.sprint) : undefined;
-    }
-    catch (error) {
-        console.error('Failed to fetch sprint:', error);
-        return undefined;
-    }
+    const data = await fetchJson(`${API_BASE_URL}/sprints/${sprintId}`);
+    return data.sprint ? transformSprint(data.sprint) : undefined;
 }
 export async function createSprint(projectId, data) {
     const response = await fetchJson(`${API_BASE_URL}/projects/${projectId}/sprints`, {

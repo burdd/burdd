@@ -9,18 +9,15 @@ const seedData = async () => {
 
         console.log('Starting database seed...')
 
-        // 1. Get existing authenticated user or create mock users
         console.log('Setting up users...')
         const userIds = {}
         
-        // First, check if there's an existing user (from OAuth login)
         const existingUser = await client.query(
             `SELECT id, handle FROM users WHERE handle = $1 LIMIT 1`,
             ['otutochi']
         )
         
         if (existingUser.rows.length > 0) {
-            // Use the existing authenticated user
             userIds['otutochi'] = existingUser.rows[0].id
             console.log(`Found existing user 'otutochi' (id: ${userIds['otutochi']})`)
         }
@@ -56,7 +53,6 @@ const seedData = async () => {
 
         console.log(`Created ${users.length} users`)
 
-        // 2. Create projects
         console.log('Creating projects...')
         const projectIds = {}
 
@@ -77,7 +73,6 @@ const seedData = async () => {
 
         console.log(`Created ${projects.length} projects`)
 
-        // 3. Add project members
         console.log('Adding project members...')
         const members = [
             { project: 'burdd', user: 'otutochi', role: 'admin' },
@@ -99,7 +94,6 @@ const seedData = async () => {
 
         console.log(`Added ${members.length} project members`)
 
-        // 4. Create sprints
         console.log('Creating sprints...')
         const sprintIds = {}
 
@@ -121,7 +115,6 @@ const seedData = async () => {
 
         console.log(`Created ${sprints.length} sprints`)
 
-        // 5. Create issues
         console.log('Creating issues...')
         const issueIds = {}
 
@@ -153,7 +146,6 @@ const seedData = async () => {
 
         console.log(`Created ${issues.length} issues`)
 
-        // 6. Create tickets
         console.log('Creating tickets...')
         const ticketIds = {}
 
@@ -193,23 +185,21 @@ const seedData = async () => {
 
         console.log(`Created ${tickets.length} tickets`)
 
-        // 7. Create ticket upvotes (simulating the upvote counts from mock data)
         console.log('Creating ticket upvotes...')
         const upvotes = [
             { ticket: '5001', count: 12, votedBy: ['otutochi', 'abdul', 'kelvin', 'riley', 'lila', 'jesse', 'QualityOps', 'SecurityPilot', 'QAHarness', 'InternalQA', 'TimelineFan', 'TypoQueen'] },
-            { ticket: '5002', count: 45, votedBy: ['otutochi'] }, // simplified - just mark current user voted
+            { ticket: '5002', count: 45, votedBy: ['otutochi'] }, 
             { ticket: '5003', count: 8, votedBy: ['abdul', 'kelvin', 'riley', 'lila', 'jesse', 'QualityOps', 'SecurityPilot', 'QAHarness'] },
             { ticket: '5004', count: 2, votedBy: ['InternalQA', 'TimelineFan'] },
-            { ticket: '1', count: 128, votedBy: ['otutochi'] }, // simplified
-            { ticket: '2', count: 256, votedBy: ['otutochi'] }, // user voted on this one
-            { ticket: '3', count: 76, votedBy: ['abdul'] }, // simplified
-            { ticket: '4', count: 215, votedBy: ['kelvin'] }, // simplified
-            { ticket: '6', count: 42, votedBy: ['riley'] }, // simplified
+            { ticket: '1', count: 128, votedBy: ['otutochi'] }, 
+            { ticket: '2', count: 256, votedBy: ['otutochi'] }, 
+            { ticket: '3', count: 76, votedBy: ['abdul'] }, 
+            { ticket: '4', count: 215, votedBy: ['kelvin'] }, 
+            { ticket: '6', count: 42, votedBy: ['riley'] }, 
         ]
 
         let upvoteCount = 0
         for (const upvote of upvotes) {
-            // Just add first user as voter for simplicity (you can expand this)
             const voter = upvote.votedBy[0]
             if (userIds[voter] && ticketIds[upvote.ticket]) {
                 await client.query(
@@ -224,7 +214,6 @@ const seedData = async () => {
 
         console.log(`Created ${upvoteCount} ticket upvotes`)
 
-        // 8. Link some tickets to issues
         console.log('Linking tickets to issues...')
         const ticketIssueLinks = [
             { ticket: '5001', issue: '1000' },
