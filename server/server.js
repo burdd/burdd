@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import passport from 'passport'
 import session from 'express-session'
+import pgSession from 'connect-pg-simple'
 import { GitHub } from './config/auth.js'
 import { pool } from './config/database.js'
 import authRouter from './routes/auth.js'
@@ -17,6 +18,7 @@ import { notFoundHandler } from './middleware/notFoundHandler.js'
 import { errorHandler } from './middleware/errorHandler.js'
 
 const app = express()
+const PgStore = pgSession(session)
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -26,6 +28,11 @@ app.use(cors({
 }))
 
 app.use(session({
+    store: new PgStore({
+        pool: pool,
+        tableName: 'session',
+        createTableIfMissing: true
+    }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
