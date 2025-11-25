@@ -21,6 +21,18 @@ const app = express()
 const PgStore = pgSession(session)
 app.set('trust proxy', 1)
 
+app.use((req, res, next) => {
+  console.log('INCOMING:',
+    req.method,
+    req.originalUrl,
+    'host=',
+    req.headers.host,
+    'xf-host=',
+    req.headers['x-forwarded-host']
+  )
+  next()
+})
+
 app.use(cors({
     origin: process.env.CLIENT_URL,
     methods: 'GET,POST,PUT,DELETE,PATCH',
