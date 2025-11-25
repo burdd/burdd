@@ -1,16 +1,16 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import AppLayout from '@components/layout/AppLayout';
-import LoginPage from '@features/auth/pages/LoginPage';
-import ProjectsListPage from '@features/projects/pages/ProjectsListPage';
-import ProjectDetailsPage from '@features/projects/pages/ProjectDetailsPage';
-import MembersPage from '@features/projects/pages/MembersPage';
-import SprintBoardPage from '@features/sprints/pages/SprintBoardPage';
-import IssueDetailsPage from '@features/issues/pages/IssueDetailsPage';
-import NotFoundPage from './pages/NotFoundPage';
+import AppLayout from './layout/AppLayout';
+import LoginPage from '@pages/auth/pages/LoginPage';
+import ProjectsListPage from '@pages/projects/pages/ProjectsListPage';
+import ProjectDetailsPage from '@pages/projects/pages/ProjectDetailsPage';
+import MembersPage from '@pages/projects/pages/MembersPage';
+import SprintBoardPage from '@pages/sprints/pages/SprintBoardPage';
+import IssueDetailsPage from '@pages/issues/pages/IssueDetailsPage';
+import NotFoundPage from '@pages/notfound/pages/NotFoundPage';
 import { AuthProvider } from '@contexts/AuthContext';
-import FeedbackDashboardPage from '@features/feedback/pages/FeedbackDashboardPage';
-import FeedbackDetailPage from '@features/feedback/pages/FeedbackDetailPage';
-import FeedbackSubmitPage from '@features/feedback/pages/FeedbackSubmitPage';
+import TicketDashboardPage from '@pages/tickets/pages/TicketDashboardPage';
+import TicketDetailPage from '@pages/tickets/pages/TicketDetailPage';
+import TicketSubmitPage from '@pages/tickets/pages/TicketSubmitPage';
 
 const App = () => {
   return (
@@ -23,9 +23,9 @@ const App = () => {
               <Route path="/projects" element={<ProjectsListPage />} />
               <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
               <Route path="/projects/:projectId/members" element={<MembersPage />} />
-              <Route path="/projects/:projectId/feedback" element={<FeedbackDashboardPage />} />
-              <Route path="/projects/:projectId/feedback/submit" element={<FeedbackSubmitPage />} />
-              <Route path="/projects/:projectId/feedback/:ticketId" element={<FeedbackDetailPage />} />
+              <Route path="/projects/:projectId/feedback" element={<TicketDashboardPage />} />
+              <Route path="/projects/:projectId/feedback/submit" element={<TicketSubmitPage />} />
+              <Route path="/projects/:projectId/feedback/:ticketId" element={<TicketDetailPage />} />
               <Route path="/sprints/:sprintId" element={<SprintBoardPage />} />
               <Route path="/issues/:issueId" element={<IssueDetailsPage />} />
             </Route>
