@@ -2,7 +2,7 @@
 
 CodePath WEB103 Final Project
 
-Designed and developed by: [Otutochi Nwadinkpa, Abdul-Rashid Zakaria]
+Designed and developed by: [Otutochi Nwadinkpa, Abdul-Rashid Zakaria, Kelvin Mathew]
 
 🔗 Link to deployed app:
 
@@ -49,7 +49,7 @@ Developers can review tickets on their projects, and convert them into new issue
 
 ### Issues CRUD
 
-Developers can create, read, update and delete issues
+Developers can create, read and update issues
 
 [gif goes here]
 

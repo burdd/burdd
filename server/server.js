@@ -19,7 +19,7 @@ import { errorHandler } from './middleware/errorHandler.js'
 const app = express()
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.CLIENT_URL,
     methods: 'GET,POST,PUT,DELETE,PATCH',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -31,9 +31,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: false, // set to true in production with HTTPS
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000 
     }
 }))
 
