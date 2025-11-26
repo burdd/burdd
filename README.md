@@ -4,7 +4,7 @@ CodePath WEB103 Final Project
 
 Designed and developed by: [Otutochi Nwadinkpa, Abdul-Rashid Zakaria, Kelvin Mathew]
 
-🔗 Link to deployed app:
+🔗 Link to deployed app: https://burdd.onrender.com
 
 ## About
 
@@ -18,9 +18,9 @@ Most issues trackers separate public intake from internal planning. Burdd merges
 
 ## Tech Stack
 
-Frontend: JavaScript (TypeScript), React, CSS
+Frontend: JavaScript, React, CSS
 
-Backend: Node.js, Express, PostgreSQL, Passport.js
+Backend: Node.js, Express, Passport.js, PostgreSQL
 
 ## Features
 
@@ -29,42 +29,39 @@ The web app uses an appropriately structured PostgreSQL database to store data
 
 <img src='/assets/feature_gifs/postgres.gif' title='Postgres GIF' alt='Postgres GIF' />
 
-### Projects CRUD
+### Projects CRUD ✅
 
 Admins can create, add developers to, and delete projects
 
-[gif goes here]
+<img src='/assets/feature_gifs/projects_crud.gif' title='Projects CRUD GIF' alt = 'Projects CRUD GIF' />
 
-### Public ticket intake
+### Public ticket intake ✅
 
 End users can submit a public ticket and track its status
 
-[gif goes here]
+<img src='/assets/feature_gifs/public_ticket_intake.gif' title='Public ticket intake GIF' alt='Public ticket intake GIF' />
 
-### Manual triage
+### Manual triage ✅
 
 Developers can review tickets on their projects, and convert them into new issues or link them to existing issues
 
-[gif goes here]
+<img src='/assets/feature_gifs/manual_triage.gif' title='Manual triage GIF' alt='Manual triage GIF' />
 
-### Issues CRUD
+### Issues CRUD ✅
 
 Developers can create, read and update issues
 
-[gif goes here]
+<img src='/assets/feature_gifs/issues_crud.gif' title='Issues CRUD GIF' alt='Issues CRUD GIF' />
 
-### Sprint Board
+### Sprint Board ✅
 
 Developers can manage issues with sprints, and track status across different stages (In Queue, In Progress, Code Review, Done)
 
-[gif goes here]
+<img src='/assets/feature_gifs/sprint_board.gif' title='Sprint Board GIF' alt='Sprint Board GIF' />
 
-### Authentication
+### Authentication ✅
 
-Developers can only see projects they are added to, and there is a role-based access to different features for a project
+Users login via GitHub and only see projects they have been added to
 
-[gif goes here]
+<img src='/assets/feature_gifs/authentication.gif' title='Authentication GIF' alt='Authentication GIF' />
 
-## Installation Instructions
-
-[instructions go here]
