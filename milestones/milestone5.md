@@ -81,6 +81,7 @@ Complete the checklist below detailing each baseline, custom, and stretch featur
 ## Final Demo GIF
 
 Here's a GIF walkthrough of the final project
+
 <img src='/assets/feature_gifs/final_demo.gif' title='Final Demo GIF' alt='Final Demo GIF' />
 
 ## Reflection
